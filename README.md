@@ -26,7 +26,7 @@ The full API of this library can be found in [api.md](./api.md).
 Add the gem to your application's `Gemfile`:
 
 ```ruby
-gem "galaxy-ruby", "~> 0.1.0" # x-release-please-version
+gem "galaxy-ruby", "~> 0.2.0" # x-release-please-version
 ```
 
 Or install it directly:
