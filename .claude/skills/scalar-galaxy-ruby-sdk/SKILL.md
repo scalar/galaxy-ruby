@@ -12,7 +12,7 @@ Generated Ruby client for Scalar Galaxy API, published as `galaxy-ruby`. Use the
 Add the gem to your application's `Gemfile`:
 
 ```ruby
-gem "galaxy-ruby", "~> 0.2.0" # x-release-please-version
+gem "galaxy-ruby", "~> 0.3.0" # x-release-please-version
 ```
 
 Or install it directly:
