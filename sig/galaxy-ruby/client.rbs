@@ -1,0 +1,62 @@
+module ScalarGalaxy
+  class Client < ScalarGalaxy::Internal::Transport::BaseClient
+    DEFAULT_MAX_RETRIES: 2
+
+    DEFAULT_TIMEOUT_IN_SECONDS: Float
+
+    DEFAULT_INITIAL_RETRY_DELAY: Float
+
+    DEFAULT_MAX_RETRY_DELAY: Float
+
+    ENVIRONMENTS: {
+      production: "https://galaxy.scalar.com",
+      void: "https://void.scalar.com/"
+    }
+
+    attr_reader bearer_auth: String
+
+    attr_reader basic_auth_username: String
+
+    attr_reader basic_auth_password: String
+
+    attr_reader api_key_header: String
+
+    attr_reader api_key_query: String?
+
+    attr_reader api_key_cookie: String
+
+    attr_reader o_auth2: String?
+
+    attr_reader open_id_connect: String?
+
+    attr_reader webhook_secret: String?
+
+    attr_reader planets: ScalarGalaxy::Resources::Planets
+
+    attr_reader celestial_bodies: ScalarGalaxy::Resources::CelestialBodies
+
+    attr_reader authentication: ScalarGalaxy::Resources::Authentication
+
+    attr_reader webhooks: ScalarGalaxy::Resources::Webhooks
+
+    private def auth_headers: -> ::Hash[String, String]
+
+    def initialize: (
+      ?bearer_auth: String?,
+      ?basic_auth_username: String?,
+      ?basic_auth_password: String?,
+      ?api_key_header: String?,
+      ?api_key_query: String?,
+      ?api_key_cookie: String?,
+      ?o_auth2: String?,
+      ?open_id_connect: String?,
+      ?webhook_secret: String?,
+      ?environment: :production | :void | nil,
+      ?base_url: String?,
+      ?max_retries: Integer,
+      ?timeout: Float,
+      ?initial_retry_delay: Float,
+      ?max_retry_delay: Float
+    ) -> void
+  end
+end

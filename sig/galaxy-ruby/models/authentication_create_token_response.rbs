@@ -1,0 +1,15 @@
+module ScalarGalaxy
+  module Models
+    type authentication_create_token_response = { token: String }
+
+    class AuthenticationCreateTokenResponse < ScalarGalaxy::Internal::Type::BaseModel
+      attr_reader token: String?
+
+      def token=: (String) -> String
+
+      def initialize: (?token: String) -> void
+
+      def to_hash: -> { token: String }
+    end
+  end
+end

@@ -1,0 +1,11 @@
+module ScalarGalaxy
+  module Models
+    type unwrap_webhook_event = ScalarGalaxy::NewPlanetWebhookEvent
+
+    module UnwrapWebhookEvent
+      extend ScalarGalaxy::Internal::Type::Union
+
+      def self?.variants: -> ::Array[ScalarGalaxy::Models::unwrap_webhook_event]
+    end
+  end
+end

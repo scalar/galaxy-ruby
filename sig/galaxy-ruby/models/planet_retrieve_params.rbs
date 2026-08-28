@@ -1,0 +1,23 @@
+module ScalarGalaxy
+  module Models
+    type planet_retrieve_params =
+      { planet_id: Integer } & ScalarGalaxy::Internal::Type::request_parameters
+
+    class PlanetRetrieveParams < ScalarGalaxy::Internal::Type::BaseModel
+      extend ScalarGalaxy::Internal::Type::RequestParameters::Converter
+      include ScalarGalaxy::Internal::Type::RequestParameters
+
+      attr_accessor planet_id: Integer
+
+      def initialize: (
+        planet_id: Integer,
+        ?request_options: ScalarGalaxy::request_opts
+      ) -> void
+
+      def to_hash: -> {
+        planet_id: Integer,
+        request_options: ScalarGalaxy::RequestOptions
+      }
+    end
+  end
+end

@@ -1,0 +1,68 @@
+module ScalarGalaxy
+  module Resources
+    class Planets
+      def create: (
+        id: Integer,
+        name: String,
+        ?atmosphere: ::Array[ScalarGalaxy::Planet::Atmosphere],
+        ?creator: ScalarGalaxy::User,
+        ?description: String?,
+        ?discovered_at: Time,
+        ?failure_callback_url: String,
+        ?habitability_index: Float,
+        ?image: String?,
+        ?last_updated: Time,
+        ?physical_properties: ScalarGalaxy::Planet::PhysicalProperties,
+        ?satellites: ::Array[top],
+        ?success_callback_url: String,
+        ?tags: ::Array[String],
+        ?type: ScalarGalaxy::Models::Planet::type_,
+        ?request_options: ScalarGalaxy::request_opts
+      ) -> ScalarGalaxy::Planet
+
+      def retrieve: (
+        Integer planet_id,
+        ?request_options: ScalarGalaxy::request_opts
+      ) -> ScalarGalaxy::Planet
+
+      def update: (
+        Integer planet_id,
+        id: Integer,
+        name: String,
+        ?atmosphere: ::Array[ScalarGalaxy::Planet::Atmosphere],
+        ?creator: ScalarGalaxy::User,
+        ?description: String?,
+        ?discovered_at: Time,
+        ?failure_callback_url: String,
+        ?habitability_index: Float,
+        ?image: String?,
+        ?last_updated: Time,
+        ?physical_properties: ScalarGalaxy::Planet::PhysicalProperties,
+        ?satellites: ::Array[top],
+        ?success_callback_url: String,
+        ?tags: ::Array[String],
+        ?type: ScalarGalaxy::Models::Planet::type_,
+        ?request_options: ScalarGalaxy::request_opts
+      ) -> ScalarGalaxy::Planet
+
+      def delete: (
+        Integer planet_id,
+        ?request_options: ScalarGalaxy::request_opts
+      ) -> nil
+
+      def delte_image: (
+        Integer planet_id,
+        ?image: ScalarGalaxy::Internal::file_input,
+        ?request_options: ScalarGalaxy::request_opts
+      ) -> ScalarGalaxy::Models::PlanetDelteImageResponse
+
+      def list_all_data: (
+        ?limit: Integer,
+        ?offset: Integer,
+        ?request_options: ScalarGalaxy::request_opts
+      ) -> ScalarGalaxy::Models::PlanetListAllDataResponse
+
+      def initialize: (client: ScalarGalaxy::Client) -> void
+    end
+  end
+end

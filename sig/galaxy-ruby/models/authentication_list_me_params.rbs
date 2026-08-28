@@ -1,0 +1,15 @@
+module ScalarGalaxy
+  module Models
+    type authentication_list_me_params =
+      {  } & ScalarGalaxy::Internal::Type::request_parameters
+
+    class AuthenticationListMeParams < ScalarGalaxy::Internal::Type::BaseModel
+      extend ScalarGalaxy::Internal::Type::RequestParameters::Converter
+      include ScalarGalaxy::Internal::Type::RequestParameters
+
+      def initialize: (?request_options: ScalarGalaxy::request_opts) -> void
+
+      def to_hash: -> { request_options: ScalarGalaxy::RequestOptions }
+    end
+  end
+end

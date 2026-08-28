@@ -1,0 +1,32 @@
+module ScalarGalaxy
+  module Models
+    type planet_delte_image_params =
+      { planet_id: Integer, image: ScalarGalaxy::Internal::file_input }
+      & ScalarGalaxy::Internal::Type::request_parameters
+
+    class PlanetDelteImageParams < ScalarGalaxy::Internal::Type::BaseModel
+      extend ScalarGalaxy::Internal::Type::RequestParameters::Converter
+      include ScalarGalaxy::Internal::Type::RequestParameters
+
+      attr_accessor planet_id: Integer
+
+      attr_reader image: ScalarGalaxy::Internal::file_input?
+
+      def image=: (
+        ScalarGalaxy::Internal::file_input
+      ) -> ScalarGalaxy::Internal::file_input
+
+      def initialize: (
+        planet_id: Integer,
+        ?image: ScalarGalaxy::Internal::file_input,
+        ?request_options: ScalarGalaxy::request_opts
+      ) -> void
+
+      def to_hash: -> {
+        planet_id: Integer,
+        image: ScalarGalaxy::Internal::file_input,
+        request_options: ScalarGalaxy::RequestOptions
+      }
+    end
+  end
+end

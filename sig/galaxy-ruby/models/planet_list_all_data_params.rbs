@@ -1,0 +1,32 @@
+module ScalarGalaxy
+  module Models
+    type planet_list_all_data_params =
+      { limit: Integer, offset: Integer }
+      & ScalarGalaxy::Internal::Type::request_parameters
+
+    class PlanetListAllDataParams < ScalarGalaxy::Internal::Type::BaseModel
+      extend ScalarGalaxy::Internal::Type::RequestParameters::Converter
+      include ScalarGalaxy::Internal::Type::RequestParameters
+
+      attr_reader limit: Integer?
+
+      def limit=: (Integer) -> Integer
+
+      attr_reader offset: Integer?
+
+      def offset=: (Integer) -> Integer
+
+      def initialize: (
+        ?limit: Integer,
+        ?offset: Integer,
+        ?request_options: ScalarGalaxy::request_opts
+      ) -> void
+
+      def to_hash: -> {
+        limit: Integer,
+        offset: Integer,
+        request_options: ScalarGalaxy::RequestOptions
+      }
+    end
+  end
+end

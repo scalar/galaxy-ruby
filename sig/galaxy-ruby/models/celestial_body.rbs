@@ -1,0 +1,76 @@
+module ScalarGalaxy
+  module Models
+    type celestial_body =
+      ScalarGalaxy::Planet | ScalarGalaxy::CelestialBody::Satellite
+
+    module CelestialBody
+      extend ScalarGalaxy::Internal::Type::Union
+
+      type satellite =
+        {
+          name: String,
+          id: Integer,
+          description: String?,
+          diameter: Float,
+          orbit: top,
+          type: ScalarGalaxy::Models::CelestialBody::Satellite::type_
+        }
+
+      class Satellite < ScalarGalaxy::Internal::Type::BaseModel
+        attr_accessor name: String
+
+        attr_reader id: Integer?
+
+        def id=: (Integer) -> Integer
+
+        attr_accessor description: String?
+
+        attr_reader diameter: Float?
+
+        def diameter=: (Float) -> Float
+
+        attr_reader orbit: top?
+
+        def orbit=: (top) -> top
+
+        attr_reader type: ScalarGalaxy::Models::CelestialBody::Satellite::type_?
+
+        def type=: (
+          ScalarGalaxy::Models::CelestialBody::Satellite::type_
+        ) -> ScalarGalaxy::Models::CelestialBody::Satellite::type_
+
+        def initialize: (
+          name: String,
+          ?id: Integer,
+          ?description: String?,
+          ?diameter: Float,
+          ?orbit: top,
+          ?type: ScalarGalaxy::Models::CelestialBody::Satellite::type_
+        ) -> void
+
+        def to_hash: -> {
+          name: String,
+          id: Integer,
+          description: String?,
+          diameter: Float,
+          orbit: top,
+          type: ScalarGalaxy::Models::CelestialBody::Satellite::type_
+        }
+
+        type type_ = :moon | :asteroid | :comet
+
+        module Type
+          extend ScalarGalaxy::Internal::Type::Enum
+
+          MOON: :moon
+          ASTEROID: :asteroid
+          COMET: :comet
+
+          def self?.values: -> ::Array[ScalarGalaxy::Models::CelestialBody::Satellite::type_]
+        end
+      end
+
+      def self?.variants: -> ::Array[ScalarGalaxy::Models::celestial_body]
+    end
+  end
+end

@@ -1,0 +1,35 @@
+module ScalarGalaxy
+  class AuthenticationCreateTokenParams = ScalarGalaxy::Models::AuthenticationCreateTokenParams
+
+  class AuthenticationCreateUserParams = ScalarGalaxy::Models::AuthenticationCreateUserParams
+
+  class AuthenticationListMeParams = ScalarGalaxy::Models::AuthenticationListMeParams
+
+  module CelestialBody = ScalarGalaxy::Models::CelestialBody
+
+  class CelestialBodyCreateParams = ScalarGalaxy::Models::CelestialBodyCreateParams
+
+  class Credentials = ScalarGalaxy::Models::Credentials
+
+  class NewPlanetWebhookEvent = ScalarGalaxy::Models::NewPlanetWebhookEvent
+
+  class Planet = ScalarGalaxy::Models::Planet
+
+  class PlanetCreateParams = ScalarGalaxy::Models::PlanetCreateParams
+
+  class PlanetDeleteParams = ScalarGalaxy::Models::PlanetDeleteParams
+
+  class PlanetDelteImageParams = ScalarGalaxy::Models::PlanetDelteImageParams
+
+  class PlanetListAllDataParams = ScalarGalaxy::Models::PlanetListAllDataParams
+
+  class PlanetRetrieveParams = ScalarGalaxy::Models::PlanetRetrieveParams
+
+  class PlanetUpdateParams = ScalarGalaxy::Models::PlanetUpdateParams
+
+  module UnwrapWebhookEvent = ScalarGalaxy::Models::UnwrapWebhookEvent
+
+  class User = ScalarGalaxy::Models::User
+
+  class WebhookUnwrapParams = ScalarGalaxy::Models::WebhookUnwrapParams
+end

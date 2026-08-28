@@ -1,0 +1,9 @@
+/*.gem
+.bundle/
+.idea/
+.ruby-lsp/
+.vscode/
+.yardoc/
+/doc/
+/sorbet/tapioca/
+/vendor/bundle/

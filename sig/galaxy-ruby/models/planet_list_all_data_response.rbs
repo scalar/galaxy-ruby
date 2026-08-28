@@ -1,0 +1,64 @@
+module ScalarGalaxy
+  module Models
+    type planet_list_all_data_response =
+      {
+        data: ::Array[top],
+        meta: ScalarGalaxy::Models::PlanetListAllDataResponse::Meta
+      }
+
+    class PlanetListAllDataResponse < ScalarGalaxy::Internal::Type::BaseModel
+      attr_reader data: ::Array[top]?
+
+      def data=: (::Array[top]) -> ::Array[top]
+
+      attr_reader meta: ScalarGalaxy::Models::PlanetListAllDataResponse::Meta?
+
+      def meta=: (
+        ScalarGalaxy::Models::PlanetListAllDataResponse::Meta
+      ) -> ScalarGalaxy::Models::PlanetListAllDataResponse::Meta
+
+      def initialize: (
+        ?data: ::Array[top],
+        ?meta: ScalarGalaxy::Models::PlanetListAllDataResponse::Meta
+      ) -> void
+
+      def to_hash: -> {
+        data: ::Array[top],
+        meta: ScalarGalaxy::Models::PlanetListAllDataResponse::Meta
+      }
+
+      type meta =
+        { limit: Integer, next_: String?, offset: Integer, total: Integer }
+
+      class Meta < ScalarGalaxy::Internal::Type::BaseModel
+        attr_reader limit: Integer?
+
+        def limit=: (Integer) -> Integer
+
+        attr_accessor next_: String?
+
+        attr_reader offset: Integer?
+
+        def offset=: (Integer) -> Integer
+
+        attr_reader total: Integer?
+
+        def total=: (Integer) -> Integer
+
+        def initialize: (
+          ?limit: Integer,
+          ?next_: String?,
+          ?offset: Integer,
+          ?total: Integer
+        ) -> void
+
+        def to_hash: -> {
+          limit: Integer,
+          next_: String?,
+          offset: Integer,
+          total: Integer
+        }
+      end
+    end
+  end
+end

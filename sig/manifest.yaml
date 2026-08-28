@@ -1,0 +1,6 @@
+# Standard libraries the signatures in this directory depend on, for `rbs collection`.
+dependencies:
+  - name: date
+  - name: openssl
+  - name: pathname
+  - name: uri

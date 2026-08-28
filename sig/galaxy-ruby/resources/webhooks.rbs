@@ -1,0 +1,13 @@
+module ScalarGalaxy
+  module Resources
+    class Webhooks
+      def unwrap: (
+        String payload,
+        headers: ::Hash[String, String],
+        ?key: String?
+      ) -> ScalarGalaxy::NewPlanetWebhookEvent
+
+      def initialize: (client: ScalarGalaxy::Client) -> void
+    end
+  end
+end

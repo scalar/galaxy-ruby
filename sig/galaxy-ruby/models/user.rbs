@@ -1,0 +1,19 @@
+module ScalarGalaxy
+  module Models
+    type user = { id: Integer, name: String }
+
+    class User < ScalarGalaxy::Internal::Type::BaseModel
+      attr_reader id: Integer?
+
+      def id=: (Integer) -> Integer
+
+      attr_reader name: String?
+
+      def name=: (String) -> String
+
+      def initialize: (?id: Integer, ?name: String) -> void
+
+      def to_hash: -> { id: Integer, name: String }
+    end
+  end
+end

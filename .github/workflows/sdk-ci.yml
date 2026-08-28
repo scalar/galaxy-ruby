@@ -1,0 +1,85 @@
+name: Ruby SDK CI
+
+on:
+  push:
+  pull_request:
+
+# Least privilege for a verification-only workflow: every job below only reads the checked-out
+# tree, so the run's GITHUB_TOKEN is narrowed to that regardless of the repository's default
+# grants. Declared at the workflow level so a job added later inherits the floor.
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: ruby/setup-ruby@9eb537ca036ebaed86729dcb9309076e4c5c3b74 # v1.314.0
+        with:
+          ruby-version: "3.2"
+          bundler-cache: false
+      - run: ruby -e 'Dir["lib/**/*.rb"].each { |file| system("ruby", "-c", file) || exit(1) }'
+      # Proves the committed tree still matches what the generator's formatter writes. RuboCop is
+      # this SDK's `.rb` formatter — `rake format:rb` is `rubocop --autocorrect` — so running it in
+      # check mode is the formatting assertion, and generator output is a fixed point of it.
+      # A failure here is either hand-edited custom code or a regenerate that was not committed.
+      #
+      # Pinned to the version `Gemfile.lock` resolves, so a RuboCop release cannot fail a
+      # consumer's CI over a change the generator never made, and installed directly rather than
+      # through bundler because nothing else in this workflow needs the bundle. Never add
+      # `--autocorrect` here: fixing and committing in CI would make the pushed bytes differ from
+      # generator output and invalidate the snapshot suite.
+      #
+      # Two checks, because this SDK formats its two Ruby trees with two different tools: `.rb` with
+      # `rake format:rb` (RuboCop) and `.rbi` with `rake format:rbi` (`stree write`). Checking an
+      # `.rbi` with RuboCop would fail on formatting `stree write` itself produces — the two tools
+      # disagree about multi-line method-call indentation, and the generator never runs RuboCop over
+      # a signature file — so each tree is checked by the tool that owns it.
+      #
+      # Files are piped in explicitly rather than naming the directories, the way `rake lint:rubocop`
+      # does it: RuboCop globs a directory argument through `AllCops/Include`, which does not list
+      # `*.rbi`, so a directory argument checks whatever that list happens to cover.
+      #
+      # `lib`, `rbi` and `examples` are all emitted unconditionally, which is what lets `find` name
+      # them directly. `tests/` is left out because it exists only when the smoke harness is
+      # emitted, and `find` would report a missing path. The generator still formats what is in
+      # there, like any other Ruby it writes; it is simply not checked here. Do not name that file
+      # in this workflow: `emit-sdk.test.ts` asserts it never appears, because the harness needs a
+      # mock server and credentials and must not run in CI.
+      #
+      # `shell: bash` is load-bearing. GitHub's default for `run:` is `bash -e {0}`, which has no
+      # `pipefail`, so the exit status of a pipeline is the *last* command's — `find` failing on a
+      # missing directory would be discarded and the step would pass having checked whatever
+      # happened to survive. That is the same fail-open shape as globbing a directory RuboCop does
+      # not expand, which is what this check was written to avoid. `shell: bash` runs
+      # `bash --noprofile --norc -eo pipefail {0}`, so a broken `find` fails the job.
+      #
+      # `--only Layout` because this is a formatting check, not a lint: Layout is the department the
+      # formatter owns and the one it runs itself. The other departments police things a reformat
+      # cannot fix, so failing CI on them would report a generator bug as formatting drift.
+      # `Layout/LineLength` is then excluded for the reason `rake lint:rubocop` excludes it — some
+      # lines cannot be broken, and the generator lays out what it can.
+      - run: gem install rubocop -v 1.89.0 --no-document
+      - run: gem install syntax_tree -v 6.3.0 --no-document
+      - name: rubocop (.rb formatting)
+        shell: bash
+        run: >-
+          find lib examples -type f -name '*.rb' -print0
+          | xargs -0 --no-run-if-empty
+          rubocop --only Layout --except Layout/LineLength --format github
+      # `RUBYOPT` for the reason the generated Rakefile's `format:rbi` task sets it: `stree` reads a
+      # file through `SyntaxTree.read`, which falls back to `Encoding.default_external`. The emitted
+      # signatures are not all ASCII — `request_options.rbi` carries a typographic apostrophe — so on
+      # a runner with no `LANG` or `LC_ALL` (a container-based self-hosted one, typically) the read
+      # raises `invalid byte sequence in US-ASCII` and reads as formatting drift. RuboCop forces
+      # UTF-8 itself, so only this step needs it.
+      - name: stree (.rbi formatting)
+        shell: bash
+        env:
+          RUBYOPT: --encoding=UTF-8
+        run: >-
+          find rbi -type f -name '*.rbi' -print0
+          | xargs -0 --no-run-if-empty
+          stree check --
+      - run: gem build *.gemspec
