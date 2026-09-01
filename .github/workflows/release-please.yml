@@ -88,6 +88,12 @@ jobs:
           bundler-cache: false
       - run: ruby -e 'Dir["lib/**/*.rb"].each { |file| system("ruby", "-c", file) || exit(1) }'
       - run: gem build *.gemspec
+      # Trusted publishing: exchanges the job's OIDC id-token for a short-lived rubygems.org API
+      # key and exports it as GEM_HOST_API_KEY for the push below, so no long-lived secret is
+      # stored. Requires a trusted publisher registered for this gem on rubygems.org naming this
+      # repository and this workflow file (a pending publisher covers a gem's first release).
+      - name: Configure RubyGems credentials
+        uses: rubygems/configure-rubygems-credentials@dc5a8d8553e6ee01fc26761a49e99e733d17954a # v2.1.0
       - name: Publish to RubyGems
         run: |
           gem build *.gemspec --output galaxy-ruby.gem
@@ -97,5 +103,3 @@ jobs:
           else
             gem push galaxy-ruby.gem
           fi
-        env:
-          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
