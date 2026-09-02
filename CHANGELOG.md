@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/scalar/galaxy-ruby/compare/v0.3.1...v0.3.2) (2026-09-02)
+
+
+### Chores
+
+* **api:** regenerate SDK ([8d78019](https://github.com/scalar/galaxy-ruby/commit/8d7801996c969c91f4099c3fe5975bc0e65ef6c1))
+
 ## [0.3.1](https://github.com/scalar/galaxy-ruby/compare/v0.3.0...v0.3.1) (2026-08-31)
 
 

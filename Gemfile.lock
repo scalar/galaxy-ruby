@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    galaxy-ruby (0.3.1)
+    galaxy-ruby (0.3.2)
       base64
       cgi
       connection_pool
