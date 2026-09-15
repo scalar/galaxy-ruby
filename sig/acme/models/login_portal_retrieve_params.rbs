@@ -1,0 +1,20 @@
+module Scalar
+  module Models
+    type login_portal_retrieve_params =
+      { slug: String } & Scalar::Internal::Type::request_parameters
+
+    class LoginPortalRetrieveParams < Scalar::Internal::Type::BaseModel
+      extend Scalar::Internal::Type::RequestParameters::Converter
+      include Scalar::Internal::Type::RequestParameters
+
+      attr_accessor slug: String
+
+      def initialize: (
+        slug: String,
+        ?request_options: Scalar::request_opts
+      ) -> void
+
+      def to_hash: -> { slug: String, request_options: Scalar::RequestOptions }
+    end
+  end
+end

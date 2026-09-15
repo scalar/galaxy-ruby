@@ -1,0 +1,36 @@
+module Scalar
+  module Models
+    type theme_update_params =
+      { slug: String, description: String, name: String }
+      & Scalar::Internal::Type::request_parameters
+
+    class ThemeUpdateParams < Scalar::Internal::Type::BaseModel
+      extend Scalar::Internal::Type::RequestParameters::Converter
+      include Scalar::Internal::Type::RequestParameters
+
+      attr_accessor slug: String
+
+      attr_reader description: String?
+
+      def description=: (String) -> String
+
+      attr_reader name: String?
+
+      def name=: (String) -> String
+
+      def initialize: (
+        slug: String,
+        ?description: String,
+        ?name: String,
+        ?request_options: Scalar::request_opts
+      ) -> void
+
+      def to_hash: -> {
+        slug: String,
+        description: String,
+        name: String,
+        request_options: Scalar::RequestOptions
+      }
+    end
+  end
+end

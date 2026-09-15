@@ -1,0 +1,9 @@
+module Scalar
+  module Resources
+    class Namespaces
+      def list: (?request_options: Scalar::request_opts) -> String
+
+      def initialize: (client: Scalar::Client) -> void
+    end
+  end
+end

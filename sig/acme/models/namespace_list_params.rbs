@@ -1,0 +1,15 @@
+module Scalar
+  module Models
+    type namespace_list_params =
+      {  } & Scalar::Internal::Type::request_parameters
+
+    class NamespaceListParams < Scalar::Internal::Type::BaseModel
+      extend Scalar::Internal::Type::RequestParameters::Converter
+      include Scalar::Internal::Type::RequestParameters
+
+      def initialize: (?request_options: Scalar::request_opts) -> void
+
+      def to_hash: -> { request_options: Scalar::RequestOptions }
+    end
+  end
+end

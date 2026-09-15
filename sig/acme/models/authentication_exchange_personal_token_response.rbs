@@ -1,0 +1,14 @@
+module Scalar
+  module Models
+    type authentication_exchange_personal_token_response =
+      { access_token: String }
+
+    class AuthenticationExchangePersonalTokenResponse < Scalar::Internal::Type::BaseModel
+      attr_accessor access_token: String
+
+      def initialize: (access_token: String) -> void
+
+      def to_hash: -> { access_token: String }
+    end
+  end
+end

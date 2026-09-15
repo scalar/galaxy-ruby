@@ -1,0 +1,117 @@
+module Scalar
+  class AccessGroup = Scalar::Models::AccessGroup
+
+  class AuthenticationExchangePersonalTokenParams = Scalar::Models::AuthenticationExchangePersonalTokenParams
+
+  class AuthenticationListCurrentUserParams = Scalar::Models::AuthenticationListCurrentUserParams
+
+  class LoginPortalCreateParams = Scalar::Models::LoginPortalCreateParams
+
+  class LoginPortalDeleteParams = Scalar::Models::LoginPortalDeleteParams
+
+  class LoginPortalEmail = Scalar::Models::LoginPortalEmail
+
+  class LoginPortalListParams = Scalar::Models::LoginPortalListParams
+
+  class LoginPortalPage = Scalar::Models::LoginPortalPage
+
+  class LoginPortalRetrieveParams = Scalar::Models::LoginPortalRetrieveParams
+
+  class LoginPortalUpdateParams = Scalar::Models::LoginPortalUpdateParams
+
+  class ManagedDocVersion = Scalar::Models::ManagedDocVersion
+
+  class Namespace = Scalar::Models::Namespace
+
+  class NamespaceListParams = Scalar::Models::NamespaceListParams
+
+  class Nanoid = Scalar::Models::Nanoid
+
+  class RegistryCreateAPIDocumentAccessGroupParams = Scalar::Models::RegistryCreateAPIDocumentAccessGroupParams
+
+  class RegistryCreateAPIDocumentParams = Scalar::Models::RegistryCreateAPIDocumentParams
+
+  class RegistryCreateAPIDocumentVersionParams = Scalar::Models::RegistryCreateAPIDocumentVersionParams
+
+  class RegistryDeleteAPIDocumentAccessGroupParams = Scalar::Models::RegistryDeleteAPIDocumentAccessGroupParams
+
+  class RegistryDeleteAPIDocumentParams = Scalar::Models::RegistryDeleteAPIDocumentParams
+
+  class RegistryDeleteAPIDocumentVersionParams = Scalar::Models::RegistryDeleteAPIDocumentVersionParams
+
+  class RegistryListAllAPIDocumentsParams = Scalar::Models::RegistryListAllAPIDocumentsParams
+
+  class RegistryListAPIDocumentsParams = Scalar::Models::RegistryListAPIDocumentsParams
+
+  class RegistryListAPIDocumentVersionMetadataParams = Scalar::Models::RegistryListAPIDocumentVersionMetadataParams
+
+  class RegistryRetrieveAPIDocumentVersionParams = Scalar::Models::RegistryRetrieveAPIDocumentVersionParams
+
+  class RegistryUpdateAPIDocumentParams = Scalar::Models::RegistryUpdateAPIDocumentParams
+
+  class RegistryUpdateAPIDocumentVersionParams = Scalar::Models::RegistryUpdateAPIDocumentVersionParams
+
+  class RuleCreateRulesetAccessGroupParams = Scalar::Models::RuleCreateRulesetAccessGroupParams
+
+  class RuleCreateRulesetParams = Scalar::Models::RuleCreateRulesetParams
+
+  class RuleDeleteRulesetAccessGroupParams = Scalar::Models::RuleDeleteRulesetAccessGroupParams
+
+  class RuleDeleteRulesetParams = Scalar::Models::RuleDeleteRulesetParams
+
+  class RuleListRulesetsParams = Scalar::Models::RuleListRulesetsParams
+
+  class RuleRetrieveRulesetDocumentParams = Scalar::Models::RuleRetrieveRulesetDocumentParams
+
+  class RuleUpdateRulesetParams = Scalar::Models::RuleUpdateRulesetParams
+
+  class ScalarDocCreateGuideParams = Scalar::Models::ScalarDocCreateGuideParams
+
+  class ScalarDocListGuidesParams = Scalar::Models::ScalarDocListGuidesParams
+
+  class ScalarDocPublishGuideParams = Scalar::Models::ScalarDocPublishGuideParams
+
+  class SchemaCreateParams = Scalar::Models::SchemaCreateParams
+
+  class SchemaDeleteParams = Scalar::Models::SchemaDeleteParams
+
+  class SchemaListParams = Scalar::Models::SchemaListParams
+
+  module Schemas = Scalar::Models::Schemas
+
+  class SchemaUpdateParams = Scalar::Models::SchemaUpdateParams
+
+  class Slug = Scalar::Models::Slug
+
+  class TeamListParams = Scalar::Models::TeamListParams
+
+  class ThemeCreateParams = Scalar::Models::ThemeCreateParams
+
+  class ThemeDeleteParams = Scalar::Models::ThemeDeleteParams
+
+  class ThemeListParams = Scalar::Models::ThemeListParams
+
+  class ThemeReplaceDocumentParams = Scalar::Models::ThemeReplaceDocumentParams
+
+  class ThemeRetrieveParams = Scalar::Models::ThemeRetrieveParams
+
+  class ThemeUpdateParams = Scalar::Models::ThemeUpdateParams
+
+  class Timestamp = Scalar::Models::Timestamp
+
+  class UID = Scalar::Models::UID
+
+  class Value400 = Scalar::Models::Value400
+
+  class Value401 = Scalar::Models::Value401
+
+  class Value403 = Scalar::Models::Value403
+
+  class Value404 = Scalar::Models::Value404
+
+  class Value422 = Scalar::Models::Value422
+
+  class Value500 = Scalar::Models::Value500
+
+  class Version = Scalar::Models::Version
+end

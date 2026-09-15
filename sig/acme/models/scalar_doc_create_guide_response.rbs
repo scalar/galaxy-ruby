@@ -1,0 +1,15 @@
+module Scalar
+  module Models
+    type scalar_doc_create_guide_response = { slug: String, uid: String }
+
+    class ScalarDocCreateGuideResponse < Scalar::Internal::Type::BaseModel
+      attr_accessor slug: String
+
+      attr_accessor uid: String
+
+      def initialize: (slug: String, uid: String) -> void
+
+      def to_hash: -> { slug: String, uid: String }
+    end
+  end
+end

@@ -1,0 +1,13 @@
+module Scalar
+  module Models
+    type scalar_doc_publish_guide_response = { publish_uid: String }
+
+    class ScalarDocPublishGuideResponse < Scalar::Internal::Type::BaseModel
+      attr_accessor publish_uid: String
+
+      def initialize: (publish_uid: String) -> void
+
+      def to_hash: -> { publish_uid: String }
+    end
+  end
+end

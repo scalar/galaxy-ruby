@@ -1,0 +1,16 @@
+module Scalar
+  module Resources
+    class Authentication
+      def exchange_personal_token: (
+        personal_token: String,
+        ?request_options: Scalar::request_opts
+      ) -> Scalar::Models::AuthenticationExchangePersonalTokenResponse
+
+      def list_current_user: (
+        ?request_options: Scalar::request_opts
+      ) -> Scalar::Models::AuthenticationListCurrentUserResponse
+
+      def initialize: (client: Scalar::Client) -> void
+    end
+  end
+end

@@ -1,0 +1,38 @@
+module Scalar
+  module Models
+    module Schemas
+      type version_create_params =
+        { namespace: String, slug: String, document: String, version: String }
+        & Scalar::Internal::Type::request_parameters
+
+      class VersionCreateParams < Scalar::Internal::Type::BaseModel
+        extend Scalar::Internal::Type::RequestParameters::Converter
+        include Scalar::Internal::Type::RequestParameters
+
+        attr_accessor namespace: String
+
+        attr_accessor slug: String
+
+        attr_accessor document: String
+
+        attr_accessor version: String
+
+        def initialize: (
+          namespace: String,
+          slug: String,
+          document: String,
+          version: String,
+          ?request_options: Scalar::request_opts
+        ) -> void
+
+        def to_hash: -> {
+          namespace: String,
+          slug: String,
+          document: String,
+          version: String,
+          request_options: Scalar::RequestOptions
+        }
+      end
+    end
+  end
+end

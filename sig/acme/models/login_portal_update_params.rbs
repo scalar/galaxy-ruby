@@ -1,0 +1,30 @@
+module Scalar
+  module Models
+    type login_portal_update_params =
+      { slug: String, title: String }
+      & Scalar::Internal::Type::request_parameters
+
+    class LoginPortalUpdateParams < Scalar::Internal::Type::BaseModel
+      extend Scalar::Internal::Type::RequestParameters::Converter
+      include Scalar::Internal::Type::RequestParameters
+
+      attr_accessor slug: String
+
+      attr_reader title: String?
+
+      def title=: (String) -> String
+
+      def initialize: (
+        slug: String,
+        ?title: String,
+        ?request_options: Scalar::request_opts
+      ) -> void
+
+      def to_hash: -> {
+        slug: String,
+        title: String,
+        request_options: Scalar::RequestOptions
+      }
+    end
+  end
+end

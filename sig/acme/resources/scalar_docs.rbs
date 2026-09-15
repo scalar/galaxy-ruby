@@ -1,0 +1,25 @@
+module Scalar
+  module Resources
+    class ScalarDocs
+      def create_guide: (
+        allowed_domains: ::Array[String],
+        allowed_users: ::Array[String],
+        is_private: bool,
+        name: String,
+        ?slug: String,
+        ?request_options: Scalar::request_opts
+      ) -> Scalar::Models::ScalarDocCreateGuideResponse
+
+      def list_guides: (
+        ?request_options: Scalar::request_opts
+      ) -> ::Array[Scalar::Models::ScalarDocListGuidesResponseItem]
+
+      def publish_guide: (
+        String slug,
+        ?request_options: Scalar::request_opts
+      ) -> Scalar::Models::ScalarDocPublishGuideResponse
+
+      def initialize: (client: Scalar::Client) -> void
+    end
+  end
+end

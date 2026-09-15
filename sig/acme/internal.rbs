@@ -1,0 +1,9 @@
+module Scalar
+  module Internal
+    extend Scalar::Internal::Util::SorbetRuntimeSupport
+
+    type file_input = Pathname | StringIO | IO | String | Scalar::FilePart
+
+    OMIT: Object
+  end
+end

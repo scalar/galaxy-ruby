@@ -1,9 +1,0 @@
-module ScalarGalaxy
-  module Internal
-    extend ScalarGalaxy::Internal::Util::SorbetRuntimeSupport
-
-    type file_input = Pathname | StringIO | IO | String | ScalarGalaxy::FilePart
-
-    OMIT: Object
-  end
-end

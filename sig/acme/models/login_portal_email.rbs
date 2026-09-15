@@ -1,0 +1,70 @@
+module Scalar
+  module Models
+    type login_portal_email =
+      {
+        button_background: String,
+        button_color: String,
+        button_text: String,
+        card_background: String,
+        card_color: String,
+        logo: String,
+        logo_size: String,
+        main_background: String,
+        main_color: String,
+        message: String,
+        title: String
+      }
+
+    class LoginPortalEmail < Scalar::Internal::Type::BaseModel
+      attr_accessor button_background: String
+
+      attr_accessor button_color: String
+
+      attr_accessor button_text: String
+
+      attr_accessor card_background: String
+
+      attr_accessor card_color: String
+
+      attr_accessor logo: String
+
+      attr_accessor logo_size: String
+
+      attr_accessor main_background: String
+
+      attr_accessor main_color: String
+
+      attr_accessor message: String
+
+      attr_accessor title: String
+
+      def initialize: (
+        button_background: String,
+        button_color: String,
+        button_text: String,
+        card_background: String,
+        card_color: String,
+        logo: String,
+        logo_size: String,
+        main_background: String,
+        main_color: String,
+        message: String,
+        title: String
+      ) -> void
+
+      def to_hash: -> {
+        button_background: String,
+        button_color: String,
+        button_text: String,
+        card_background: String,
+        card_color: String,
+        logo: String,
+        logo_size: String,
+        main_background: String,
+        main_color: String,
+        message: String,
+        title: String
+      }
+    end
+  end
+end

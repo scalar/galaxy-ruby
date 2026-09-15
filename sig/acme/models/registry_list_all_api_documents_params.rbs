@@ -1,0 +1,15 @@
+module Scalar
+  module Models
+    type registry_list_all_api_documents_params =
+      {  } & Scalar::Internal::Type::request_parameters
+
+    class RegistryListAllAPIDocumentsParams < Scalar::Internal::Type::BaseModel
+      extend Scalar::Internal::Type::RequestParameters::Converter
+      include Scalar::Internal::Type::RequestParameters
+
+      def initialize: (?request_options: Scalar::request_opts) -> void
+
+      def to_hash: -> { request_options: Scalar::RequestOptions }
+    end
+  end
+end

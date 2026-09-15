@@ -1,0 +1,38 @@
+module Scalar
+  module Models
+    type theme_create_params =
+      { document: String, name: String, slug: String, description: String }
+      & Scalar::Internal::Type::request_parameters
+
+    class ThemeCreateParams < Scalar::Internal::Type::BaseModel
+      extend Scalar::Internal::Type::RequestParameters::Converter
+      include Scalar::Internal::Type::RequestParameters
+
+      attr_accessor document: String
+
+      attr_accessor name: String
+
+      attr_accessor slug: String
+
+      attr_reader description: String?
+
+      def description=: (String) -> String
+
+      def initialize: (
+        document: String,
+        name: String,
+        slug: String,
+        ?description: String,
+        ?request_options: Scalar::request_opts
+      ) -> void
+
+      def to_hash: -> {
+        document: String,
+        name: String,
+        slug: String,
+        description: String,
+        request_options: Scalar::RequestOptions
+      }
+    end
+  end
+end

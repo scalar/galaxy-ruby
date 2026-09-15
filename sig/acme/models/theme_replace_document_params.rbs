@@ -1,0 +1,28 @@
+module Scalar
+  module Models
+    type theme_replace_document_params =
+      { slug: String, document: String }
+      & Scalar::Internal::Type::request_parameters
+
+    class ThemeReplaceDocumentParams < Scalar::Internal::Type::BaseModel
+      extend Scalar::Internal::Type::RequestParameters::Converter
+      include Scalar::Internal::Type::RequestParameters
+
+      attr_accessor slug: String
+
+      attr_accessor document: String
+
+      def initialize: (
+        slug: String,
+        document: String,
+        ?request_options: Scalar::request_opts
+      ) -> void
+
+      def to_hash: -> {
+        slug: String,
+        document: String,
+        request_options: Scalar::RequestOptions
+      }
+    end
+  end
+end

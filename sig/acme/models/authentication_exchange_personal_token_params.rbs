@@ -1,0 +1,23 @@
+module Scalar
+  module Models
+    type authentication_exchange_personal_token_params =
+      { personal_token: String } & Scalar::Internal::Type::request_parameters
+
+    class AuthenticationExchangePersonalTokenParams < Scalar::Internal::Type::BaseModel
+      extend Scalar::Internal::Type::RequestParameters::Converter
+      include Scalar::Internal::Type::RequestParameters
+
+      attr_accessor personal_token: String
+
+      def initialize: (
+        personal_token: String,
+        ?request_options: Scalar::request_opts
+      ) -> void
+
+      def to_hash: -> {
+        personal_token: String,
+        request_options: Scalar::RequestOptions
+      }
+    end
+  end
+end

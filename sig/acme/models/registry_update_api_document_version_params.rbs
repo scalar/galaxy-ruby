@@ -1,0 +1,48 @@
+module Scalar
+  module Models
+    type registry_update_api_document_version_params =
+      {
+        namespace: String,
+        slug: String,
+        semver: String,
+        document: String,
+        last_known_version_sha: String
+      }
+      & Scalar::Internal::Type::request_parameters
+
+    class RegistryUpdateAPIDocumentVersionParams < Scalar::Internal::Type::BaseModel
+      extend Scalar::Internal::Type::RequestParameters::Converter
+      include Scalar::Internal::Type::RequestParameters
+
+      attr_accessor namespace: String
+
+      attr_accessor slug: String
+
+      attr_accessor semver: String
+
+      attr_accessor document: String
+
+      attr_reader last_known_version_sha: String?
+
+      def last_known_version_sha=: (String) -> String
+
+      def initialize: (
+        namespace: String,
+        slug: String,
+        semver: String,
+        document: String,
+        ?last_known_version_sha: String,
+        ?request_options: Scalar::request_opts
+      ) -> void
+
+      def to_hash: -> {
+        namespace: String,
+        slug: String,
+        semver: String,
+        document: String,
+        last_known_version_sha: String,
+        request_options: Scalar::RequestOptions
+      }
+    end
+  end
+end

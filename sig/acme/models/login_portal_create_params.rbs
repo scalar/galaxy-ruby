@@ -1,0 +1,41 @@
+module Scalar
+  module Models
+    type login_portal_create_params =
+      {
+        email: Scalar::LoginPortalEmail,
+        page: Scalar::LoginPortalPage,
+        slug: String,
+        title: String
+      }
+      & Scalar::Internal::Type::request_parameters
+
+    class LoginPortalCreateParams < Scalar::Internal::Type::BaseModel
+      extend Scalar::Internal::Type::RequestParameters::Converter
+      include Scalar::Internal::Type::RequestParameters
+
+      attr_accessor email: Scalar::LoginPortalEmail
+
+      attr_accessor page: Scalar::LoginPortalPage
+
+      attr_accessor slug: String
+
+      attr_accessor title: String
+
+      def initialize: (
+        email: Scalar::LoginPortalEmail,
+        page: Scalar::LoginPortalPage,
+        slug: String,
+        title: String,
+        ?request_options: Scalar::request_opts
+      ) -> void
+
+      def to_hash: -> {
+        email: Scalar::LoginPortalEmail,
+        page: Scalar::LoginPortalPage,
+        slug: String,
+        title: String,
+        request_options: Scalar::RequestOptions
+      }
+    end
+  end
+end

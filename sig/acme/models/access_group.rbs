@@ -1,0 +1,13 @@
+module Scalar
+  module Models
+    type access_group = { access_group_slug: String }
+
+    class AccessGroup < Scalar::Internal::Type::BaseModel
+      attr_accessor access_group_slug: String
+
+      def initialize: (access_group_slug: String) -> void
+
+      def to_hash: -> { access_group_slug: String }
+    end
+  end
+end

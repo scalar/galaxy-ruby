@@ -1,0 +1,50 @@
+module Scalar
+  module Models
+    type rule_list_rulesets_response_item =
+      {
+        description: String,
+        is_private: bool,
+        namespace: String,
+        slug: String,
+        title: String,
+        uid: String
+      }
+
+    class RuleListRulesetsResponseItem < Scalar::Internal::Type::BaseModel
+      attr_accessor description: String
+
+      attr_accessor is_private: bool
+
+      attr_accessor namespace: String
+
+      attr_accessor slug: String
+
+      attr_accessor title: String
+
+      attr_accessor uid: String
+
+      def initialize: (
+        description: String,
+        is_private: bool,
+        namespace: String,
+        slug: String,
+        title: String,
+        uid: String
+      ) -> void
+
+      def to_hash: -> {
+        description: String,
+        is_private: bool,
+        namespace: String,
+        slug: String,
+        title: String,
+        uid: String
+      }
+    end
+
+    type rule_list_rulesets_response =
+      ::Array[Scalar::Models::RuleListRulesetsResponseItem]
+
+    RuleListRulesetsResponse: Scalar::Internal::Type::Converter
+  end
+end

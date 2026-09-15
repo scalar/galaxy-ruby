@@ -1,0 +1,79 @@
+module Scalar
+  module Internal
+    module Type
+      module Converter
+        extend Scalar::Internal::Util::SorbetRuntimeSupport
+
+        type input = Scalar::Internal::Type::Converter | Class
+
+        type coerce_state =
+          {
+            translate_names: bool,
+            strictness: bool,
+            exactness: { yes: Integer, no: Integer, maybe: Integer },
+            error: Class,
+            branched: Integer
+          }
+
+        type dump_state = { can_retry: bool }
+
+        def coerce: (
+          top value,
+          state: Scalar::Internal::Type::Converter::coerce_state
+        ) -> top
+
+        def dump: (
+          top value,
+          state: Scalar::Internal::Type::Converter::dump_state
+        ) -> top
+
+        def inspect: (?depth: Integer) -> String
+
+        def self.type_info: (
+          {
+            const: (nil | bool | Integer | Float | Symbol)?,
+            enum: ^-> Scalar::Internal::Type::Converter::input?,
+            union: ^-> Scalar::Internal::Type::Converter::input?
+          }
+          | ^-> Scalar::Internal::Type::Converter::input
+          | Scalar::Internal::Type::Converter::input spec
+        ) -> (^-> top)
+
+        def self.meta_info: (
+          {
+            const: (nil | bool | Integer | Float | Symbol)?,
+            enum: ^-> Scalar::Internal::Type::Converter::input?,
+            union: ^-> Scalar::Internal::Type::Converter::input?
+          }
+          | ^-> Scalar::Internal::Type::Converter::input
+          | Scalar::Internal::Type::Converter::input type_info,
+          {
+            const: (nil | bool | Integer | Float | Symbol)?,
+            enum: ^-> Scalar::Internal::Type::Converter::input?,
+            union: ^-> Scalar::Internal::Type::Converter::input?
+          }
+          | ^-> Scalar::Internal::Type::Converter::input
+          | Scalar::Internal::Type::Converter::input spec
+        ) -> ::Hash[Symbol, top]
+
+        def self.new_coerce_state: (
+          ?translate_names: bool
+        ) -> Scalar::Internal::Type::Converter::coerce_state
+
+        def self.coerce: (
+          Scalar::Internal::Type::Converter::input target,
+          top value,
+          ?state: Scalar::Internal::Type::Converter::coerce_state
+        ) -> top
+
+        def self.dump: (
+          Scalar::Internal::Type::Converter::input target,
+          top value,
+          ?state: Scalar::Internal::Type::Converter::dump_state
+        ) -> top
+
+        def self.inspect: (top target, depth: Integer) -> String
+      end
+    end
+  end
+end

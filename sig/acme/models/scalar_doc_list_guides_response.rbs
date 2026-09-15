@@ -1,0 +1,183 @@
+module Scalar
+  module Models
+    type scalar_doc_list_guides_response_item =
+      {
+        access_groups: top,
+        active_deployment: Scalar::Models::ScalarDocListGuidesResponseItem::ActiveDeployment?,
+        active_theme_id: String,
+        agent_enabled: bool,
+        created_at: Integer,
+        is_private: bool,
+        last_published: Integer?,
+        last_published_uid: String?,
+        login_portal_uid: String,
+        name: String,
+        publish_message: String,
+        publish_status: String,
+        slug: String,
+        uid: String,
+        updated_at: Integer,
+        repository: Scalar::Models::ScalarDocListGuidesResponseItem::Repository?,
+        typesense_id: Float
+      }
+
+    class ScalarDocListGuidesResponseItem < Scalar::Internal::Type::BaseModel
+      attr_accessor access_groups: top
+
+      attr_accessor active_deployment: Scalar::Models::ScalarDocListGuidesResponseItem::ActiveDeployment?
+
+      attr_accessor active_theme_id: String
+
+      attr_accessor agent_enabled: bool
+
+      attr_accessor created_at: Integer
+
+      attr_accessor is_private: bool
+
+      attr_accessor last_published: Integer?
+
+      attr_accessor last_published_uid: String?
+
+      attr_accessor login_portal_uid: String
+
+      attr_accessor name: String
+
+      attr_accessor publish_message: String
+
+      attr_accessor publish_status: String
+
+      attr_accessor slug: String
+
+      attr_accessor uid: String
+
+      attr_accessor updated_at: Integer
+
+      attr_accessor repository: Scalar::Models::ScalarDocListGuidesResponseItem::Repository?
+
+      attr_reader typesense_id: Float?
+
+      def typesense_id=: (Float) -> Float
+
+      def initialize: (
+        access_groups: top,
+        active_deployment: Scalar::Models::ScalarDocListGuidesResponseItem::ActiveDeployment?,
+        active_theme_id: String,
+        agent_enabled: bool,
+        created_at: Integer,
+        is_private: bool,
+        last_published: Integer?,
+        last_published_uid: String?,
+        login_portal_uid: String,
+        name: String,
+        publish_message: String,
+        publish_status: String,
+        slug: String,
+        uid: String,
+        updated_at: Integer,
+        ?repository: Scalar::Models::ScalarDocListGuidesResponseItem::Repository?,
+        ?typesense_id: Float
+      ) -> void
+
+      def to_hash: -> {
+        access_groups: top,
+        active_deployment: Scalar::Models::ScalarDocListGuidesResponseItem::ActiveDeployment?,
+        active_theme_id: String,
+        agent_enabled: bool,
+        created_at: Integer,
+        is_private: bool,
+        last_published: Integer?,
+        last_published_uid: String?,
+        login_portal_uid: String,
+        name: String,
+        publish_message: String,
+        publish_status: String,
+        slug: String,
+        uid: String,
+        updated_at: Integer,
+        repository: Scalar::Models::ScalarDocListGuidesResponseItem::Repository?,
+        typesense_id: Float
+      }
+
+      type active_deployment =
+        { domain: String, published_at: Integer, uid: String }
+
+      class ActiveDeployment < Scalar::Internal::Type::BaseModel
+        attr_accessor domain: String
+
+        attr_accessor published_at: Integer
+
+        attr_accessor uid: String
+
+        def initialize: (
+          domain: String,
+          published_at: Integer,
+          uid: String
+        ) -> void
+
+        def to_hash: -> { domain: String, published_at: Integer, uid: String }
+      end
+
+      type repository =
+        {
+          id: Float,
+          branch: String,
+          config_path: String,
+          expired: bool,
+          linked_by: String,
+          name: String,
+          pr_comments: bool,
+          publish_on_merge: bool,
+          publish_previews: bool
+        }
+
+      class Repository < Scalar::Internal::Type::BaseModel
+        attr_accessor id: Float
+
+        attr_accessor branch: String
+
+        attr_accessor config_path: String
+
+        attr_accessor expired: bool
+
+        attr_accessor linked_by: String
+
+        attr_accessor name: String
+
+        attr_accessor pr_comments: bool
+
+        attr_accessor publish_on_merge: bool
+
+        attr_accessor publish_previews: bool
+
+        def initialize: (
+          id: Float,
+          branch: String,
+          config_path: String,
+          expired: bool,
+          linked_by: String,
+          name: String,
+          pr_comments: bool,
+          publish_on_merge: bool,
+          publish_previews: bool
+        ) -> void
+
+        def to_hash: -> {
+          id: Float,
+          branch: String,
+          config_path: String,
+          expired: bool,
+          linked_by: String,
+          name: String,
+          pr_comments: bool,
+          publish_on_merge: bool,
+          publish_previews: bool
+        }
+      end
+    end
+
+    type scalar_doc_list_guides_response =
+      ::Array[Scalar::Models::ScalarDocListGuidesResponseItem]
+
+    ScalarDocListGuidesResponse: Scalar::Internal::Type::Converter
+  end
+end
