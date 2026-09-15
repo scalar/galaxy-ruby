@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.4.0](https://github.com/scalar/galaxy-ruby/compare/v0.3.1...v0.4.0) (2026-09-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* **api:** 3 breaking changes to the SDK surface.
+    - Property `planet.habitabilityIndex` type changed from `number<float>` to `number<float>`.
+    - Property `planet.physicalProperties` type changed from `object` to `object`.
+    - Property `planet.atmosphere` type changed from `Array<object>` to `Array<object>`.
+
+### Features
+
+* **api:** update property planet.habitabilityIndex (+3 more changes) ([0eec358](https://github.com/scalar/galaxy-ruby/commit/0eec3582bffe0684b4396a6c2e0863ad75665b23))
+
+
+### Chores
+
+* **api:** regenerate SDK ([8d78019](https://github.com/scalar/galaxy-ruby/commit/8d7801996c969c91f4099c3fe5975bc0e65ef6c1))
+
 ## [0.3.1](https://github.com/scalar/galaxy-ruby/compare/v0.3.0...v0.3.1) (2026-08-31)
 
 
