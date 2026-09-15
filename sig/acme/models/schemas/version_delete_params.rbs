@@ -1,0 +1,34 @@
+module Scalar
+  module Models
+    module Schemas
+      type version_delete_params =
+        { namespace: String, slug: String, semver: String }
+        & Scalar::Internal::Type::request_parameters
+
+      class VersionDeleteParams < Scalar::Internal::Type::BaseModel
+        extend Scalar::Internal::Type::RequestParameters::Converter
+        include Scalar::Internal::Type::RequestParameters
+
+        attr_accessor namespace: String
+
+        attr_accessor slug: String
+
+        attr_accessor semver: String
+
+        def initialize: (
+          namespace: String,
+          slug: String,
+          semver: String,
+          ?request_options: Scalar::request_opts
+        ) -> void
+
+        def to_hash: -> {
+          namespace: String,
+          slug: String,
+          semver: String,
+          request_options: Scalar::RequestOptions
+        }
+      end
+    end
+  end
+end

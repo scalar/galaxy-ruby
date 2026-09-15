@@ -1,0 +1,3 @@
+module Scalar
+  VERSION: String
+end

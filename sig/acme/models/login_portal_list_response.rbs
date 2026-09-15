@@ -1,0 +1,23 @@
+module Scalar
+  module Models
+    type login_portal_list_response_item =
+      { slug: String, title: String, uid: String }
+
+    class LoginPortalListResponseItem < Scalar::Internal::Type::BaseModel
+      attr_accessor slug: String
+
+      attr_accessor title: String
+
+      attr_accessor uid: String
+
+      def initialize: (slug: String, title: String, uid: String) -> void
+
+      def to_hash: -> { slug: String, title: String, uid: String }
+    end
+
+    type login_portal_list_response =
+      ::Array[Scalar::Models::LoginPortalListResponseItem]
+
+    LoginPortalListResponse: Scalar::Internal::Type::Converter
+  end
+end

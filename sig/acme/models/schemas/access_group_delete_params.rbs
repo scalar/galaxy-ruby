@@ -1,0 +1,34 @@
+module Scalar
+  module Models
+    module Schemas
+      type access_group_delete_params =
+        { namespace: String, slug: String }
+        & Scalar::Internal::Type::request_parameters
+
+      class AccessGroupDeleteParams < Scalar::Models::AccessGroup
+        extend Scalar::Internal::Type::RequestParameters::Converter
+        include Scalar::Internal::Type::RequestParameters
+
+        def namespace: -> String
+
+        def namespace=: (String _) -> String
+
+        def slug: -> String
+
+        def slug=: (String _) -> String
+
+        def initialize: (
+          namespace: String,
+          slug: String,
+          ?request_options: Scalar::request_opts
+        ) -> void
+
+        def to_hash: -> {
+          namespace: String,
+          slug: String,
+          request_options: Scalar::RequestOptions
+        }
+      end
+    end
+  end
+end

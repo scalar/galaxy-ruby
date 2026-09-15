@@ -1,0 +1,117 @@
+module Scalar
+  module Errors
+    class Error < StandardError
+      attr_accessor cause: StandardError?
+    end
+
+    class ConversionError < Scalar::Errors::Error
+      def cause: -> StandardError?
+
+      def initialize: (
+        on: Class,
+        method: Symbol,
+        target: top,
+        value: top,
+        ?cause: StandardError?
+      ) -> void
+    end
+
+    class APIError < Scalar::Errors::Error
+      attr_accessor url: URI::Generic
+
+      attr_accessor status: Integer?
+
+      attr_accessor headers: ::Hash[String, String]?
+
+      attr_accessor body: top?
+
+      def initialize: (
+        url: URI::Generic,
+        ?status: Integer?,
+        ?headers: ::Hash[String, String]?,
+        ?body: Object?,
+        ?request: nil,
+        ?response: nil,
+        ?message: String?
+      ) -> void
+    end
+
+    class APIConnectionError < Scalar::Errors::APIError
+      def initialize: (
+        url: URI::Generic,
+        ?status: nil,
+        ?headers: ::Hash[String, String]?,
+        ?body: nil,
+        ?request: nil,
+        ?response: nil,
+        ?message: String?
+      ) -> void
+    end
+
+    class APITimeoutError < Scalar::Errors::APIConnectionError
+      def initialize: (
+        url: URI::Generic,
+        ?status: nil,
+        ?headers: ::Hash[String, String]?,
+        ?body: nil,
+        ?request: nil,
+        ?response: nil,
+        ?message: String?
+      ) -> void
+    end
+
+    class APIStatusError < Scalar::Errors::APIError
+      def self.for: (
+        url: URI::Generic,
+        status: Integer,
+        headers: ::Hash[String, String]?,
+        body: Object?,
+        request: nil,
+        response: nil,
+        ?message: String?
+      ) -> instance
+
+      def initialize: (
+        url: URI::Generic,
+        status: Integer,
+        headers: ::Hash[String, String]?,
+        body: Object?,
+        request: nil,
+        response: nil,
+        ?message: String?
+      ) -> void
+    end
+
+    class BadRequestError < Scalar::Errors::APIStatusError
+      HTTP_STATUS: 400
+    end
+
+    class AuthenticationError < Scalar::Errors::APIStatusError
+      HTTP_STATUS: 401
+    end
+
+    class PermissionDeniedError < Scalar::Errors::APIStatusError
+      HTTP_STATUS: 403
+    end
+
+    class NotFoundError < Scalar::Errors::APIStatusError
+      HTTP_STATUS: 404
+    end
+
+    class ConflictError < Scalar::Errors::APIStatusError
+      HTTP_STATUS: 409
+    end
+
+    class UnprocessableEntityError < Scalar::Errors::APIStatusError
+      HTTP_STATUS: 422
+    end
+
+    class RateLimitError < Scalar::Errors::APIStatusError
+      HTTP_STATUS: 429
+    end
+
+    class InternalServerError < Scalar::Errors::APIStatusError
+      HTTP_STATUS: Range[Integer]
+    end
+  end
+end

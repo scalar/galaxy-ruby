@@ -1,0 +1,142 @@
+module Scalar
+  module Models
+    type managed_doc_version =
+      {
+        created_at: Float,
+        embed_status: Scalar::Models::ManagedDocVersion::embed_status?,
+        tags: ::Array[String],
+        uid: String,
+        upgraded: bool,
+        version: String,
+        json_sha: String,
+        tools: ::Array[Scalar::ManagedDocVersion::Tool],
+        version_sha: String,
+        yaml_sha: String
+      }
+
+    class ManagedDocVersion < Scalar::Internal::Type::BaseModel
+      attr_accessor created_at: Float
+
+      attr_accessor embed_status: Scalar::Models::ManagedDocVersion::embed_status?
+
+      attr_accessor tags: ::Array[String]
+
+      attr_accessor uid: String
+
+      attr_accessor upgraded: bool
+
+      attr_accessor version: String
+
+      attr_reader json_sha: String?
+
+      def json_sha=: (String) -> String
+
+      attr_reader tools: ::Array[Scalar::ManagedDocVersion::Tool]?
+
+      def tools=: (
+        ::Array[Scalar::ManagedDocVersion::Tool]
+      ) -> ::Array[Scalar::ManagedDocVersion::Tool]
+
+      attr_reader version_sha: String?
+
+      def version_sha=: (String) -> String
+
+      attr_reader yaml_sha: String?
+
+      def yaml_sha=: (String) -> String
+
+      def initialize: (
+        created_at: Float,
+        embed_status: Scalar::Models::ManagedDocVersion::embed_status?,
+        tags: ::Array[String],
+        uid: String,
+        upgraded: bool,
+        version: String,
+        ?json_sha: String,
+        ?tools: ::Array[Scalar::ManagedDocVersion::Tool],
+        ?version_sha: String,
+        ?yaml_sha: String
+      ) -> void
+
+      def to_hash: -> {
+        created_at: Float,
+        embed_status: Scalar::Models::ManagedDocVersion::embed_status?,
+        tags: ::Array[String],
+        uid: String,
+        upgraded: bool,
+        version: String,
+        json_sha: String,
+        tools: ::Array[Scalar::ManagedDocVersion::Tool],
+        version_sha: String,
+        yaml_sha: String
+      }
+
+      type embed_status = :complete | :failed
+
+      module EmbedStatus
+        extend Scalar::Internal::Type::Enum
+
+        COMPLETE: :complete
+        FAILED: :failed
+
+        def self?.values: -> ::Array[Scalar::Models::ManagedDocVersion::embed_status]
+      end
+
+      type tool =
+        {
+          enabled_tools: ::Array[Scalar::Models::ManagedDocVersion::Tool::enabled_tool],
+          method_: Scalar::Models::ManagedDocVersion::Tool::method_,
+          path: String
+        }
+
+      class Tool < Scalar::Internal::Type::BaseModel
+        attr_accessor enabled_tools: ::Array[Scalar::Models::ManagedDocVersion::Tool::enabled_tool]
+
+        attr_accessor method_: Scalar::Models::ManagedDocVersion::Tool::method_
+
+        attr_accessor path: String
+
+        def initialize: (
+          enabled_tools: ::Array[Scalar::Models::ManagedDocVersion::Tool::enabled_tool],
+          method_: Scalar::Models::ManagedDocVersion::Tool::method_,
+          path: String
+        ) -> void
+
+        def to_hash: -> {
+          enabled_tools: ::Array[Scalar::Models::ManagedDocVersion::Tool::enabled_tool],
+          method_: Scalar::Models::ManagedDocVersion::Tool::method_,
+          path: String
+        }
+
+        type enabled_tool = :"execute-request" | :"get-mini-openapi-spec"
+
+        module EnabledTool
+          extend Scalar::Internal::Type::Enum
+
+          EXECUTE_REQUEST: :"execute-request"
+          GET_MINI_OPENAPI_SPEC: :"get-mini-openapi-spec"
+
+          def self?.values: -> ::Array[Scalar::Models::ManagedDocVersion::Tool::enabled_tool]
+        end
+
+        type method_ =
+          :delete | :get | :head | :options | :patch | :post | :put | :trace
+
+        module Method
+          extend Scalar::Internal::Type::Enum
+
+          DELETE: :delete
+          GET: :get
+          HEAD: :head
+          OPTIONS: :options
+          PATCH: :patch
+          POST: :post
+          PUT: :put
+          TRACE: :trace
+
+          def self?.values: -> ::Array[Scalar::Models::ManagedDocVersion::Tool::method_]
+        end
+      end
+    end
+  end
+end

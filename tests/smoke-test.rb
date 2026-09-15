@@ -5,53 +5,287 @@ require "json"
 require "stringio"
 require "time"
 
-root = File.exist?(File.join(__dir__, "lib", "galaxy-ruby.rb")) ? __dir__ : File.expand_path("..", __dir__)
+root = File.exist?(File.join(__dir__, "lib", "acme.rb")) ? __dir__ : File.expand_path("..", __dir__)
 $LOAD_PATH.unshift(File.join(root, "lib"))
-require "galaxy-ruby"
+require "acme"
 
 # Smoke test: calls every generated operation once to confirm the SDK can reach each endpoint.
 # Run it from this repo with `ruby tests/smoke-test.rb`. The generator also runs this file
 # against a mock server and reads the JSON report produced via SCALAR_SMOKE_REPORT.
-client = ScalarGalaxy::Client.new(max_retries: 2, timeout: 30)
+client = Scalar::Client.new(max_retries: 2, timeout: 30)
 
 cases = [
   {
-    operation: "create",
+    operation: "createApiDocument",
     method: "POST",
-    path: "/planets",
+    path: "/v1/apis/{namespace}",
     label: "required params",
-    run: -> { client.planets.create({id: 1, name: "Mars"}) }
+    run: -> do
+      client.registry.create_api_document("namespace", {document: "", slug: "", title: "", version: "x"})
+    end
+  },
+  {
+    operation: "createApiDocument",
+    method: "POST",
+    path: "/v1/apis/{namespace}",
+    label: "all params",
+    run: -> do
+      client.registry.create_api_document(
+        "namespace",
+        {document: "", slug: "", title: "", version: "x", description: "", is_private: false, ruleset: ""}
+      )
+    end
+  },
+  {
+    operation: "createApiDocumentAccessGroup",
+    method: "POST",
+    path: "/v1/apis/{namespace}/{slug}/access-group",
+    run: -> do
+      client.registry.create_api_document_access_group(
+        "slug",
+        {access_group_slug: "xxx", namespace: "namespace"}
+      )
+    end
+  },
+  {
+    operation: "createApiDocumentVersion",
+    method: "POST",
+    path: "/v1/apis/{namespace}/{slug}/version",
+    label: "required params",
+    run: -> do
+      client.registry.create_api_document_version(
+        "slug",
+        {namespace: "namespace", document: "", version: "x"}
+      )
+    end
+  },
+  {
+    operation: "createApiDocumentVersion",
+    method: "POST",
+    path: "/v1/apis/{namespace}/{slug}/version",
+    label: "all params",
+    run: -> do
+      client.registry.create_api_document_version(
+        "slug",
+        {namespace: "namespace", document: "", version: "x", force: false, last_known_version_sha: ""}
+      )
+    end
+  },
+  {
+    operation: "deleteApiDocument",
+    method: "DELETE",
+    path: "/v1/apis/{namespace}/{slug}",
+    run: -> { client.registry.delete_api_document("slug", {namespace: "namespace"}) }
+  },
+  {
+    operation: "deleteApiDocumentAccessGroup",
+    method: "DELETE",
+    path: "/v1/apis/{namespace}/{slug}/access-group",
+    run: -> do
+      client.registry.delete_api_document_access_group(
+        "slug",
+        {access_group_slug: "xxx", namespace: "namespace"}
+      )
+    end
+  },
+  {
+    operation: "deleteApiDocumentVersion",
+    method: "DELETE",
+    path: "/v1/apis/{namespace}/{slug}/version/{semver}",
+    run: -> do
+      client.registry.delete_api_document_version("semver", {namespace: "namespace", slug: "slug"})
+    end
+  },
+  {
+    operation: "listAllApiDocuments",
+    method: "GET",
+    path: "/v1/apis",
+    run: -> { client.registry.list_all_api_documents }
+  },
+  {
+    operation: "listApiDocumentVersionMetadata",
+    method: "GET",
+    path: "/v1/apis/{namespace}/{slug}/version/{semver}/metadata",
+    run: -> do
+      client.registry.list_api_document_version_metadata("semver", {namespace: "namespace", slug: "slug"})
+    end
+  },
+  {
+    operation: "listApiDocuments",
+    method: "GET",
+    path: "/v1/apis/{namespace}",
+    run: -> { client.registry.list_api_documents("namespace") }
+  },
+  {
+    operation: "retrieveApiDocumentVersion",
+    method: "GET",
+    path: "/v1/apis/{namespace}/{slug}/version/{semver}",
+    run: -> do
+      client.registry.retrieve_api_document_version("semver", {namespace: "namespace", slug: "slug"})
+    end
+  },
+  {
+    operation: "updateApiDocument",
+    method: "PATCH",
+    path: "/v1/apis/{namespace}/{slug}",
+    label: "required params",
+    run: -> { client.registry.update_api_document("slug", {namespace: "namespace"}) }
+  },
+  {
+    operation: "updateApiDocument",
+    method: "PATCH",
+    path: "/v1/apis/{namespace}/{slug}",
+    label: "all params",
+    run: -> do
+      client.registry.update_api_document(
+        "slug",
+        {namespace: "namespace", description: "", is_private: false, ruleset: "", title: ""}
+      )
+    end
+  },
+  {
+    operation: "updateApiDocumentVersion",
+    method: "PATCH",
+    path: "/v1/apis/{namespace}/{slug}/version/{semver}",
+    label: "required params",
+    run: -> do
+      client.registry.update_api_document_version(
+        "semver",
+        {namespace: "namespace", slug: "slug", document: ""}
+      )
+    end
+  },
+  {
+    operation: "updateApiDocumentVersion",
+    method: "PATCH",
+    path: "/v1/apis/{namespace}/{slug}/version/{semver}",
+    label: "all params",
+    run: -> do
+      client.registry.update_api_document_version(
+        "semver",
+        {namespace: "namespace", slug: "slug", document: "", last_known_version_sha: ""}
+      )
+    end
   },
   {
     operation: "create",
     method: "POST",
-    path: "/planets",
+    path: "/v1/schemas/{namespace}",
+    label: "required params",
+    run: -> { client.schemas.create("namespace", {document: "", slug: "", title: "", version: "x"}) }
+  },
+  {
+    operation: "create",
+    method: "POST",
+    path: "/v1/schemas/{namespace}",
     label: "all params",
     run: -> do
-      client.planets.create(
+      client.schemas.create(
+        "namespace",
+        {document: "", slug: "", title: "", version: "x", description: "", is_private: false}
+      )
+    end
+  },
+  {
+    operation: "update",
+    method: "PATCH",
+    path: "/v1/schemas/{namespace}/{slug}",
+    label: "required params",
+    run: -> { client.schemas.update("slug", {namespace: "namespace"}) }
+  },
+  {
+    operation: "update",
+    method: "PATCH",
+    path: "/v1/schemas/{namespace}/{slug}",
+    label: "all params",
+    run: -> do
+      client.schemas.update("slug", {namespace: "namespace", description: "", is_private: false, title: ""})
+    end
+  },
+  {
+    operation: "list",
+    method: "GET",
+    path: "/v1/schemas/{namespace}",
+    run: -> { client.schemas.list("namespace") }
+  },
+  {
+    operation: "delete",
+    method: "DELETE",
+    path: "/v1/schemas/{namespace}/{slug}",
+    run: -> { client.schemas.delete("slug", {namespace: "namespace"}) }
+  },
+  {
+    operation: "create",
+    method: "POST",
+    path: "/v1/schemas/{namespace}/{slug}/version",
+    run: -> { client.schemas.version.create("slug", {namespace: "namespace", document: "", version: "x"}) }
+  },
+  {
+    operation: "retrieve",
+    method: "GET",
+    path: "/v1/schemas/{namespace}/{slug}/version/{semver}",
+    run: -> { client.schemas.version.retrieve("semver", {namespace: "namespace", slug: "slug"}) }
+  },
+  {
+    operation: "delete",
+    method: "DELETE",
+    path: "/v1/schemas/{namespace}/{slug}/version/{semver}",
+    run: -> { client.schemas.version.delete("semver", {namespace: "namespace", slug: "slug"}) }
+  },
+  {
+    operation: "create",
+    method: "POST",
+    path: "/v1/schemas/{namespace}/{slug}/access-group",
+    run: -> do
+      client.schemas.access_group.create("slug", {access_group_slug: "xxx", namespace: "namespace"})
+    end
+  },
+  {
+    operation: "delete",
+    method: "DELETE",
+    path: "/v1/schemas/{namespace}/{slug}/access-group",
+    run: -> do
+      client.schemas.access_group.delete("slug", {access_group_slug: "xxx", namespace: "namespace"})
+    end
+  },
+  {
+    operation: "create",
+    method: "POST",
+    path: "/v1/login-portals",
+    run: -> do
+      client.login_portals.create(
         {
-          id: 1,
-          name: "Mars",
-          atmosphere: [{}],
-          creator: {
-            "name" => "Marc"
+          email: {
+            "logo" => "",
+            "logoSize" => "100",
+            "buttonText" => "Login",
+            "message" => "Click to access private documentation hosted by scalar.com",
+            "title" => "Private Docs",
+            "mainColor" => "\#2a2f45",
+            "mainBackground" => "\#f6f6f6",
+            "cardColor" => "2a2f45",
+            "cardBackground" => "\#fff",
+            "buttonColor" => "\#fff",
+            "buttonBackground" => "\#0f0f0f"
           },
-          description: "The red planet",
-          discovered_at: "1610-01-07T00:00:00Z",
-          failure_callback_url: "https://example.com/webhook",
-          habitability_index: 0.68,
-          image: "https://cdn.scalar.com/photos/mars.jpg",
-          last_updated: "2024-01-15T14:30:00Z",
-          physical_properties: {
-            "mass" => 0.107,
-            "radius" => 0.532,
-            "gravity" => 0.378,
-            "temperature" => {}
+          page: {
+            "title" => "Scalar Private Docs",
+            "description" => "Login to access your documentation",
+            "head" => "",
+            "script" => "",
+            "theme" => "",
+            "companyName" => "",
+            "logo" => "",
+            "logoURL" => "",
+            "favicon" => "",
+            "termsLink" => "",
+            "privacyLink" => "",
+            "formTitle" => "Scalar Private Docs",
+            "formDescription" => "Login to access your documentation",
+            "formImage" => ""
           },
-          satellites: [{"name" => "Phobos"}],
-          success_callback_url: "https://example.com/webhook",
-          tags: [""],
-          type: "terrestrial"
+          slug: "",
+          title: ""
         }
       )
     end
@@ -59,126 +293,197 @@ cases = [
   {
     operation: "retrieve",
     method: "GET",
-    path: "/planets/{planetId}",
-    run: -> { client.planets.retrieve(1) }
+    path: "/v1/login-portals/{slug}",
+    run: -> { client.login_portals.retrieve("slug") }
   },
   {
     operation: "update",
-    method: "PUT",
-    path: "/planets/{planetId}",
+    method: "PATCH",
+    path: "/v1/login-portals/{slug}",
     label: "required params",
-    run: -> { client.planets.update(1, {id: 1, name: "Mars"}) }
+    run: -> { client.login_portals.update("slug") }
   },
   {
     operation: "update",
-    method: "PUT",
-    path: "/planets/{planetId}",
+    method: "PATCH",
+    path: "/v1/login-portals/{slug}",
     label: "all params",
-    run: -> do
-      client.planets.update(
-        1,
-        {
-          id: 1,
-          name: "Mars",
-          atmosphere: [{}],
-          creator: {
-            "name" => "Marc"
-          },
-          description: "The red planet",
-          discovered_at: "1610-01-07T00:00:00Z",
-          failure_callback_url: "https://example.com/webhook",
-          habitability_index: 0.68,
-          image: "https://cdn.scalar.com/photos/mars.jpg",
-          last_updated: "2024-01-15T14:30:00Z",
-          physical_properties: {
-            "mass" => 0.107,
-            "radius" => 0.532,
-            "gravity" => 0.378,
-            "temperature" => {}
-          },
-          satellites: [{"name" => "Phobos"}],
-          success_callback_url: "https://example.com/webhook",
-          tags: [""],
-          type: "terrestrial"
-        }
-      )
-    end
+    run: -> { client.login_portals.update("slug", {title: ""}) }
   },
+  {operation: "list", method: "GET", path: "/v1/login-portals", run: -> { client.login_portals.list }},
   {
     operation: "delete",
     method: "DELETE",
-    path: "/planets/{planetId}",
-    run: -> { client.planets.delete(1) }
+    path: "/v1/login-portals/{slug}",
+    run: -> { client.login_portals.delete("slug") }
   },
   {
-    operation: "delteImage",
+    operation: "createRuleset",
     method: "POST",
-    path: "/planets/{planetId}/image",
+    path: "/v1/rulesets/{namespace}",
     label: "required params",
-    run: -> { client.planets.delte_image(1) }
+    run: -> { client.rules.create_ruleset("namespace", {document: "", slug: "", title: ""}) }
   },
   {
-    operation: "delteImage",
+    operation: "createRuleset",
     method: "POST",
-    path: "/planets/{planetId}/image",
-    label: "all params",
-    run: -> { client.planets.delte_image(1, {image: "@mars.jpg"}) }
-  },
-  {
-    operation: "listAllData",
-    method: "GET",
-    path: "/planets",
-    run: -> { client.planets.list_all_data({limit: 10, offset: 0}) }
-  },
-  {
-    operation: "create",
-    method: "POST",
-    path: "/celestial-bodies",
-    label: "required params",
-    run: -> { client.celestial_bodies.create({celestial_body: {"name" => "Mars"}}) }
-  },
-  {
-    operation: "create",
-    method: "POST",
-    path: "/celestial-bodies",
+    path: "/v1/rulesets/{namespace}",
     label: "all params",
     run: -> do
-      client.celestial_bodies.create(
+      client.rules.create_ruleset(
+        "namespace",
+        {document: "", slug: "", title: "", description: "", is_private: false}
+      )
+    end
+  },
+  {
+    operation: "createRulesetAccessGroup",
+    method: "POST",
+    path: "/v1/rulesets/{namespace}/{slug}/access-group",
+    run: -> do
+      client.rules.create_ruleset_access_group("slug", {access_group_slug: "xxx", namespace: "namespace"})
+    end
+  },
+  {
+    operation: "deleteRuleset",
+    method: "DELETE",
+    path: "/v1/rulesets/{namespace}/{slug}",
+    run: -> { client.rules.delete_ruleset("slug", {namespace: "namespace"}) }
+  },
+  {
+    operation: "deleteRulesetAccessGroup",
+    method: "DELETE",
+    path: "/v1/rulesets/{namespace}/{slug}/access-group",
+    run: -> do
+      client.rules.delete_ruleset_access_group("slug", {access_group_slug: "xxx", namespace: "namespace"})
+    end
+  },
+  {
+    operation: "listRulesets",
+    method: "GET",
+    path: "/v1/rulesets/{namespace}",
+    run: -> { client.rules.list_rulesets("namespace") }
+  },
+  {
+    operation: "retrieveRulesetDocument",
+    method: "GET",
+    path: "/v1/rulesets/{namespace}/{slug}",
+    run: -> { client.rules.retrieve_ruleset_document("slug", {namespace: "namespace"}) }
+  },
+  {
+    operation: "updateRuleset",
+    method: "PATCH",
+    path: "/v1/rulesets/{namespace}/{slug}",
+    label: "required params",
+    run: -> { client.rules.update_ruleset("path_slug", {path_namespace: "path_namespace"}) }
+  },
+  {
+    operation: "updateRuleset",
+    method: "PATCH",
+    path: "/v1/rulesets/{namespace}/{slug}",
+    label: "all params",
+    run: -> do
+      client.rules.update_ruleset(
+        "path_slug",
         {
-          celestial_body: {
-            "name" => "Mars",
-            "description" => "The red planet",
-            "type" => "terrestrial",
-            "habitabilityIndex" => 0.68,
-            "physicalProperties" => {},
-            "atmosphere" => [{}],
-            "discoveredAt" => "1610-01-07T00:00:00Z",
-            "image" => "https://cdn.scalar.com/photos/mars.jpg",
-            "satellites" => [{"name" => "Phobos"}],
-            "creator" => {},
-            "tags" => %w[solar-system rocky explored],
-            "successCallbackUrl" => "https://example.com/webhook",
-            "failureCallbackUrl" => "https://example.com/webhook"
-          }
+          path_namespace: "path_namespace",
+          description: "",
+          is_private: false,
+          body_namespace: "",
+          body_slug: "",
+          title: ""
         }
       )
     end
   },
   {
-    operation: "createToken",
+    operation: "create",
     method: "POST",
-    path: "/auth/token",
-    run: -> { client.authentication.create_token({email: "marc@scalar.com", password: "i-love-scalar"}) }
+    path: "/v1/themes",
+    label: "required params",
+    run: -> { client.themes.create({document: "", name: "", slug: ""}) }
   },
   {
-    operation: "createUser",
+    operation: "create",
     method: "POST",
-    path: "/user/signup",
+    path: "/v1/themes",
+    label: "all params",
+    run: -> { client.themes.create({document: "", name: "", slug: "", description: ""}) }
+  },
+  {
+    operation: "retrieve",
+    method: "GET",
+    path: "/v1/themes/{slug}",
+    run: -> { client.themes.retrieve("slug") }
+  },
+  {
+    operation: "update",
+    method: "PATCH",
+    path: "/v1/themes/{slug}",
+    label: "required params",
+    run: -> { client.themes.update("slug") }
+  },
+  {
+    operation: "update",
+    method: "PATCH",
+    path: "/v1/themes/{slug}",
+    label: "all params",
+    run: -> { client.themes.update("slug", {description: "", name: ""}) }
+  },
+  {operation: "list", method: "GET", path: "/v1/themes", run: -> { client.themes.list }},
+  {
+    operation: "delete",
+    method: "DELETE",
+    path: "/v1/themes/{slug}",
+    run: -> { client.themes.delete("slug") }
+  },
+  {
+    operation: "replaceDocument",
+    method: "PUT",
+    path: "/v1/themes/{slug}",
+    run: -> { client.themes.replace_document("slug", {document: ""}) }
+  },
+  {operation: "list", method: "GET", path: "/v1/teams", run: -> { client.teams.list }},
+  {
+    operation: "createGuide",
+    method: "POST",
+    path: "/v1/guides",
+    label: "required params",
     run: -> do
-      client.authentication.create_user({email: "marc@scalar.com", password: "i-love-scalar", name: "Marc"})
+      client.scalar_docs.create_guide({allowed_domains: [], allowed_users: [], is_private: false, name: ""})
     end
   },
-  {operation: "listMe", method: "GET", path: "/me", run: -> { client.authentication.list_me }}
+  {
+    operation: "createGuide",
+    method: "POST",
+    path: "/v1/guides",
+    label: "all params",
+    run: -> do
+      client.scalar_docs.create_guide(
+        {allowed_domains: [], allowed_users: [], is_private: false, name: "", slug: "xxx"}
+      )
+    end
+  },
+  {operation: "listGuides", method: "GET", path: "/v1/guides", run: -> { client.scalar_docs.list_guides }},
+  {
+    operation: "publishGuide",
+    method: "POST",
+    path: "/v1/guides/{slug}/publish",
+    run: -> { client.scalar_docs.publish_guide("slug") }
+  },
+  {operation: "list", method: "GET", path: "/v1/namespaces", run: -> { client.namespaces.list }},
+  {
+    operation: "exchangePersonalToken",
+    method: "POST",
+    path: "/v1/auth/exchange",
+    run: -> { client.authentication.exchange_personal_token({personal_token: ""}) }
+  },
+  {
+    operation: "listCurrentUser",
+    method: "GET",
+    path: "/v1/auth/me",
+    run: -> { client.authentication.list_current_user }
+  }
 ]
 
 # Renders a failure as its whole cause chain, then the backtrace of the exception that escaped.

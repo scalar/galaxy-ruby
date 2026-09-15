@@ -1,6 +1,6 @@
-# Scalar Galaxy
+# Scalar
 
-This library provides convenient access to the Scalar Galaxy REST API from Ruby.
+This library provides convenient access to the Scalar REST API from Ruby.
 
 The full API of this library can be found in [api.md](./api.md).
 
@@ -26,13 +26,13 @@ The full API of this library can be found in [api.md](./api.md).
 Add the gem to your application's `Gemfile`:
 
 ```ruby
-gem "galaxy-ruby", "~> 0.1.0" # x-release-please-version
+gem "acme", "~> 0.1.0" # x-release-please-version
 ```
 
 Or install it directly:
 
 ```sh
-gem install galaxy-ruby
+gem install acme
 ```
 
 <br />
@@ -40,13 +40,13 @@ gem install galaxy-ruby
 ## Usage
 
 ```ruby
-require "galaxy-ruby"
+require "acme"
 
-client = ScalarGalaxy::Client.new(
+client = Scalar::Client.new(
   bearer_auth: ENV["BEARER_AUTH"], # defaults to the BEARER_AUTH env var
 )
 
-response = client.planets.list_all_data({ limit: 10, offset: 0 })
+response = client.registry.list_all_api_documents
 
 puts response.inspect
 ```
@@ -63,24 +63,11 @@ Pass credentials to the generated client constructor. Environment variables are 
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `bearer_auth` | `String \| nil` | - | JWT Bearer token authentication Defaults to BEARER_AUTH. |
-| `basic_auth_username` | `String \| nil` | - | Basic HTTP authentication Defaults to BASIC_AUTH_USERNAME. |
-| `basic_auth_password` | `String \| nil` | - | Basic HTTP authentication Defaults to BASIC_AUTH_PASSWORD. |
-| `api_key_header` | `String \| nil` | - | API key request header Defaults to API_KEY_HEADER. |
-| `api_key_query` | `String \| nil` | - | API key query parameter Defaults to API_KEY_QUERY. |
-| `api_key_cookie` | `String \| nil` | - | API key browser cookie Defaults to API_KEY_COOKIE. |
-| `o_auth2` | `String \| nil` | - | OAuth 2.0 authentication Defaults to SCALAR_O_AUTH2. |
-| `open_id_connect` | `String \| nil` | - | OpenID Connect Authentication Defaults to SCALAR_OPEN_ID_CONNECT. |
+| `bearer_auth` | `String \| nil` | - | Credential for the BearerAuth authentication scheme. Defaults to BEARER_AUTH. |
 
 Declared schemes:
 
-- `bearerAuth` bearer token
-- `basicAuth` basic authentication
-- `apiKeyHeader` API key in header `X-API-Key`
-- `apiKeyQuery` API key in query `api_key`
-- `apiKeyCookie` API key in cookie `api_key`
-- `oAuth2` OAuth2/OpenID Connect
-- `openIdConnect` OAuth2/OpenID Connect
+- `BearerAuth` bearer token
 
 <br />
 
@@ -90,16 +77,16 @@ Non-success responses throw generated API errors. Error objects expose status, h
 
 ```ruby
 begin
-  response = client.planets.list_all_data({ limit: 10, offset: 0 })
+  response = client.registry.list_all_api_documents
 
   puts response.inspect
-rescue ScalarGalaxy::Errors::APIError => error
+rescue Scalar::Errors::APIError => error
   puts "#{error.status}: #{error.message}"
   raise
 end
 ```
 
-Documented error statuses: `400`, `401`, `403`, `404`, `409`, `422`, `429`.
+Documented error statuses: `400`, `401`, `403`, `404`, `422`, `500`.
 
 <br />
 
@@ -108,9 +95,9 @@ Documented error statuses: `400`, `401`, `403`, `404`, `409`, `422`, `429`.
 Configure the generated client by setting any of these options when you create it.
 
 ```ruby
-require "galaxy-ruby"
+require "acme"
 
-client = ScalarGalaxy::Client.new(
+client = Scalar::Client.new(
   timeout: 60.0,
   max_retries: 2,
 )
@@ -118,16 +105,7 @@ client = ScalarGalaxy::Client.new(
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `bearer_auth` | `String \| nil` | `ENV["BEARER_AUTH"]` | JWT Bearer token authentication |
-| `basic_auth_username` | `String \| nil` | `ENV["BASIC_AUTH_USERNAME"]` | Basic HTTP authentication |
-| `basic_auth_password` | `String \| nil` | `ENV["BASIC_AUTH_PASSWORD"]` | Basic HTTP authentication |
-| `api_key_header` | `String \| nil` | `ENV["API_KEY_HEADER"]` | API key request header |
-| `api_key_query` | `String \| nil` | `ENV["API_KEY_QUERY"]` | API key query parameter |
-| `api_key_cookie` | `String \| nil` | `ENV["API_KEY_COOKIE"]` | API key browser cookie |
-| `o_auth2` | `String \| nil` | `ENV["SCALAR_O_AUTH2"]` | OAuth 2.0 authentication |
-| `open_id_connect` | `String \| nil` | `ENV["SCALAR_OPEN_ID_CONNECT"]` | OpenID Connect Authentication |
-| `webhook_secret` | `String \| nil` | `ENV["SCALAR_WEBHOOK_SECRET"]` | Secret used to verify incoming webhook signatures. |
-| `environment` | `:production \| :void \| nil` | - | Environment to target; each one maps to a different base URL. |
+| `bearer_auth` | `String \| nil` | `ENV["BEARER_AUTH"]` | Credential for the BearerAuth authentication scheme. |
 | `base_url` | `String \| nil` | `ENV["SCALAR_BASE_URL"]` | Override the default API base URL. |
 | `max_retries` | `Integer` | `2` | Max number of retries to attempt after a failed retryable request. |
 | `timeout` | `Float` | `60.0` | Seconds to wait for a response before timing out. |

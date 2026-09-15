@@ -1,0 +1,73 @@
+module Scalar
+  module Models
+    type authentication_list_current_user_response =
+      {
+        active_team_id: String?,
+        created_at: Integer,
+        email: String,
+        has_github: bool,
+        teams: ::Array[Scalar::Models::AuthenticationListCurrentUserResponse::Team],
+        uid: String,
+        updated_at: Integer,
+        theme: String
+      }
+
+    class AuthenticationListCurrentUserResponse < Scalar::Internal::Type::BaseModel
+      attr_accessor active_team_id: String?
+
+      attr_accessor created_at: Integer
+
+      attr_accessor email: String
+
+      attr_accessor has_github: bool
+
+      attr_accessor teams: ::Array[Scalar::Models::AuthenticationListCurrentUserResponse::Team]
+
+      attr_accessor uid: String
+
+      attr_accessor updated_at: Integer
+
+      attr_reader theme: String?
+
+      def theme=: (String) -> String
+
+      def initialize: (
+        active_team_id: String?,
+        created_at: Integer,
+        email: String,
+        has_github: bool,
+        teams: ::Array[Scalar::Models::AuthenticationListCurrentUserResponse::Team],
+        uid: String,
+        updated_at: Integer,
+        ?theme: String
+      ) -> void
+
+      def to_hash: -> {
+        active_team_id: String?,
+        created_at: Integer,
+        email: String,
+        has_github: bool,
+        teams: ::Array[Scalar::Models::AuthenticationListCurrentUserResponse::Team],
+        uid: String,
+        updated_at: Integer,
+        theme: String
+      }
+
+      type team = { name: String, uid: String, image_uri: String }
+
+      class Team < Scalar::Internal::Type::BaseModel
+        attr_accessor name: String
+
+        attr_accessor uid: String
+
+        attr_reader image_uri: String?
+
+        def image_uri=: (String) -> String
+
+        def initialize: (name: String, uid: String, ?image_uri: String) -> void
+
+        def to_hash: -> { name: String, uid: String, image_uri: String }
+      end
+    end
+  end
+end

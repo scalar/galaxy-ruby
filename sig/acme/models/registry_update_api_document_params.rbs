@@ -1,0 +1,59 @@
+module Scalar
+  module Models
+    type registry_update_api_document_params =
+      {
+        namespace: String,
+        slug: String,
+        description: String,
+        is_private: bool,
+        ruleset: String,
+        title: String
+      }
+      & Scalar::Internal::Type::request_parameters
+
+    class RegistryUpdateAPIDocumentParams < Scalar::Internal::Type::BaseModel
+      extend Scalar::Internal::Type::RequestParameters::Converter
+      include Scalar::Internal::Type::RequestParameters
+
+      attr_accessor namespace: String
+
+      attr_accessor slug: String
+
+      attr_reader description: String?
+
+      def description=: (String) -> String
+
+      attr_reader is_private: bool?
+
+      def is_private=: (bool) -> bool
+
+      attr_reader ruleset: String?
+
+      def ruleset=: (String) -> String
+
+      attr_reader title: String?
+
+      def title=: (String) -> String
+
+      def initialize: (
+        namespace: String,
+        slug: String,
+        ?description: String,
+        ?is_private: bool,
+        ?ruleset: String,
+        ?title: String,
+        ?request_options: Scalar::request_opts
+      ) -> void
+
+      def to_hash: -> {
+        namespace: String,
+        slug: String,
+        description: String,
+        is_private: bool,
+        ruleset: String,
+        title: String,
+        request_options: Scalar::RequestOptions
+      }
+    end
+  end
+end

@@ -1,0 +1,31 @@
+module Scalar
+  module Resources
+    class Schemas
+      class Version
+        def create: (
+          String slug,
+          namespace: String,
+          document: String,
+          version: String,
+          ?request_options: Scalar::request_opts
+        ) -> Scalar::UID
+
+        def retrieve: (
+          String semver,
+          namespace: String,
+          slug: String,
+          ?request_options: Scalar::request_opts
+        ) -> String
+
+        def delete: (
+          String semver,
+          namespace: String,
+          slug: String,
+          ?request_options: Scalar::request_opts
+        ) -> top
+
+        def initialize: (client: Scalar::Client) -> void
+      end
+    end
+  end
+end

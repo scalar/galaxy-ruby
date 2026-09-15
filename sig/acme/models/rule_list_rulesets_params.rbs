@@ -1,0 +1,23 @@
+module Scalar
+  module Models
+    type rule_list_rulesets_params =
+      { namespace: String } & Scalar::Internal::Type::request_parameters
+
+    class RuleListRulesetsParams < Scalar::Internal::Type::BaseModel
+      extend Scalar::Internal::Type::RequestParameters::Converter
+      include Scalar::Internal::Type::RequestParameters
+
+      attr_accessor namespace: String
+
+      def initialize: (
+        namespace: String,
+        ?request_options: Scalar::request_opts
+      ) -> void
+
+      def to_hash: -> {
+        namespace: String,
+        request_options: Scalar::RequestOptions
+      }
+    end
+  end
+end

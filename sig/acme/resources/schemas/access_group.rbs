@@ -1,0 +1,23 @@
+module Scalar
+  module Resources
+    class Schemas
+      class AccessGroup
+        def create: (
+          String slug,
+          access_group_slug: String,
+          namespace: String,
+          ?request_options: Scalar::request_opts
+        ) -> top
+
+        def delete: (
+          String slug,
+          access_group_slug: String,
+          namespace: String,
+          ?request_options: Scalar::request_opts
+        ) -> top
+
+        def initialize: (client: Scalar::Client) -> void
+      end
+    end
+  end
+end

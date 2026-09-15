@@ -1,0 +1,46 @@
+module Scalar
+  module Models
+    type team_list_response_item =
+      {
+        name: String,
+        slug: String,
+        theme: String,
+        uid: String,
+        image_uri: String
+      }
+
+    class TeamListResponseItem < Scalar::Internal::Type::BaseModel
+      attr_accessor name: String
+
+      attr_accessor slug: String
+
+      attr_accessor theme: String
+
+      attr_accessor uid: String
+
+      attr_reader image_uri: String?
+
+      def image_uri=: (String) -> String
+
+      def initialize: (
+        name: String,
+        slug: String,
+        theme: String,
+        uid: String,
+        ?image_uri: String
+      ) -> void
+
+      def to_hash: -> {
+        name: String,
+        slug: String,
+        theme: String,
+        uid: String,
+        image_uri: String
+      }
+    end
+
+    type team_list_response = ::Array[Scalar::Models::TeamListResponseItem]
+
+    TeamListResponse: Scalar::Internal::Type::Converter
+  end
+end

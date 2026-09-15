@@ -1,0 +1,85 @@
+module Scalar
+  module Models
+    type login_portal_page =
+      {
+        company_name: String,
+        description: String,
+        favicon: String,
+        form_description: String,
+        form_image: String,
+        form_title: String,
+        head: String,
+        logo: String,
+        logo_url: String,
+        privacy_link: String,
+        script: String,
+        terms_link: String,
+        theme: String,
+        title: String
+      }
+
+    class LoginPortalPage < Scalar::Internal::Type::BaseModel
+      attr_accessor company_name: String
+
+      attr_accessor description: String
+
+      attr_accessor favicon: String
+
+      attr_accessor form_description: String
+
+      attr_accessor form_image: String
+
+      attr_accessor form_title: String
+
+      attr_accessor head: String
+
+      attr_accessor logo: String
+
+      attr_accessor logo_url: String
+
+      attr_accessor privacy_link: String
+
+      attr_accessor script: String
+
+      attr_accessor terms_link: String
+
+      attr_accessor theme: String
+
+      attr_accessor title: String
+
+      def initialize: (
+        company_name: String,
+        description: String,
+        favicon: String,
+        form_description: String,
+        form_image: String,
+        form_title: String,
+        head: String,
+        logo: String,
+        logo_url: String,
+        privacy_link: String,
+        script: String,
+        terms_link: String,
+        theme: String,
+        title: String
+      ) -> void
+
+      def to_hash: -> {
+        company_name: String,
+        description: String,
+        favicon: String,
+        form_description: String,
+        form_image: String,
+        form_title: String,
+        head: String,
+        logo: String,
+        logo_url: String,
+        privacy_link: String,
+        script: String,
+        terms_link: String,
+        theme: String,
+        title: String
+      }
+    end
+  end
+end

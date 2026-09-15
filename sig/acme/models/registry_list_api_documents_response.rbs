@@ -1,0 +1,65 @@
+module Scalar
+  module Models
+    type registry_list_api_documents_response_item =
+      {
+        description: String,
+        is_private: bool,
+        namespace: String,
+        slug: String,
+        tags: top,
+        title: String,
+        uid: String,
+        version: String,
+        versions: ::Array[Scalar::ManagedDocVersion]
+      }
+
+    class RegistryListAPIDocumentsResponseItem < Scalar::Internal::Type::BaseModel
+      attr_accessor description: String
+
+      attr_accessor is_private: bool
+
+      attr_accessor namespace: String
+
+      attr_accessor slug: String
+
+      attr_accessor tags: top
+
+      attr_accessor title: String
+
+      attr_accessor uid: String
+
+      attr_accessor version: String
+
+      attr_accessor versions: ::Array[Scalar::ManagedDocVersion]
+
+      def initialize: (
+        description: String,
+        is_private: bool,
+        namespace: String,
+        slug: String,
+        tags: top,
+        title: String,
+        uid: String,
+        version: String,
+        versions: ::Array[Scalar::ManagedDocVersion]
+      ) -> void
+
+      def to_hash: -> {
+        description: String,
+        is_private: bool,
+        namespace: String,
+        slug: String,
+        tags: top,
+        title: String,
+        uid: String,
+        version: String,
+        versions: ::Array[Scalar::ManagedDocVersion]
+      }
+    end
+
+    type registry_list_api_documents_response =
+      ::Array[Scalar::Models::RegistryListAPIDocumentsResponseItem]
+
+    RegistryListAPIDocumentsResponse: Scalar::Internal::Type::Converter
+  end
+end

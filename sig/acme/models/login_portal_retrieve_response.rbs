@@ -1,0 +1,40 @@
+module Scalar
+  module Models
+    type login_portal_retrieve_response =
+      {
+        email: Scalar::LoginPortalEmail,
+        page: Scalar::LoginPortalPage,
+        slug: String,
+        title: String,
+        uid: String
+      }
+
+    class LoginPortalRetrieveResponse < Scalar::Internal::Type::BaseModel
+      attr_accessor email: Scalar::LoginPortalEmail
+
+      attr_accessor page: Scalar::LoginPortalPage
+
+      attr_accessor slug: String
+
+      attr_accessor title: String
+
+      attr_accessor uid: String
+
+      def initialize: (
+        email: Scalar::LoginPortalEmail,
+        page: Scalar::LoginPortalPage,
+        slug: String,
+        title: String,
+        uid: String
+      ) -> void
+
+      def to_hash: -> {
+        email: Scalar::LoginPortalEmail,
+        page: Scalar::LoginPortalPage,
+        slug: String,
+        title: String,
+        uid: String
+      }
+    end
+  end
+end

@@ -1,0 +1,42 @@
+module Scalar
+  class Client < Scalar::Internal::Transport::BaseClient
+    DEFAULT_MAX_RETRIES: 2
+
+    DEFAULT_TIMEOUT_IN_SECONDS: Float
+
+    DEFAULT_INITIAL_RETRY_DELAY: Float
+
+    DEFAULT_MAX_RETRY_DELAY: Float
+
+    attr_reader bearer_auth: String
+
+    attr_reader registry: Scalar::Resources::Registry
+
+    attr_reader schemas: Scalar::Resources::Schemas
+
+    attr_reader login_portals: Scalar::Resources::LoginPortals
+
+    attr_reader rules: Scalar::Resources::Rules
+
+    attr_reader themes: Scalar::Resources::Themes
+
+    attr_reader teams: Scalar::Resources::Teams
+
+    attr_reader scalar_docs: Scalar::Resources::ScalarDocs
+
+    attr_reader namespaces: Scalar::Resources::Namespaces
+
+    attr_reader authentication: Scalar::Resources::Authentication
+
+    private def auth_headers: -> ::Hash[String, String]
+
+    def initialize: (
+      ?bearer_auth: String?,
+      ?base_url: String?,
+      ?max_retries: Integer,
+      ?timeout: Float,
+      ?initial_retry_delay: Float,
+      ?max_retry_delay: Float
+    ) -> void
+  end
+end

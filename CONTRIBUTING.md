@@ -26,7 +26,7 @@ Files under `examples/` are never modified by the generator.
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative "../lib/galaxy-ruby"
+require_relative "../lib/acme"
 
 # ...
 ```
@@ -40,13 +40,13 @@ $ ruby ./examples/<your-example>.rb
 To install from git in your `Gemfile`:
 
 ```ruby
-gem "galaxy-ruby", git: "<repository url>"
+gem "acme", git: "<repository url>"
 ```
 
 Or reference a local checkout:
 
 ```ruby
-gem "galaxy-ruby", path: "/path/to/galaxy-ruby"
+gem "acme", path: "/path/to/acme"
 ```
 
 ## Linting, formatting, and typechecking

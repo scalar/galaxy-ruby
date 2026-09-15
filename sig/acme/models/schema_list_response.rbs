@@ -1,0 +1,86 @@
+module Scalar
+  module Models
+    type schema_list_response_item =
+      {
+        description: String,
+        is_private: bool,
+        namespace: String,
+        slug: String,
+        title: String,
+        uid: String,
+        versions: ::Array[Scalar::Models::SchemaListResponseItem::Version]
+      }
+
+    class SchemaListResponseItem < Scalar::Internal::Type::BaseModel
+      attr_accessor description: String
+
+      attr_accessor is_private: bool
+
+      attr_accessor namespace: String
+
+      attr_accessor slug: String
+
+      attr_accessor title: String
+
+      attr_accessor uid: String
+
+      attr_accessor versions: ::Array[Scalar::Models::SchemaListResponseItem::Version]
+
+      def initialize: (
+        description: String,
+        is_private: bool,
+        namespace: String,
+        slug: String,
+        title: String,
+        uid: String,
+        versions: ::Array[Scalar::Models::SchemaListResponseItem::Version]
+      ) -> void
+
+      def to_hash: -> {
+        description: String,
+        is_private: bool,
+        namespace: String,
+        slug: String,
+        title: String,
+        uid: String,
+        versions: ::Array[Scalar::Models::SchemaListResponseItem::Version]
+      }
+
+      type version =
+        {
+          created_at: Integer,
+          uid: String,
+          updated_at: Integer,
+          version: String
+        }
+
+      class Version < Scalar::Internal::Type::BaseModel
+        attr_accessor created_at: Integer
+
+        attr_accessor uid: String
+
+        attr_accessor updated_at: Integer
+
+        attr_accessor version: String
+
+        def initialize: (
+          created_at: Integer,
+          uid: String,
+          updated_at: Integer,
+          version: String
+        ) -> void
+
+        def to_hash: -> {
+          created_at: Integer,
+          uid: String,
+          updated_at: Integer,
+          version: String
+        }
+      end
+    end
+
+    type schema_list_response = ::Array[Scalar::Models::SchemaListResponseItem]
+
+    SchemaListResponse: Scalar::Internal::Type::Converter
+  end
+end

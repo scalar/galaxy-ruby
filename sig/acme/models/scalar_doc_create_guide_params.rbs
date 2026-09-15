@@ -1,0 +1,48 @@
+module Scalar
+  module Models
+    type scalar_doc_create_guide_params =
+      {
+        allowed_domains: ::Array[String],
+        allowed_users: ::Array[String],
+        is_private: bool,
+        name: String,
+        slug: String
+      }
+      & Scalar::Internal::Type::request_parameters
+
+    class ScalarDocCreateGuideParams < Scalar::Internal::Type::BaseModel
+      extend Scalar::Internal::Type::RequestParameters::Converter
+      include Scalar::Internal::Type::RequestParameters
+
+      attr_accessor allowed_domains: ::Array[String]
+
+      attr_accessor allowed_users: ::Array[String]
+
+      attr_accessor is_private: bool
+
+      attr_accessor name: String
+
+      attr_reader slug: String?
+
+      def slug=: (String) -> String
+
+      def initialize: (
+        allowed_domains: ::Array[String],
+        allowed_users: ::Array[String],
+        is_private: bool,
+        name: String,
+        ?slug: String,
+        ?request_options: Scalar::request_opts
+      ) -> void
+
+      def to_hash: -> {
+        allowed_domains: ::Array[String],
+        allowed_users: ::Array[String],
+        is_private: bool,
+        name: String,
+        slug: String,
+        request_options: Scalar::RequestOptions
+      }
+    end
+  end
+end

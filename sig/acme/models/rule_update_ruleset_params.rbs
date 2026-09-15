@@ -1,0 +1,66 @@
+module Scalar
+  module Models
+    type rule_update_ruleset_params =
+      {
+        path_namespace: String,
+        path_slug: String,
+        description: String,
+        is_private: bool,
+        body_namespace: String,
+        body_slug: String,
+        title: String
+      }
+      & Scalar::Internal::Type::request_parameters
+
+    class RuleUpdateRulesetParams < Scalar::Internal::Type::BaseModel
+      extend Scalar::Internal::Type::RequestParameters::Converter
+      include Scalar::Internal::Type::RequestParameters
+
+      attr_accessor path_namespace: String
+
+      attr_accessor path_slug: String
+
+      attr_reader description: String?
+
+      def description=: (String) -> String
+
+      attr_reader is_private: bool?
+
+      def is_private=: (bool) -> bool
+
+      attr_reader body_namespace: String?
+
+      def body_namespace=: (String) -> String
+
+      attr_reader body_slug: String?
+
+      def body_slug=: (String) -> String
+
+      attr_reader title: String?
+
+      def title=: (String) -> String
+
+      def initialize: (
+        path_namespace: String,
+        path_slug: String,
+        ?description: String,
+        ?is_private: bool,
+        ?body_namespace: String,
+        ?body_slug: String,
+        ?title: String,
+        ?request_options: Scalar::request_opts
+      ) -> void
+
+      def to_hash: -> {
+        path_namespace: String,
+        path_slug: String,
+        description: String,
+        is_private: bool,
+        body_namespace: String,
+        body_slug: String,
+        title: String,
+        request_options: Scalar::RequestOptions
+      }
+    end
+  end
+end

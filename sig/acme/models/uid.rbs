@@ -1,0 +1,13 @@
+module Scalar
+  module Models
+    type uid = { uid: String }
+
+    class UID < Scalar::Internal::Type::BaseModel
+      attr_accessor uid: String
+
+      def initialize: (uid: String) -> void
+
+      def to_hash: -> { uid: String }
+    end
+  end
+end

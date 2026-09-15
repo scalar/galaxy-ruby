@@ -1,0 +1,45 @@
+module Scalar
+  module Models
+    type registry_create_api_document_response =
+      {
+        json_sha: String,
+        title: String,
+        uid: String,
+        version_sha: String,
+        version_uid: String,
+        yaml_sha: String
+      }
+
+    class RegistryCreateAPIDocumentResponse < Scalar::Internal::Type::BaseModel
+      attr_accessor json_sha: String
+
+      attr_accessor title: String
+
+      attr_accessor uid: String
+
+      attr_accessor version_sha: String
+
+      attr_accessor version_uid: String
+
+      attr_accessor yaml_sha: String
+
+      def initialize: (
+        json_sha: String,
+        title: String,
+        uid: String,
+        version_sha: String,
+        version_uid: String,
+        yaml_sha: String
+      ) -> void
+
+      def to_hash: -> {
+        json_sha: String,
+        title: String,
+        uid: String,
+        version_sha: String,
+        version_uid: String,
+        yaml_sha: String
+      }
+    end
+  end
+end

@@ -1,0 +1,26 @@
+module Scalar
+  module Models
+    type registry_update_api_document_version_response =
+      { json_sha: String, version_sha: String, yaml_sha: String }
+
+    class RegistryUpdateAPIDocumentVersionResponse < Scalar::Internal::Type::BaseModel
+      attr_accessor json_sha: String
+
+      attr_accessor version_sha: String
+
+      attr_accessor yaml_sha: String
+
+      def initialize: (
+        json_sha: String,
+        version_sha: String,
+        yaml_sha: String
+      ) -> void
+
+      def to_hash: -> {
+        json_sha: String,
+        version_sha: String,
+        yaml_sha: String
+      }
+    end
+  end
+end

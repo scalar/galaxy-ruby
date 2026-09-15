@@ -1,0 +1,9 @@
+module Scalar
+  module Models
+    class NamespaceListResponseItem = String
+
+    type namespace_list_response = ::Array[String]
+
+    NamespaceListResponse: Scalar::Internal::Type::Converter
+  end
+end

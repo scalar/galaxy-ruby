@@ -1,0 +1,34 @@
+module Scalar
+  module Models
+    type theme_list_response_item =
+      { description: String, name: String, slug: String, uid: String }
+
+    class ThemeListResponseItem < Scalar::Internal::Type::BaseModel
+      attr_accessor description: String
+
+      attr_accessor name: String
+
+      attr_accessor slug: String
+
+      attr_accessor uid: String
+
+      def initialize: (
+        description: String,
+        name: String,
+        slug: String,
+        uid: String
+      ) -> void
+
+      def to_hash: -> {
+        description: String,
+        name: String,
+        slug: String,
+        uid: String
+      }
+    end
+
+    type theme_list_response = ::Array[Scalar::Models::ThemeListResponseItem]
+
+    ThemeListResponse: Scalar::Internal::Type::Converter
+  end
+end
