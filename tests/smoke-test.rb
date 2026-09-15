@@ -12,7 +12,7 @@ require "galaxy-ruby"
 # Smoke test: calls every generated operation once to confirm the SDK can reach each endpoint.
 # Run it from this repo with `ruby tests/smoke-test.rb`. The generator also runs this file
 # against a mock server and reads the JSON report produced via SCALAR_SMOKE_REPORT.
-client = ScalarGalaxy::Client.new(max_retries: 0, timeout: 30)
+client = ScalarGalaxy::Client.new(max_retries: 2, timeout: 30)
 
 cases = [
   {
@@ -32,7 +32,7 @@ cases = [
         {
           id: 1,
           name: "Mars",
-          atmosphere: [],
+          atmosphere: [{}],
           creator: {
             "name" => "Marc"
           },
@@ -48,9 +48,9 @@ cases = [
             "gravity" => 0.378,
             "temperature" => {}
           },
-          satellites: [],
+          satellites: [{"name" => "Phobos"}],
           success_callback_url: "https://example.com/webhook",
-          tags: [],
+          tags: [""],
           type: "terrestrial"
         }
       )
@@ -80,7 +80,7 @@ cases = [
         {
           id: 1,
           name: "Mars",
-          atmosphere: [],
+          atmosphere: [{}],
           creator: {
             "name" => "Marc"
           },
@@ -96,9 +96,9 @@ cases = [
             "gravity" => 0.378,
             "temperature" => {}
           },
-          satellites: [],
+          satellites: [{"name" => "Phobos"}],
           success_callback_url: "https://example.com/webhook",
-          tags: [],
+          tags: [""],
           type: "terrestrial"
         }
       )
@@ -151,12 +151,12 @@ cases = [
             "type" => "terrestrial",
             "habitabilityIndex" => 0.68,
             "physicalProperties" => {},
-            "atmosphere" => [],
+            "atmosphere" => [{}],
             "discoveredAt" => "1610-01-07T00:00:00Z",
             "image" => "https://cdn.scalar.com/photos/mars.jpg",
-            "satellites" => [],
+            "satellites" => [{"name" => "Phobos"}],
             "creator" => {},
-            "tags" => [],
+            "tags" => %w[solar-system rocky explored],
             "successCallbackUrl" => "https://example.com/webhook",
             "failureCallbackUrl" => "https://example.com/webhook"
           }
@@ -181,6 +181,22 @@ cases = [
   {operation: "listMe", method: "GET", path: "/me", run: -> { client.authentication.list_me }}
 ]
 
+# Renders a failure as its whole cause chain, then the backtrace of the exception that escaped.
+# The SDK wraps a dropped socket in an APIConnectionError whose message is only "Connection
+# error." — the Errno::ECONNRESET or EOFError that says which teardown it was is attached as
+# `cause` and is invisible unless walked. The chain leads so that a report reader taking only the
+# first line still sees the class and message of the failure itself.
+def error_details(e)
+  chain = []
+  current = e
+  # Ruby refuses to set a circular `cause`, so following it always terminates.
+  while current
+    chain << "#{current.class.name}: #{current.message}"
+    current = current.cause
+  end
+  (chain + e.backtrace.to_a).join("\n")
+end
+
 def run_case(test_case)
   started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
   # `label` distinguishes the required-params run from the all-params run of the same operation;
@@ -197,7 +213,7 @@ def run_case(test_case)
     identity.merge(
       status: "failed",
       durationMs: ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000).to_i,
-      error: ([e.class.name, e.message] + e.backtrace.to_a).join("\n")
+      error: error_details(e)
     )
   end
 end
@@ -215,8 +231,28 @@ selected =
     end
   )
 
-results =
-  selected.map { |test_case| Thread.new(test_case) { |smoke_case| run_case(smoke_case) } }.map(&:value)
+# Run the cases under a bounded worker pool rather than one thread per case. A large SDK has
+# hundreds of operations, and starting a thread for each one puts more requests in flight than
+# the client's connection pool has slots while the runner is already busy with other targets.
+# SCALAR_SMOKE_CONCURRENCY overrides the cap; anything unparseable falls back to the default.
+# Workers pull from a shared cursor and write into a pre-sized array, so results stay in case
+# order however the threads interleave.
+concurrency = [Integer(ENV.fetch("SCALAR_SMOKE_CONCURRENCY", "32"), exception: false) || 32, 1].max
+worker_count = [concurrency, selected.length].min
+results = Array.new(selected.length)
+cursor = 0
+mutex = Mutex.new
+Array
+  .new(worker_count) do
+    Thread.new do
+      loop do
+        index = mutex.synchronize { cursor.tap { cursor += 1 } }
+        break if index >= selected.length
+        results[index] = run_case(selected[index])
+      end
+    end
+  end
+  .each(&:join)
 
 failed = results.select { |result| result[:status] == "failed" }
 if ENV["SCALAR_SMOKE_REPORT"]
