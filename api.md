@@ -57,7 +57,7 @@ Time to play god and create a new planet. What do you think? Ah, don't think too
 | Response | [`Planet`](././lib/galaxy-ruby/models/planet.rb) |
 
 ```ruby
-response = client.planets.create({ id: 1, name: "Mars", atmosphere: [], creator: {  }, description: "The red planet", discovered_at: "1610-01-07T00:00:00Z", failure_callback_url: "https://example.com/webhook", habitability_index: 0.68, image: "https://cdn.scalar.com/photos/mars.jpg", last_updated: "2024-01-15T14:30:00Z", physical_properties: {  }, satellites: [], success_callback_url: "https://example.com/webhook", tags: [], type: "terrestrial" })
+response = client.planets.create({ id: 1, name: "Mars", atmosphere: [{  }], creator: {  }, description: "The red planet", discovered_at: "1610-01-07T00:00:00Z", failure_callback_url: "https://example.com/webhook", habitability_index: 0.68, image: "https://cdn.scalar.com/photos/mars.jpg", last_updated: "2024-01-15T14:30:00Z", physical_properties: {  }, satellites: [{ "name" => "Phobos" }], success_callback_url: "https://example.com/webhook", tags: [""], type: "terrestrial" })
 
 puts response.inspect
 ```
@@ -87,7 +87,7 @@ Sometimes you make mistakes, that's fine. No worries, you can update all planets
 | Response | [`Planet`](././lib/galaxy-ruby/models/planet.rb) |
 
 ```ruby
-response = client.planets.update(1, { id: 1, name: "Mars", atmosphere: [], creator: {  }, description: "The red planet", discovered_at: "1610-01-07T00:00:00Z", failure_callback_url: "https://example.com/webhook", habitability_index: 0.68, image: "https://cdn.scalar.com/photos/mars.jpg", last_updated: "2024-01-15T14:30:00Z", physical_properties: {  }, satellites: [], success_callback_url: "https://example.com/webhook", tags: [], type: "terrestrial" })
+response = client.planets.update(1, { id: 1, name: "Mars", atmosphere: [{  }], creator: {  }, description: "The red planet", discovered_at: "1610-01-07T00:00:00Z", failure_callback_url: "https://example.com/webhook", habitability_index: 0.68, image: "https://cdn.scalar.com/photos/mars.jpg", last_updated: "2024-01-15T14:30:00Z", physical_properties: {  }, satellites: [{ "name" => "Phobos" }], success_callback_url: "https://example.com/webhook", tags: [""], type: "terrestrial" })
 
 puts response.inspect
 ```
