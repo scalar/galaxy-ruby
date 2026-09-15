@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/scalar/galaxy-ruby/compare/v0.4.0...v0.4.1) (2026-09-15)
+
+
+### Chores
+
+* **api:** update generated SDK content ([d3cf8aa](https://github.com/scalar/galaxy-ruby/commit/d3cf8aa08ea8df077f331839be5b24fddc7bd89a))
+
 ## [0.4.0](https://github.com/scalar/galaxy-ruby/compare/v0.3.1...v0.4.0) (2026-09-15)
 
 
