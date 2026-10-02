@@ -1,0 +1,211 @@
+module ScalarGalaxy
+  module Models
+    type planet =
+      {
+        id: Integer,
+        name: String,
+        atmosphere: ::Array[ScalarGalaxy::Planet::Atmosphere],
+        creator: ScalarGalaxy::User,
+        description: String?,
+        discovered_at: Time,
+        failure_callback_url: String,
+        habitability_index: Float,
+        image: String?,
+        last_updated: Time,
+        physical_properties: ScalarGalaxy::Planet::PhysicalProperties,
+        satellites: ::Array[top],
+        success_callback_url: String,
+        tags: ::Array[String],
+        type: ScalarGalaxy::Models::Planet::type_
+      }
+
+    class Planet < ScalarGalaxy::Internal::Type::BaseModel
+      attr_accessor id: Integer
+
+      attr_accessor name: String
+
+      attr_reader atmosphere: ::Array[ScalarGalaxy::Planet::Atmosphere]?
+
+      def atmosphere=: (
+        ::Array[ScalarGalaxy::Planet::Atmosphere]
+      ) -> ::Array[ScalarGalaxy::Planet::Atmosphere]
+
+      attr_reader creator: ScalarGalaxy::User?
+
+      def creator=: (ScalarGalaxy::User) -> ScalarGalaxy::User
+
+      attr_accessor description: String?
+
+      attr_reader discovered_at: Time?
+
+      def discovered_at=: (Time) -> Time
+
+      attr_reader failure_callback_url: String?
+
+      def failure_callback_url=: (String) -> String
+
+      attr_reader habitability_index: Float?
+
+      def habitability_index=: (Float) -> Float
+
+      attr_accessor image: String?
+
+      attr_reader last_updated: Time?
+
+      def last_updated=: (Time) -> Time
+
+      attr_reader physical_properties: ScalarGalaxy::Planet::PhysicalProperties?
+
+      def physical_properties=: (
+        ScalarGalaxy::Planet::PhysicalProperties
+      ) -> ScalarGalaxy::Planet::PhysicalProperties
+
+      attr_reader satellites: ::Array[top]?
+
+      def satellites=: (::Array[top]) -> ::Array[top]
+
+      attr_reader success_callback_url: String?
+
+      def success_callback_url=: (String) -> String
+
+      attr_reader tags: ::Array[String]?
+
+      def tags=: (::Array[String]) -> ::Array[String]
+
+      attr_reader type: ScalarGalaxy::Models::Planet::type_?
+
+      def type=: (
+        ScalarGalaxy::Models::Planet::type_
+      ) -> ScalarGalaxy::Models::Planet::type_
+
+      def initialize: (
+        id: Integer,
+        name: String,
+        ?atmosphere: ::Array[ScalarGalaxy::Planet::Atmosphere],
+        ?creator: ScalarGalaxy::User,
+        ?description: String?,
+        ?discovered_at: Time,
+        ?failure_callback_url: String,
+        ?habitability_index: Float,
+        ?image: String?,
+        ?last_updated: Time,
+        ?physical_properties: ScalarGalaxy::Planet::PhysicalProperties,
+        ?satellites: ::Array[top],
+        ?success_callback_url: String,
+        ?tags: ::Array[String],
+        ?type: ScalarGalaxy::Models::Planet::type_
+      ) -> void
+
+      def to_hash: -> {
+        id: Integer,
+        name: String,
+        atmosphere: ::Array[ScalarGalaxy::Planet::Atmosphere],
+        creator: ScalarGalaxy::User,
+        description: String?,
+        discovered_at: Time,
+        failure_callback_url: String,
+        habitability_index: Float,
+        image: String?,
+        last_updated: Time,
+        physical_properties: ScalarGalaxy::Planet::PhysicalProperties,
+        satellites: ::Array[top],
+        success_callback_url: String,
+        tags: ::Array[String],
+        type: ScalarGalaxy::Models::Planet::type_
+      }
+
+      type atmosphere = { compound: String, percentage: Float }
+
+      class Atmosphere < ScalarGalaxy::Internal::Type::BaseModel
+        attr_reader compound: String?
+
+        def compound=: (String) -> String
+
+        attr_reader percentage: Float?
+
+        def percentage=: (Float) -> Float
+
+        def initialize: (?compound: String, ?percentage: Float) -> void
+
+        def to_hash: -> { compound: String, percentage: Float }
+      end
+
+      type physical_properties =
+        {
+          gravity: Float,
+          mass: Float,
+          radius: Float,
+          temperature: ScalarGalaxy::Planet::PhysicalProperties::Temperature
+        }
+
+      class PhysicalProperties < ScalarGalaxy::Internal::Type::BaseModel
+        attr_reader gravity: Float?
+
+        def gravity=: (Float) -> Float
+
+        attr_reader mass: Float?
+
+        def mass=: (Float) -> Float
+
+        attr_reader radius: Float?
+
+        def radius=: (Float) -> Float
+
+        attr_reader temperature: ScalarGalaxy::Planet::PhysicalProperties::Temperature?
+
+        def temperature=: (
+          ScalarGalaxy::Planet::PhysicalProperties::Temperature
+        ) -> ScalarGalaxy::Planet::PhysicalProperties::Temperature
+
+        def initialize: (
+          ?gravity: Float,
+          ?mass: Float,
+          ?radius: Float,
+          ?temperature: ScalarGalaxy::Planet::PhysicalProperties::Temperature
+        ) -> void
+
+        def to_hash: -> {
+          gravity: Float,
+          mass: Float,
+          radius: Float,
+          temperature: ScalarGalaxy::Planet::PhysicalProperties::Temperature
+        }
+
+        type temperature = { average: Float, max: Float, min: Float }
+
+        class Temperature < ScalarGalaxy::Internal::Type::BaseModel
+          attr_reader average: Float?
+
+          def average=: (Float) -> Float
+
+          attr_reader max: Float?
+
+          def max=: (Float) -> Float
+
+          attr_reader min: Float?
+
+          def min=: (Float) -> Float
+
+          def initialize: (?average: Float, ?max: Float, ?min: Float) -> void
+
+          def to_hash: -> { average: Float, max: Float, min: Float }
+        end
+      end
+
+      type type_ =
+        :terrestrial | :gas_giant | :ice_giant | :dwarf | :super_earth
+
+      module Type
+        extend ScalarGalaxy::Internal::Type::Enum
+
+        TERRESTRIAL: :terrestrial
+        GAS_GIANT: :gas_giant
+        ICE_GIANT: :ice_giant
+        DWARF: :dwarf
+        SUPER_EARTH: :super_earth
+
+        def self?.values: -> ::Array[ScalarGalaxy::Models::Planet::type_]
+      end
+    end
+  end
+end

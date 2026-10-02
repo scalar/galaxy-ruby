@@ -1,0 +1,25 @@
+module ScalarGalaxy
+  module Models
+    type planet_update_params =
+      { planet_id: Integer } & ScalarGalaxy::Internal::Type::request_parameters
+
+    class PlanetUpdateParams < ScalarGalaxy::Models::Planet
+      extend ScalarGalaxy::Internal::Type::RequestParameters::Converter
+      include ScalarGalaxy::Internal::Type::RequestParameters
+
+      def planet_id: -> Integer
+
+      def planet_id=: (Integer _) -> Integer
+
+      def initialize: (
+        planet_id: Integer,
+        ?request_options: ScalarGalaxy::request_opts
+      ) -> void
+
+      def to_hash: -> {
+        planet_id: Integer,
+        request_options: ScalarGalaxy::RequestOptions
+      }
+    end
+  end
+end

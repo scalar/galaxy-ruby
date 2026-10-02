@@ -1,7 +1,0 @@
-module Scalar
-  module Models
-    module Schemas
-      class VersionRetrieveResponse = String
-    end
-  end
-end

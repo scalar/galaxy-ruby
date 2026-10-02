@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "acme"
+require "galaxy-ruby"
 
-client = Scalar::Client.new
+client = ScalarGalaxy::Client.new
 # response = client.your_resource.your_method({ request_options: { timeout: 30 } })
 # puts response

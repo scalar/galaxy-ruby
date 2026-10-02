@@ -40,9 +40,9 @@ Layout/LineLength:
   AllowedPatterns:
     - "^\\s*#.*$"
     - ^require(_relative)?
-    - "Scalar::Internal::Type::BaseModel$"
+    - "ScalarGalaxy::Internal::Type::BaseModel$"
     - "^\\s*[A-Z0-9_]+ = :"
-    - "Scalar::(Models|Resources|Test)::"
+    - "ScalarGalaxy::(Models|Resources|Test)::"
   Max: 110
 
 Layout/MultilineArrayLineBreaks:
