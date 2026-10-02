@@ -1,0 +1,12 @@
+module ScalarGalaxy
+  module Resources
+    class CelestialBodies
+      def create: (
+        celestial_body: ScalarGalaxy::Models::celestial_body,
+        ?request_options: ScalarGalaxy::request_opts
+      ) -> ScalarGalaxy::Models::celestial_body
+
+      def initialize: (client: ScalarGalaxy::Client) -> void
+    end
+  end
+end

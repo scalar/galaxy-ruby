@@ -1,0 +1,50 @@
+module ScalarGalaxy
+  module Models
+    type planet_delte_image_response =
+      {
+        file_size: Integer,
+        image_url: String,
+        message: String,
+        mime_type: String,
+        uploaded_at: Time
+      }
+
+    class PlanetDelteImageResponse < ScalarGalaxy::Internal::Type::BaseModel
+      attr_reader file_size: Integer?
+
+      def file_size=: (Integer) -> Integer
+
+      attr_reader image_url: String?
+
+      def image_url=: (String) -> String
+
+      attr_reader message: String?
+
+      def message=: (String) -> String
+
+      attr_reader mime_type: String?
+
+      def mime_type=: (String) -> String
+
+      attr_reader uploaded_at: Time?
+
+      def uploaded_at=: (Time) -> Time
+
+      def initialize: (
+        ?file_size: Integer,
+        ?image_url: String,
+        ?message: String,
+        ?mime_type: String,
+        ?uploaded_at: Time
+      ) -> void
+
+      def to_hash: -> {
+        file_size: Integer,
+        image_url: String,
+        message: String,
+        mime_type: String,
+        uploaded_at: Time
+      }
+    end
+  end
+end

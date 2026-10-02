@@ -1,5 +1,0 @@
-module Scalar
-  module Models
-    class Namespace = String
-  end
-end

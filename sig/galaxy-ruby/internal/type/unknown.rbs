@@ -1,0 +1,26 @@
+module ScalarGalaxy
+  module Internal
+    module Type
+      class Unknown
+        extend ScalarGalaxy::Internal::Type::Converter
+        extend ScalarGalaxy::Internal::Util::SorbetRuntimeSupport
+
+        def self.===: (top other) -> bool
+
+        def self.==: (top other) -> bool
+
+        def self.coerce: (
+          top value,
+          state: ScalarGalaxy::Internal::Type::Converter::coerce_state
+        ) -> top
+
+        def self.dump: (
+          top value,
+          state: ScalarGalaxy::Internal::Type::Converter::dump_state
+        ) -> top
+
+        def self.to_sorbet_type: -> top
+      end
+    end
+  end
+end

@@ -1,5 +1,0 @@
-module Scalar
-  module Models
-    class RegistryRetrieveAPIDocumentVersionResponse = String
-  end
-end
