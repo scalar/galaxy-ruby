@@ -19,22 +19,22 @@ module ScalarGalaxy
         T::Hash[Symbol, String]
       )
 
-    sig { returns(String) }
+    sig { returns(T.nilable(String)) }
     attr_reader :bearer_auth
 
-    sig { returns(String) }
+    sig { returns(T.nilable(String)) }
     attr_reader :basic_auth_username
 
-    sig { returns(String) }
+    sig { returns(T.nilable(String)) }
     attr_reader :basic_auth_password
 
-    sig { returns(String) }
+    sig { returns(T.nilable(String)) }
     attr_reader :api_key_header
 
     sig { returns(T.nilable(String)) }
     attr_reader :api_key_query
 
-    sig { returns(String) }
+    sig { returns(T.nilable(String)) }
     attr_reader :api_key_cookie
 
     sig { returns(T.nilable(String)) }
