@@ -12,7 +12,7 @@ require "galaxy-ruby"
 # Smoke test: calls every generated operation once to confirm the SDK can reach each endpoint.
 # Run it from this repo with `ruby tests/smoke-test.rb`. The generator also runs this file
 # against a mock server and reads the JSON report produced via SCALAR_SMOKE_REPORT.
-client = ScalarGalaxy::Client.new(max_retries: 2, timeout: 30)
+client = ScalarGalaxy::Client.new(max_retries: 2, timeout: 10)
 
 cases = [
   {

@@ -21,17 +21,17 @@ module ScalarGalaxy
     # rubocop:enable Style/MutableConstant
 
     # JWT Bearer token authentication
-    # @return [String]
+    # @return [String, nil]
     attr_reader :bearer_auth
 
-    # @return [String]
+    # @return [String, nil]
     attr_reader :basic_auth_username
 
-    # @return [String]
+    # @return [String, nil]
     attr_reader :basic_auth_password
 
     # API key request header
-    # @return [String]
+    # @return [String, nil]
     attr_reader :api_key_header
 
     # API key query parameter
@@ -39,7 +39,7 @@ module ScalarGalaxy
     attr_reader :api_key_query
 
     # API key browser cookie
-    # @return [String]
+    # @return [String, nil]
     attr_reader :api_key_cookie
 
     # OAuth 2.0 authentication
@@ -193,26 +193,6 @@ module ScalarGalaxy
           raise ArgumentError.new(message)
         end
 
-      if bearer_auth.nil?
-        raise ArgumentError.new("bearer_auth is required, and can be set via environ: \"BEARER_AUTH\"")
-      end
-      if basic_auth_username.nil?
-        raise ArgumentError.new(
-          "basic_auth_username is required, and can be set via environ: \"BASIC_AUTH_USERNAME\""
-        )
-      end
-      if basic_auth_password.nil?
-        raise ArgumentError.new(
-          "basic_auth_password is required, and can be set via environ: \"BASIC_AUTH_PASSWORD\""
-        )
-      end
-      if api_key_header.nil?
-        raise ArgumentError.new("api_key_header is required, and can be set via environ: \"API_KEY_HEADER\"")
-      end
-      if api_key_cookie.nil?
-        raise ArgumentError.new("api_key_cookie is required, and can be set via environ: \"API_KEY_COOKIE\"")
-      end
-
       headers = {}
       custom_headers_env = ENV["SCALAR_CUSTOM_HEADERS"]
       unless custom_headers_env.nil?
@@ -226,12 +206,12 @@ module ScalarGalaxy
         headers = parsed.merge(headers)
       end
 
-      @bearer_auth = bearer_auth.to_s
-      @basic_auth_username = basic_auth_username.to_s
-      @basic_auth_password = basic_auth_password.to_s
-      @api_key_header = api_key_header.to_s
+      @bearer_auth = bearer_auth&.to_s
+      @basic_auth_username = basic_auth_username&.to_s
+      @basic_auth_password = basic_auth_password&.to_s
+      @api_key_header = api_key_header&.to_s
       @api_key_query = api_key_query&.to_s
-      @api_key_cookie = api_key_cookie.to_s
+      @api_key_cookie = api_key_cookie&.to_s
       @o_auth2 = o_auth2&.to_s
       @open_id_connect = open_id_connect&.to_s
       @webhook_secret = webhook_secret&.to_s

@@ -13,17 +13,17 @@ module ScalarGalaxy
       void: "https://void.scalar.com/"
     }
 
-    attr_reader bearer_auth: String
+    attr_reader bearer_auth: String?
 
-    attr_reader basic_auth_username: String
+    attr_reader basic_auth_username: String?
 
-    attr_reader basic_auth_password: String
+    attr_reader basic_auth_password: String?
 
-    attr_reader api_key_header: String
+    attr_reader api_key_header: String?
 
     attr_reader api_key_query: String?
 
-    attr_reader api_key_cookie: String
+    attr_reader api_key_cookie: String?
 
     attr_reader o_auth2: String?
 
