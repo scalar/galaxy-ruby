@@ -2,11 +2,11 @@
 
 module ScalarGalaxy
   module Models
-    class PlanetDelteImageResponse < ScalarGalaxy::Internal::Type::BaseModel
+    class PlanetUploadImageResponse < ScalarGalaxy::Internal::Type::BaseModel
       OrHash =
         T.type_alias do
           T.any(
-            ScalarGalaxy::Models::PlanetDelteImageResponse,
+            ScalarGalaxy::Models::PlanetUploadImageResponse,
             ScalarGalaxy::Internal::AnyHash
           )
         end

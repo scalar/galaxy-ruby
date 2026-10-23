@@ -38,11 +38,11 @@ It's easy to say you know them all, but do you really? Retrieve all the planets 
 
 | Direction | Type |
 | --- | --- |
-| Request | [`PlanetListAllDataParams`](././lib/galaxy-ruby/models/planet_list_all_data_params.rb) |
-| Response | [`PlanetListAllDataResponse`](././lib/galaxy-ruby/models/planet_list_all_data_response.rb) |
+| Request | [`PlanetListParams`](././lib/galaxy-ruby/models/planet_list_params.rb) |
+| Response | [`PlanetListResponse`](././lib/galaxy-ruby/models/planet_list_response.rb) |
 
 ```ruby
-response = client.planets.list_all_data({ limit: 10, offset: 0 })
+response = client.planets.list({ limit: 10, offset: 0 })
 
 puts response.inspect
 ```
@@ -110,11 +110,11 @@ Got a crazy good photo of a planet? Share it with the world!
 
 | Direction | Type |
 | --- | --- |
-| Request | [`PlanetDelteImageParams`](././lib/galaxy-ruby/models/planet_delte_image_params.rb) |
-| Response | [`PlanetDelteImageResponse`](././lib/galaxy-ruby/models/planet_delte_image_response.rb) |
+| Request | [`PlanetUploadImageParams`](././lib/galaxy-ruby/models/planet_upload_image_params.rb) |
+| Response | [`PlanetUploadImageResponse`](././lib/galaxy-ruby/models/planet_upload_image_response.rb) |
 
 ```ruby
-response = client.planets.delte_image(1, { image: "@mars.jpg" })
+response = client.planets.upload_image(1, { image: "@mars.jpg" })
 
 puts response.inspect
 ```
