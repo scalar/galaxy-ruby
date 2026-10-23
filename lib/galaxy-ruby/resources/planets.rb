@@ -121,6 +121,32 @@ module ScalarGalaxy
         )
       end
 
+      # It's easy to say you know them all, but do you really? Retrieve all the planets
+      # and check whether you missed one.
+      #
+      # @overload list(limit: nil, offset: nil, request_options: {})
+      #
+      # @param limit [Integer] The number of items to return
+      #
+      # @param offset [Integer] The number of items to skip before starting to collect the result set
+      #
+      # @param request_options [ScalarGalaxy::RequestOptions, Hash{Symbol=>Object}, nil]
+      #
+      # @return [ScalarGalaxy::Models::PlanetListResponse]
+      #
+      # @see ScalarGalaxy::Models::PlanetListParams
+      def list(params = {})
+        parsed, options = ScalarGalaxy::PlanetListParams.dump_request(params)
+        query = ScalarGalaxy::Internal::Util.encode_query_params(parsed)
+        @client.request(
+          method: :get,
+          path: "planets",
+          query: query,
+          model: ScalarGalaxy::Models::PlanetListResponse,
+          options: options
+        )
+      end
+
       # This endpoint was used to delete planets. Unfortunately, that caused a lot of
       # trouble for planets with life. So, this endpoint is now deprecated and should
       # not be used anymore.
@@ -145,7 +171,7 @@ module ScalarGalaxy
 
       # Got a crazy good photo of a planet? Share it with the world!
       #
-      # @overload delte_image(planet_id, image: nil, request_options: {})
+      # @overload upload_image(planet_id, image: nil, request_options: {})
       #
       # @param planet_id [Integer] The ID of the planet to get
       #
@@ -153,11 +179,11 @@ module ScalarGalaxy
       #
       # @param request_options [ScalarGalaxy::RequestOptions, Hash{Symbol=>Object}, nil]
       #
-      # @return [ScalarGalaxy::Models::PlanetDelteImageResponse]
+      # @return [ScalarGalaxy::Models::PlanetUploadImageResponse]
       #
-      # @see ScalarGalaxy::Models::PlanetDelteImageParams
-      def delte_image(planet_id, params = {})
-        parsed, options = ScalarGalaxy::PlanetDelteImageParams.dump_request(params)
+      # @see ScalarGalaxy::Models::PlanetUploadImageParams
+      def upload_image(planet_id, params = {})
+        parsed, options = ScalarGalaxy::PlanetUploadImageParams.dump_request(params)
         @client.request(
           method: :post,
           path: ["planets/%1$s/image", planet_id],
@@ -165,33 +191,7 @@ module ScalarGalaxy
             "content-type" => "multipart/form-data"
           },
           body: parsed,
-          model: ScalarGalaxy::Models::PlanetDelteImageResponse,
-          options: options
-        )
-      end
-
-      # It's easy to say you know them all, but do you really? Retrieve all the planets
-      # and check whether you missed one.
-      #
-      # @overload list_all_data(limit: nil, offset: nil, request_options: {})
-      #
-      # @param limit [Integer] The number of items to return
-      #
-      # @param offset [Integer] The number of items to skip before starting to collect the result set
-      #
-      # @param request_options [ScalarGalaxy::RequestOptions, Hash{Symbol=>Object}, nil]
-      #
-      # @return [ScalarGalaxy::Models::PlanetListAllDataResponse]
-      #
-      # @see ScalarGalaxy::Models::PlanetListAllDataParams
-      def list_all_data(params = {})
-        parsed, options = ScalarGalaxy::PlanetListAllDataParams.dump_request(params)
-        query = ScalarGalaxy::Internal::Util.encode_query_params(parsed)
-        @client.request(
-          method: :get,
-          path: "planets",
-          query: query,
-          model: ScalarGalaxy::Models::PlanetListAllDataResponse,
+          model: ScalarGalaxy::Models::PlanetUploadImageResponse,
           options: options
         )
       end

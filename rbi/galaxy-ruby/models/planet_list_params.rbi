@@ -2,16 +2,13 @@
 
 module ScalarGalaxy
   module Models
-    class PlanetListAllDataParams < ScalarGalaxy::Internal::Type::BaseModel
+    class PlanetListParams < ScalarGalaxy::Internal::Type::BaseModel
       extend ScalarGalaxy::Internal::Type::RequestParameters::Converter
       include ScalarGalaxy::Internal::Type::RequestParameters
 
       OrHash =
         T.type_alias do
-          T.any(
-            ScalarGalaxy::PlanetListAllDataParams,
-            ScalarGalaxy::Internal::AnyHash
-          )
+          T.any(ScalarGalaxy::PlanetListParams, ScalarGalaxy::Internal::AnyHash)
         end
 
       # The number of items to return

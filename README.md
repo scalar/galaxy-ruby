@@ -46,7 +46,7 @@ client = ScalarGalaxy::Client.new(
   bearer_auth: ENV["BEARER_AUTH"], # defaults to the BEARER_AUTH env var
 )
 
-response = client.planets.list_all_data({ limit: 10, offset: 0 })
+response = client.planets.list({ limit: 10, offset: 0 })
 
 puts response.inspect
 ```
@@ -90,7 +90,7 @@ Non-success responses throw generated API errors. Error objects expose status, h
 
 ```ruby
 begin
-  response = client.planets.list_all_data({ limit: 10, offset: 0 })
+  response = client.planets.list({ limit: 10, offset: 0 })
 
   puts response.inspect
 rescue ScalarGalaxy::Errors::APIError => error

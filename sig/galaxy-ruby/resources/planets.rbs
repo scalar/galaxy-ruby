@@ -41,22 +41,22 @@ module ScalarGalaxy
         ?request_options: ScalarGalaxy::request_opts
       ) -> ScalarGalaxy::Planet
 
+      def list: (
+        ?limit: Integer,
+        ?offset: Integer,
+        ?request_options: ScalarGalaxy::request_opts
+      ) -> ScalarGalaxy::Models::PlanetListResponse
+
       def delete: (
         Integer planet_id,
         ?request_options: ScalarGalaxy::request_opts
       ) -> nil
 
-      def delte_image: (
+      def upload_image: (
         Integer planet_id,
         ?image: ScalarGalaxy::Internal::file_input,
         ?request_options: ScalarGalaxy::request_opts
-      ) -> ScalarGalaxy::Models::PlanetDelteImageResponse
-
-      def list_all_data: (
-        ?limit: Integer,
-        ?offset: Integer,
-        ?request_options: ScalarGalaxy::request_opts
-      ) -> ScalarGalaxy::Models::PlanetListAllDataResponse
+      ) -> ScalarGalaxy::Models::PlanetUploadImageResponse
 
       def initialize: (client: ScalarGalaxy::Client) -> void
     end

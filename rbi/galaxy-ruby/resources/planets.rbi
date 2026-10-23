@@ -108,6 +108,24 @@ module ScalarGalaxy
       )
       end
 
+      # It's easy to say you know them all, but do you really? Retrieve all the planets
+      # and check whether you missed one.
+      sig do
+        params(
+          limit: Integer,
+          offset: Integer,
+          request_options: ScalarGalaxy::RequestOptions::OrHash
+        ).returns(ScalarGalaxy::Models::PlanetListResponse)
+      end
+      def list(
+        # The number of items to return
+        limit: nil,
+        # The number of items to skip before starting to collect the result set
+        offset: nil,
+        request_options: {}
+      )
+      end
+
       # This endpoint was used to delete planets. Unfortunately, that caused a lot of
       # trouble for planets with life. So, this endpoint is now deprecated and should
       # not be used anymore.
@@ -130,31 +148,13 @@ module ScalarGalaxy
           planet_id: Integer,
           image: ScalarGalaxy::Internal::FileInput,
           request_options: ScalarGalaxy::RequestOptions::OrHash
-        ).returns(ScalarGalaxy::Models::PlanetDelteImageResponse)
+        ).returns(ScalarGalaxy::Models::PlanetUploadImageResponse)
       end
-      def delte_image(
+      def upload_image(
         # The ID of the planet to get
         planet_id,
         # The image file to upload
         image: nil,
-        request_options: {}
-      )
-      end
-
-      # It's easy to say you know them all, but do you really? Retrieve all the planets
-      # and check whether you missed one.
-      sig do
-        params(
-          limit: Integer,
-          offset: Integer,
-          request_options: ScalarGalaxy::RequestOptions::OrHash
-        ).returns(ScalarGalaxy::Models::PlanetListAllDataResponse)
-      end
-      def list_all_data(
-        # The number of items to return
-        limit: nil,
-        # The number of items to skip before starting to collect the result set
-        offset: nil,
         request_options: {}
       )
       end
