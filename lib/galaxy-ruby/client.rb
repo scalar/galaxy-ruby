@@ -88,6 +88,8 @@ module ScalarGalaxy
     #
     # @return [Hash{String=>String}]
     private def auth_bearer_auth
+      return {} if @bearer_auth.to_s.empty?
+
       {"authorization" => "Bearer #{@bearer_auth}"}
     end
 
@@ -121,6 +123,8 @@ module ScalarGalaxy
     #
     # @return [Hash{String=>String}]
     private def auth_o_auth2
+      return {} if @o_auth2.to_s.empty?
+
       {"authorization" => "Bearer #{@o_auth2}"}
     end
 
@@ -128,8 +132,27 @@ module ScalarGalaxy
     #
     # @return [Hash{String=>String}]
     private def auth_open_id_connect
+      return {} if @open_id_connect.to_s.empty?
+
       {"authorization" => "Bearer #{@open_id_connect}"}
     end
+
+    # @api private
+    #
+    # @return [Array<String>]
+    private def auth_header_keys = %w[authorization x-api-key cookie]
+
+    # @api private
+    #
+    # @return [Hash{String=>String}]
+    private def auth_query
+      {"api_key" => @api_key_query}.reject { |_, value| value.to_s.empty? }
+    end
+
+    # @api private
+    #
+    # @return [Array<String>]
+    private def auth_query_keys = ["api_key"]
 
     # Creates and returns a new client for interacting with the API.
     #

@@ -41,6 +41,12 @@ module ScalarGalaxy
 
     private def auth_headers: -> ::Hash[String, String]
 
+    private def auth_header_keys: -> ::Array[String]
+
+    private def auth_query: -> ::Hash[String, String]
+
+    private def auth_query_keys: -> ::Array[String]
+
     def initialize: (
       ?bearer_auth: String?,
       ?basic_auth_username: String?,

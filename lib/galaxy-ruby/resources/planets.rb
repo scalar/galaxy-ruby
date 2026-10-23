@@ -7,9 +7,7 @@ module ScalarGalaxy
       # Time to play god and create a new planet. What do you think? Ah, don't think too
       # much. What could go wrong anyway?
       #
-      # @overload create(id:, name:, atmosphere: nil, creator: nil, description: nil, discovered_at: nil, failure_callback_url: nil, habitability_index: nil, image: nil, last_updated: nil, physical_properties: nil, satellites: nil, success_callback_url: nil, tags: nil, type: nil, request_options: {})
-      #
-      # @param id [Integer]
+      # @overload create(name:, atmosphere: nil, creator: nil, description: nil, discovered_at: nil, failure_callback_url: nil, habitability_index: nil, image: nil, physical_properties: nil, satellites: nil, success_callback_url: nil, tags: nil, type: nil, request_options: {})
       #
       # @param name [String]
       #
@@ -26,8 +24,6 @@ module ScalarGalaxy
       # @param habitability_index [Float] A score from 0 to 1 indicating potential habitability
       #
       # @param image [String, nil]
-      #
-      # @param last_updated [Time]
       #
       # @param physical_properties [ScalarGalaxy::Models::Planet::PhysicalProperties]
       #
@@ -79,11 +75,9 @@ module ScalarGalaxy
       # Sometimes you make mistakes, that's fine. No worries, you can update all
       # planets.
       #
-      # @overload update(planet_id, id:, name:, atmosphere: nil, creator: nil, description: nil, discovered_at: nil, failure_callback_url: nil, habitability_index: nil, image: nil, last_updated: nil, physical_properties: nil, satellites: nil, success_callback_url: nil, tags: nil, type: nil, request_options: {})
+      # @overload update(planet_id, name:, atmosphere: nil, creator: nil, description: nil, discovered_at: nil, failure_callback_url: nil, habitability_index: nil, image: nil, physical_properties: nil, satellites: nil, success_callback_url: nil, tags: nil, type: nil, request_options: {})
       #
       # @param planet_id [Integer] The ID of the planet to get
-      #
-      # @param id [Integer]
       #
       # @param name [String]
       #
@@ -100,8 +94,6 @@ module ScalarGalaxy
       # @param habitability_index [Float] A score from 0 to 1 indicating potential habitability
       #
       # @param image [String, nil]
-      #
-      # @param last_updated [Time]
       #
       # @param physical_properties [ScalarGalaxy::Models::Planet::PhysicalProperties]
       #

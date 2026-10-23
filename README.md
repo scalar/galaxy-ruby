@@ -95,6 +95,8 @@ begin
   puts response.inspect
 rescue ScalarGalaxy::Errors::APIError => error
   puts "#{error.status}: #{error.message}"
+  puts error.request_id if error.request_id
+  puts error.problem_details if error.problem_details
   raise
 end
 ```
@@ -131,7 +133,7 @@ client = ScalarGalaxy::Client.new(
 | `base_url` | `String \| nil` | `ENV["SCALAR_BASE_URL"]` | Override the default API base URL. |
 | `max_retries` | `Integer` | `2` | Max number of retries to attempt after a failed retryable request. |
 | `timeout` | `Float` | `60.0` | Seconds to wait for a response before timing out. |
-| `initial_retry_delay` | `Float` | `0.5` | Seconds to wait before the first retry; later retries back off exponentially. |
+| `initial_retry_delay` | `Float` | `0.5` | Base delay, in seconds, for retry backoff: the wait grows with the square of the retry count, so the first retry is sent right away. |
 | `max_retry_delay` | `Float` | `8.0` | Upper bound, in seconds, on the delay between retries. |
 
 <br />
@@ -140,7 +142,7 @@ client = ScalarGalaxy::Client.new(
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `idempotency_key` | `String` | - | Idempotency key for one request, sent when the SDK configures an idempotency header. |
+| `idempotency_key` | `String` | - | Idempotency key for one request. This SDK configures no idempotency header, so it is not sent. |
 | `extra_query` | `Hash` | - | Additional query parameters for one request. |
 | `extra_headers` | `Hash` | - | Additional headers for one request. |
 | `extra_body` | `Hash` | - | Additional body fields for one request. |

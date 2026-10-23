@@ -182,9 +182,15 @@ module ScalarGalaxy
                 end
               end
             rescue Timeout::Error
-              raise ScalarGalaxy::Errors::APITimeoutError.new(url: url, request: req)
+              raise ScalarGalaxy::Errors::APITimeoutError.new(
+                url: request.fetch(:error_url, url),
+                request: req
+              )
             rescue StandardError
-              raise ScalarGalaxy::Errors::APIConnectionError.new(url: url, request: req)
+              raise ScalarGalaxy::Errors::APIConnectionError.new(
+                url: request.fetch(:error_url, url),
+                request: req
+              )
             end
           # rubocop:enable Metrics/BlockLength
 

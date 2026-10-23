@@ -39,6 +39,18 @@ module ScalarGalaxy
       sig { returns(T.nilable(T.anything)) }
       attr_accessor :body
 
+      sig { returns(T.nilable(String)) }
+      def request_id
+      end
+
+      sig { returns(T.nilable(T::Hash[T.any(String, Symbol), T.anything])) }
+      def problem_details
+      end
+
+      sig { params(name: String).returns(T.nilable(String)) }
+      private def response_header(name)
+      end
+
       # @api private
       sig do
         params(
