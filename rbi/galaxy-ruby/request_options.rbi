@@ -17,8 +17,8 @@ module ScalarGalaxy
     def self.validate!(opts)
     end
 
-    # Idempotency key to send with request and all associated retries. Will only be
-    # sent for write requests.
+    # Idempotency key to send with this request and its retries when the client
+    # has an idempotency header configured.
     sig { returns(T.nilable(String)) }
     attr_accessor :idempotency_key
 

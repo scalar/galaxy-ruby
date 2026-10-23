@@ -2,7 +2,6 @@ module ScalarGalaxy
   module Resources
     class Planets
       def create: (
-        id: Integer,
         name: String,
         ?atmosphere: ::Array[ScalarGalaxy::Planet::Atmosphere],
         ?creator: ScalarGalaxy::User,
@@ -11,7 +10,6 @@ module ScalarGalaxy
         ?failure_callback_url: String,
         ?habitability_index: Float,
         ?image: String?,
-        ?last_updated: Time,
         ?physical_properties: ScalarGalaxy::Planet::PhysicalProperties,
         ?satellites: ::Array[top],
         ?success_callback_url: String,
@@ -27,7 +25,6 @@ module ScalarGalaxy
 
       def update: (
         Integer planet_id,
-        id: Integer,
         name: String,
         ?atmosphere: ::Array[ScalarGalaxy::Planet::Atmosphere],
         ?creator: ScalarGalaxy::User,
@@ -36,7 +33,6 @@ module ScalarGalaxy
         ?failure_callback_url: String,
         ?habitability_index: Float,
         ?image: String?,
-        ?last_updated: Time,
         ?physical_properties: ScalarGalaxy::Planet::PhysicalProperties,
         ?satellites: ::Array[top],
         ?success_callback_url: String,

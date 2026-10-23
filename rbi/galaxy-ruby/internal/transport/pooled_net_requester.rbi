@@ -14,7 +14,8 @@ module ScalarGalaxy
               url: URI::Generic,
               headers: T::Hash[String, String],
               body: T.anything,
-              deadline: Float
+              deadline: Float,
+              error_url: T.nilable(URI::Generic)
             }
           end
 

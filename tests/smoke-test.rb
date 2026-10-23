@@ -20,7 +20,7 @@ cases = [
     method: "POST",
     path: "/planets",
     label: "required params",
-    run: -> { client.planets.create({id: 1, name: "Mars"}) }
+    run: -> { client.planets.create({name: "Mars"}) }
   },
   {
     operation: "create",
@@ -30,7 +30,6 @@ cases = [
     run: -> do
       client.planets.create(
         {
-          id: 1,
           name: "Mars",
           atmosphere: [{}],
           creator: {
@@ -41,7 +40,6 @@ cases = [
           failure_callback_url: "https://example.com/webhook",
           habitability_index: 0.68,
           image: "https://cdn.scalar.com/photos/mars.jpg",
-          last_updated: "2024-01-15T14:30:00Z",
           physical_properties: {
             "mass" => 0.107,
             "radius" => 0.532,
@@ -67,7 +65,7 @@ cases = [
     method: "PUT",
     path: "/planets/{planetId}",
     label: "required params",
-    run: -> { client.planets.update(1, {id: 1, name: "Mars"}) }
+    run: -> { client.planets.update(1, {name: "Mars"}) }
   },
   {
     operation: "update",
@@ -78,7 +76,6 @@ cases = [
       client.planets.update(
         1,
         {
-          id: 1,
           name: "Mars",
           atmosphere: [{}],
           creator: {
@@ -89,7 +86,6 @@ cases = [
           failure_callback_url: "https://example.com/webhook",
           habitability_index: 0.68,
           image: "https://cdn.scalar.com/photos/mars.jpg",
-          last_updated: "2024-01-15T14:30:00Z",
           physical_properties: {
             "mass" => 0.107,
             "radius" => 0.532,

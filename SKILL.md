@@ -69,6 +69,8 @@ begin
   puts response.inspect
 rescue ScalarGalaxy::Errors::APIError => error
   puts "#{error.status}: #{error.message}"
+  puts error.request_id if error.request_id
+  puts error.problem_details if error.problem_details
   raise
 end
 ```

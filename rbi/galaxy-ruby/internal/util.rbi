@@ -13,8 +13,8 @@ module ScalarGalaxy
 
       # @api private
       sig do
-        params(ns: T.any(Module, T::Class[T.anything])).returns(
-          T::Enumerable[T.any(Module, T::Class[T.anything])]
+        params(ns: T.any(T::Module[T.anything], T::Class[T.anything])).returns(
+          T::Enumerable[T.any(T::Module[T.anything], T::Class[T.anything])]
         )
       end
       def self.walk_namespaces(ns)

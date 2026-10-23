@@ -25,6 +25,12 @@ module ScalarGalaxy
 
       attr_accessor body: top?
 
+      def request_id: -> String?
+
+      def problem_details: -> ::Hash[String | Symbol, top]?
+
+      private def response_header: (String name) -> String?
+
       def initialize: (
         url: URI::Generic,
         ?status: Integer?,
