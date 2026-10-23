@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.6.0](https://github.com/scalar/galaxy-ruby/compare/v0.5.0...v0.6.0) (2026-10-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* **api:** 5 breaking changes to the SDK surface.
+    - Removed operation `planets.listAllData` (`GET /planets`).
+    - Removed operation `planets.delteImage` (`POST /planets/{planetId}/image`).
+    - Removed schema `ListAllDataResponseHeaders`.
+    - Removed schema `DelteImageResponseHeaders`.
+    - Removed schema `DelteImageStatus400ResponseHeaders`.
+
+### Features
+
+* **api:** remove operation planets.listAllData (+9 more changes) ([3a24f2a](https://github.com/scalar/galaxy-ruby/commit/3a24f2a43d1ed76e957da933732850970df72c08))
+
+
+### Chores
+
+* **api:** regenerate SDK ([07c8a8e](https://github.com/scalar/galaxy-ruby/commit/07c8a8e6836f40a1ea49454ef2a58aba8694e2a9))
+
 ## [0.5.0](https://github.com/scalar/galaxy-ruby/compare/v0.4.0...v0.5.0) (2026-10-07)
 
 
