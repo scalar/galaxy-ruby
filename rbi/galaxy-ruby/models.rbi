@@ -23,13 +23,13 @@ module ScalarGalaxy
 
   PlanetDeleteParams = ScalarGalaxy::Models::PlanetDeleteParams
 
-  PlanetDelteImageParams = ScalarGalaxy::Models::PlanetDelteImageParams
-
-  PlanetListAllDataParams = ScalarGalaxy::Models::PlanetListAllDataParams
+  PlanetListParams = ScalarGalaxy::Models::PlanetListParams
 
   PlanetRetrieveParams = ScalarGalaxy::Models::PlanetRetrieveParams
 
   PlanetUpdateParams = ScalarGalaxy::Models::PlanetUpdateParams
+
+  PlanetUploadImageParams = ScalarGalaxy::Models::PlanetUploadImageParams
 
   UnwrapWebhookEvent = ScalarGalaxy::Models::UnwrapWebhookEvent
 

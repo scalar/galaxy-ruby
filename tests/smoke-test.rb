@@ -20,7 +20,7 @@ cases = [
     method: "POST",
     path: "/planets",
     label: "required params",
-    run: -> { client.planets.create({id: 1, name: "Mars"}) }
+    run: -> { client.planets.create({name: "Mars"}) }
   },
   {
     operation: "create",
@@ -30,7 +30,6 @@ cases = [
     run: -> do
       client.planets.create(
         {
-          id: 1,
           name: "Mars",
           atmosphere: [{}],
           creator: {
@@ -41,7 +40,6 @@ cases = [
           failure_callback_url: "https://example.com/webhook",
           habitability_index: 0.68,
           image: "https://cdn.scalar.com/photos/mars.jpg",
-          last_updated: "2024-01-15T14:30:00Z",
           physical_properties: {
             "mass" => 0.107,
             "radius" => 0.532,
@@ -67,7 +65,7 @@ cases = [
     method: "PUT",
     path: "/planets/{planetId}",
     label: "required params",
-    run: -> { client.planets.update(1, {id: 1, name: "Mars"}) }
+    run: -> { client.planets.update(1, {name: "Mars"}) }
   },
   {
     operation: "update",
@@ -78,7 +76,6 @@ cases = [
       client.planets.update(
         1,
         {
-          id: 1,
           name: "Mars",
           atmosphere: [{}],
           creator: {
@@ -89,7 +86,6 @@ cases = [
           failure_callback_url: "https://example.com/webhook",
           habitability_index: 0.68,
           image: "https://cdn.scalar.com/photos/mars.jpg",
-          last_updated: "2024-01-15T14:30:00Z",
           physical_properties: {
             "mass" => 0.107,
             "radius" => 0.532,
@@ -105,30 +101,30 @@ cases = [
     end
   },
   {
+    operation: "list",
+    method: "GET",
+    path: "/planets",
+    run: -> { client.planets.list({limit: 10, offset: 0}) }
+  },
+  {
     operation: "delete",
     method: "DELETE",
     path: "/planets/{planetId}",
     run: -> { client.planets.delete(1) }
   },
   {
-    operation: "delteImage",
+    operation: "uploadImage",
     method: "POST",
     path: "/planets/{planetId}/image",
     label: "required params",
-    run: -> { client.planets.delte_image(1) }
+    run: -> { client.planets.upload_image(1) }
   },
   {
-    operation: "delteImage",
+    operation: "uploadImage",
     method: "POST",
     path: "/planets/{planetId}/image",
     label: "all params",
-    run: -> { client.planets.delte_image(1, {image: "@mars.jpg"}) }
-  },
-  {
-    operation: "listAllData",
-    method: "GET",
-    path: "/planets",
-    run: -> { client.planets.list_all_data({limit: 10, offset: 0}) }
+    run: -> { client.planets.upload_image(1, {image: "@mars.jpg"}) }
   },
   {
     operation: "create",

@@ -2,11 +2,11 @@
 
 module ScalarGalaxy
   module Models
-    class PlanetListAllDataResponse < ScalarGalaxy::Internal::Type::BaseModel
+    class PlanetListResponse < ScalarGalaxy::Internal::Type::BaseModel
       OrHash =
         T.type_alias do
           T.any(
-            ScalarGalaxy::Models::PlanetListAllDataResponse,
+            ScalarGalaxy::Models::PlanetListResponse,
             ScalarGalaxy::Internal::AnyHash
           )
         end
@@ -17,16 +17,12 @@ module ScalarGalaxy
       sig { params(data: T::Array[T.anything]).void }
       attr_writer :data
 
-      sig do
-        returns(
-          T.nilable(ScalarGalaxy::Models::PlanetListAllDataResponse::Meta)
-        )
-      end
+      sig { returns(T.nilable(ScalarGalaxy::Models::PlanetListResponse::Meta)) }
       attr_reader :meta
 
       sig do
         params(
-          meta: ScalarGalaxy::Models::PlanetListAllDataResponse::Meta::OrHash
+          meta: ScalarGalaxy::Models::PlanetListResponse::Meta::OrHash
         ).void
       end
       attr_writer :meta
@@ -34,7 +30,7 @@ module ScalarGalaxy
       sig do
         params(
           data: T::Array[T.anything],
-          meta: ScalarGalaxy::Models::PlanetListAllDataResponse::Meta::OrHash
+          meta: ScalarGalaxy::Models::PlanetListResponse::Meta::OrHash
         ).returns(T.attached_class)
       end
       def self.new(data: nil, meta: nil)
@@ -44,7 +40,7 @@ module ScalarGalaxy
         override.returns(
           {
             data: T::Array[T.anything],
-            meta: ScalarGalaxy::Models::PlanetListAllDataResponse::Meta
+            meta: ScalarGalaxy::Models::PlanetListResponse::Meta
           }
         )
       end
@@ -55,7 +51,7 @@ module ScalarGalaxy
         OrHash =
           T.type_alias do
             T.any(
-              ScalarGalaxy::Models::PlanetListAllDataResponse::Meta,
+              ScalarGalaxy::Models::PlanetListResponse::Meta,
               ScalarGalaxy::Internal::AnyHash
             )
           end

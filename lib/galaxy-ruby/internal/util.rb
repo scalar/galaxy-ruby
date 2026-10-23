@@ -250,7 +250,12 @@ module ScalarGalaxy
         #
         # @return [String]
         def uri_origin(uri)
-          "#{uri.scheme}://#{uri.host}#{":#{uri.port}" unless uri.port == uri.default_port}"
+          # Re-parsed because `unparse_uri` and `join_parsed_uri` build a plain `URI::Generic`, which
+          # knows no default port, and the host downcased because hosts are case-insensitive. Without
+          # both, `https://API.example.com:443` and `https://api.example.com` read as two origins, and
+          # a same-origin redirect loses its credentials.
+          uri = URI(uri.to_s)
+          "#{uri.scheme}://#{uri.host&.downcase}#{":#{uri.port}" unless uri.port == uri.default_port}"
         end
 
         # @api private
@@ -501,7 +506,7 @@ module ScalarGalaxy
       end
 
       # @type [Regexp]
-      JSON_CONTENT = %r{^application/(?:[a-zA-Z0-9.-]+\+)?json(?!l)}
+      JSON_CONTENT = %r{^application/(?:[a-zA-Z0-9.-]+\+)?json(?!l)}i
       # @type [Regexp]
       JSONL_CONTENT = %r{^application/(:?x-(?:n|l)djson)|(:?(?:x-)?jsonl)}
 
@@ -529,7 +534,9 @@ module ScalarGalaxy
           in Hash
             element.each { |name, value| write_query_param_element!(collection, "#{key}[#{name}]", value) }
           in Array
-            collection[key] = element.map(&:to_s).join(",")
+            collection[key] = element.map { _1.is_a?(Time) ? _1.iso8601 : _1.to_s }.join(",")
+          in Time
+            collection[key] = element.iso8601
           else
             collection[key] = element.to_s
           end

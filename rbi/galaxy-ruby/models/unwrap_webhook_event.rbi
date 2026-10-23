@@ -5,7 +5,7 @@ module ScalarGalaxy
     module UnwrapWebhookEvent
       extend ScalarGalaxy::Internal::Type::Union
 
-      Variants = T.type_alias { T.any(ScalarGalaxy::NewPlanetWebhookEvent) }
+      Variants = T.type_alias { ScalarGalaxy::NewPlanetWebhookEvent }
 
       sig do
         override.returns(T::Array[ScalarGalaxy::UnwrapWebhookEvent::Variants])

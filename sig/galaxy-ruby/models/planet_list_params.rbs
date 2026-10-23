@@ -1,10 +1,10 @@
 module ScalarGalaxy
   module Models
-    type planet_list_all_data_params =
+    type planet_list_params =
       { limit: Integer, offset: Integer }
       & ScalarGalaxy::Internal::Type::request_parameters
 
-    class PlanetListAllDataParams < ScalarGalaxy::Internal::Type::BaseModel
+    class PlanetListParams < ScalarGalaxy::Internal::Type::BaseModel
       extend ScalarGalaxy::Internal::Type::RequestParameters::Converter
       include ScalarGalaxy::Internal::Type::RequestParameters
 

@@ -12,7 +12,7 @@ Generated Ruby client for Scalar Galaxy API, published as `galaxy-ruby`. Use the
 Add the gem to your application's `Gemfile`:
 
 ```ruby
-gem "galaxy-ruby", "~> 0.5.0" # x-release-please-version
+gem "galaxy-ruby", "~> 0.6.0" # x-release-please-version
 ```
 
 Or install it directly:
@@ -51,7 +51,7 @@ client = ScalarGalaxy::Client.new(
   bearer_auth: ENV["BEARER_AUTH"], # defaults to the BEARER_AUTH env var
 )
 
-response = client.planets.list_all_data({ limit: 10, offset: 0 })
+response = client.planets.list({ limit: 10, offset: 0 })
 
 puts response.inspect
 ```
@@ -64,11 +64,13 @@ Non-success responses throw generated API errors. Error objects expose status, h
 
 ```ruby
 begin
-  response = client.planets.list_all_data({ limit: 10, offset: 0 })
+  response = client.planets.list({ limit: 10, offset: 0 })
 
   puts response.inspect
 rescue ScalarGalaxy::Errors::APIError => error
   puts "#{error.status}: #{error.message}"
+  puts error.request_id if error.request_id
+  puts error.problem_details if error.problem_details
   raise
 end
 ```

@@ -63,7 +63,10 @@ module ScalarGalaxy
               headers: T::Hash[String, String],
               body: T.anything,
               max_retries: Integer,
-              timeout: Float
+              timeout: Float,
+              error_url: T.nilable(URI::Generic),
+              auth_query_sent: T.nilable(T::Hash[String, T::Array[String]]),
+              left_origin: T.nilable(T::Boolean)
             }
           end
 
@@ -98,12 +101,20 @@ module ScalarGalaxy
               request:
                 ScalarGalaxy::Internal::Transport::BaseClient::RequestInput,
               status: Integer,
-              response_headers: T::Hash[String, String]
+              response_headers: T::Hash[String, String],
+              base_url: URI::Generic,
+              credential_headers: T::Array[String]
             ).returns(
               ScalarGalaxy::Internal::Transport::BaseClient::RequestInput
             )
           end
-          def follow_redirect(request, status:, response_headers:)
+          def follow_redirect(
+            request,
+            status:,
+            response_headers:,
+            base_url:,
+            credential_headers:
+          )
           end
 
           # @api private
@@ -178,6 +189,40 @@ module ScalarGalaxy
         # @api private
         sig { overridable.returns(T::Hash[String, String]) }
         private def auth_headers
+        end
+
+        # @api private
+        sig { overridable.returns(T::Array[String]) }
+        private def auth_header_keys
+        end
+
+        # @api private
+        sig { overridable.returns(T::Hash[String, String]) }
+        private def auth_query
+        end
+
+        # @api private
+        sig { overridable.returns(T::Array[String]) }
+        private def auth_query_keys
+        end
+
+        # @api private
+        sig do
+          params(url: T.nilable(URI::Generic)).returns(T.nilable(URI::Generic))
+        end
+        private def redact_url(url)
+        end
+
+        # @api private
+        sig do
+          params(
+            previous:
+              ScalarGalaxy::Internal::Transport::BaseClient::RequestInput,
+            redirected:
+              ScalarGalaxy::Internal::Transport::BaseClient::RequestInput
+          ).returns(ScalarGalaxy::Internal::Transport::BaseClient::RequestInput)
+        end
+        private def reauthorize_redirect(previous, redirected)
         end
 
         # @api private

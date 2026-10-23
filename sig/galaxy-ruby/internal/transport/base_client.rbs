@@ -29,7 +29,10 @@ module ScalarGalaxy
             headers: ::Hash[String, String],
             body: top,
             max_retries: Integer,
-            timeout: Float
+            timeout: Float,
+            ?error_url: URI::Generic?,
+            ?auth_query_sent: ::Hash[String, ::Array[String]],
+            ?left_origin: bool
           }
 
         MAX_REDIRECTS: 20
@@ -48,7 +51,9 @@ module ScalarGalaxy
         def self.follow_redirect: (
           ScalarGalaxy::Internal::Transport::BaseClient::request_input request,
           status: Integer,
-          response_headers: ::Hash[String, String]
+          response_headers: ::Hash[String, String],
+          base_url: URI::Generic,
+          credential_headers: ::Array[String]
         ) -> ScalarGalaxy::Internal::Transport::BaseClient::request_input
 
         def self.reap_connection!: (
@@ -86,6 +91,19 @@ module ScalarGalaxy
         ) -> void
 
         private def auth_headers: -> ::Hash[String, String]
+
+        private def auth_header_keys: -> ::Array[String]
+
+        private def auth_query: -> ::Hash[String, String]
+
+        private def auth_query_keys: -> ::Array[String]
+
+        private def redact_url: (URI::Generic? url) -> URI::Generic?
+
+        private def reauthorize_redirect: (
+          ScalarGalaxy::Internal::Transport::BaseClient::request_input previous,
+          ScalarGalaxy::Internal::Transport::BaseClient::request_input redirected
+        ) -> ScalarGalaxy::Internal::Transport::BaseClient::request_input
 
         private def user_agent: -> String
 

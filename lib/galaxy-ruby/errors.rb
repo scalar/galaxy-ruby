@@ -46,6 +46,28 @@ module ScalarGalaxy
       # @return [Object, nil]
       attr_accessor :body
 
+      # Request identifier exposed by common API response headers, matched case-insensitively.
+      # @return [String, nil]
+      def request_id
+        response_header("x-request-id") || response_header("request-id") ||
+          response_header("x-correlation-id")
+      end
+
+      # Parsed RFC 7807 body for application/problem+json responses, preserving extension fields.
+      # Non-object bodies and other media types are not treated as Problem Details.
+      # @return [Hash{String, Symbol=>Object}, nil]
+      def problem_details
+        media_type = response_header("content-type").to_s.split(";", 2).first.to_s.strip.downcase
+        @body if media_type == "application/problem+json" && @body.is_a?(Hash)
+      end
+
+      # Header maps supplied directly by callers need not use the transport's lowercase spelling.
+      # @param name [String]
+      # @return [String, nil]
+      private def response_header(name)
+        @headers&.find { |key, _| key.to_s.downcase == name }&.last
+      end
+
       # @api private
       #
       # @param url [URI::Generic]

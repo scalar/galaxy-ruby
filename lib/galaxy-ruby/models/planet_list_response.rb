@@ -2,8 +2,8 @@
 
 module ScalarGalaxy
   module Models
-    # @see ScalarGalaxy::Resources::Planets#list_all_data
-    class PlanetListAllDataResponse < ScalarGalaxy::Internal::Type::BaseModel
+    # @see ScalarGalaxy::Resources::Planets#list
+    class PlanetListResponse < ScalarGalaxy::Internal::Type::BaseModel
       # @!attribute data
       #
       #   @return [Array<Object>, nil]
@@ -11,14 +11,14 @@ module ScalarGalaxy
 
       # @!attribute meta
       #
-      #   @return [ScalarGalaxy::Models::PlanetListAllDataResponse::Meta, nil]
-      optional :meta, -> { ScalarGalaxy::Models::PlanetListAllDataResponse::Meta }
+      #   @return [ScalarGalaxy::Models::PlanetListResponse::Meta, nil]
+      optional :meta, -> { ScalarGalaxy::Models::PlanetListResponse::Meta }
 
       # @!method initialize(data: nil, meta: nil)
       #   @param data [Array<Object>]
-      #   @param meta [ScalarGalaxy::Models::PlanetListAllDataResponse::Meta]
+      #   @param meta [ScalarGalaxy::Models::PlanetListResponse::Meta]
 
-      # @see ScalarGalaxy::Models::PlanetListAllDataResponse#meta
+      # @see ScalarGalaxy::Models::PlanetListResponse#meta
       class Meta < ScalarGalaxy::Internal::Type::BaseModel
         # @!attribute limit
         #

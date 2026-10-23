@@ -10,7 +10,8 @@ module ScalarGalaxy
             url: URI::Generic,
             headers: ::Hash[String, String],
             body: top,
-            deadline: Float
+            deadline: Float,
+            ?error_url: URI::Generic?
           }
 
         KEEP_ALIVE_TIMEOUT: 30
