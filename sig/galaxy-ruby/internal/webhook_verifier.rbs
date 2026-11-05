@@ -1,0 +1,46 @@
+module ScalarGalaxy
+  module Errors
+    class WebhookVerificationError < ScalarGalaxy::Errors::Error
+    end
+  end
+
+  module Internal
+    module WebhookVerifier
+      SECRET_PREFIX: String
+
+      TOLERANCE_SECONDS: Integer
+
+      module LegacyRescue
+        def ===: (top other) -> bool
+      end
+
+      def self.verify!: (
+        String payload,
+        ::Hash[String | Symbol, String | ::Array[String]] headers,
+        String secret
+      ) -> void
+
+      def self.header_value: (
+        ::Hash[String | Symbol, String | ::Array[String]] headers,
+        String name
+      ) -> String?
+
+      def self.decode_secret: (String secret) -> String
+
+      def self.verify_timestamp!: (String msg_timestamp) -> void
+
+      def self.secure_compare: (
+        String expected,
+        String? signature
+      ) -> bool
+    end
+  end
+end
+
+module StandardWebhooks
+  class StandardWebhooksError < StandardError
+  end
+
+  class WebhookVerificationError < StandardWebhooksError
+  end
+end

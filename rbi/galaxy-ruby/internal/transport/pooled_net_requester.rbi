@@ -14,7 +14,8 @@ module ScalarGalaxy
               url: URI::Generic,
               headers: T::Hash[String, String],
               body: T.anything,
-              deadline: Float
+              deadline: Float,
+              error_url: T.nilable(URI::Generic)
             }
           end
 
@@ -23,6 +24,9 @@ module ScalarGalaxy
         KEEP_ALIVE_TIMEOUT = 30
 
         DEFAULT_MAX_CONNECTIONS = T.let(T.unsafe(nil), Integer)
+
+        # Most origins the requester keeps a connection pool for at once.
+        MAX_POOLS = 16
 
         class << self
           # @api private

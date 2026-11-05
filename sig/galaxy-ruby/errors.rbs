@@ -25,6 +25,12 @@ module ScalarGalaxy
 
       attr_accessor body: top?
 
+      def request_id: -> String?
+
+      def problem_details: -> ::Hash[String | Symbol, top]?
+
+      private def response_header: (String name) -> String?
+
       def initialize: (
         url: URI::Generic,
         ?status: Integer?,
@@ -112,6 +118,13 @@ module ScalarGalaxy
 
     class InternalServerError < ScalarGalaxy::Errors::APIStatusError
       HTTP_STATUS: Range[Integer]
+    end
+
+    # Raised by SDKs that verify webhook signatures through the `standardwebhooks` gem when that gem
+    # is not installed. This SDK verifies them with the standard library and never raises it; the
+    # class is declared so code that rescues or names it keeps working.
+    class MissingDependencyError < ScalarGalaxy::Errors::Error
+      def initialize: (gem_name: String, feature: String) -> void
     end
   end
 end

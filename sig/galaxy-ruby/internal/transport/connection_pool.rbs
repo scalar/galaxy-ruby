@@ -1,0 +1,19 @@
+module ScalarGalaxy
+  module Internal
+    module Transport
+      class ConnectionPool
+        def with: (timeout: Float) { (top arg0) -> top } -> top
+
+        private def checkout: (Float timeout) -> [top, Integer]
+
+        private def checkin: (top conn, Integer pid) -> void
+
+        def shutdown: { (top arg0) -> void } -> void
+
+        private def reset_after_fork: -> void
+
+        def initialize: (size: Integer) { -> top } -> void
+      end
+    end
+  end
+end

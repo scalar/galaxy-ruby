@@ -12,6 +12,10 @@ module ScalarGalaxy
         # from whatwg fetch spec
         MAX_REDIRECTS = 20
 
+        # Longest wait, in seconds, a `retry-after-ms` or `Retry-After` header may ask for before the
+        # client's own backoff is used instead.
+        MAX_RETRY_AFTER = 60
+
         # rubocop:disable Style/MutableConstant
         PLATFORM_HEADERS = {
           "x-scalar-arch" => ScalarGalaxy::Internal::Util.arch,
@@ -30,7 +34,7 @@ module ScalarGalaxy
           #
           # @raise [ArgumentError]
           def validate!(req)
-            keys = %i[method path query headers body unwrap page stream model options]
+            keys = %i[method path query headers body unwrap page stream model security options]
             case req
             in Hash
               req.each_key do |k|
@@ -68,6 +72,61 @@ module ScalarGalaxy
 
           # @api private
           #
+          # The wait in seconds a `retry-after-ms` or `Retry-After` header asks for, when it is a
+          # finite value over zero and at most {MAX_RETRY_AFTER}; otherwise `nil`, and the caller backs
+          # off on its own schedule.
+          #
+          # Both headers come from the server, so neither is trusted: a negative or past value would
+          # make `sleep` raise, and an hour or `1e400` would park the call. `Retry-After` is seconds
+          # or an HTTP date; a date that does not parse is ignored rather than raised.
+          #
+          # @param headers [Hash{String=>String}, Net::HTTPResponse]
+          #
+          # @return [Float, nil]
+          def retry_after(headers)
+            millis = Float(headers["retry-after-ms"], exception: false)
+            if millis&.finite? && millis.positive? && millis <= self::MAX_RETRY_AFTER * 1000
+              return millis / 1000
+            end
+
+            header = headers["retry-after"]
+            return nil if header.nil?
+
+            seconds = Float(header, exception: false)
+            seconds ||=
+              begin
+                Time.httpdate(header.to_s) - Time.now
+              rescue ArgumentError, RangeError
+                nil
+              end
+            seconds.to_f if seconds&.finite? && seconds.positive? && seconds <= self::MAX_RETRY_AFTER
+          end
+
+          # @api private
+          #
+          # Whether a response is a redirect the client follows: a 301, 302, 303, 307 or 308 that
+          # names a `location`, the statuses the fetch spec follows. A 300 only offers choices, a 304
+          # tells a conditional request its copy is current, and a redirect with no `location` names
+          # no target, so `send_request` treats each as the server's answer and raises it as a status
+          # error, as it does a 4xx.
+          #
+          # @param status [Integer]
+          # @param headers [Hash{String=>String}]
+          #
+          # @return [Boolean]
+          def redirect?(status, headers:)
+            case status
+            in 301 | 302 | 303 | 307 | 308
+              # Net::HTTP strips a blank `location` to "", which `URI.join` resolves to the request's
+              # own URL, so it would be re-requested until the redirect limit.
+              !headers["location"].to_s.strip.empty?
+            else
+              false
+            end
+          end
+
+          # @api private
+          #
           # @param request [Hash{Symbol=>Object}] .
           #
           #   @option request [Symbol] :method
@@ -86,13 +145,23 @@ module ScalarGalaxy
           #
           # @param response_headers [Hash{String=>String}]
           #
+          # @param base_url [URI::Generic] the client's base URL, whose origin is the only one its
+          #   credentials belong to
+          #
+          # @param credential_headers [Array<String>] lowercase names of the client's header
+          #   credentials, its `auth_header_keys`
+          #
           # @return [Hash{Symbol=>Object}]
-          def follow_redirect(request, status:, response_headers:)
+          def follow_redirect(request, status:, response_headers:, base_url:, credential_headers:)
             method, url, headers = request.fetch_values(:method, :url, :headers)
+            # `send_request` only passes a response `redirect?` accepted. The rescue covers a call
+            # handed a 3xx with no `location` (`ArgumentError`), and a `location` that is not a valid
+            # URI reference (`URI::Error`), such as one with a space or a bad `%` escape, or two
+            # `Location` headers Net::HTTP joined into "/a, /b".
             location =
               Kernel.then do
                 URI.join(url, response_headers["location"])
-              rescue ArgumentError
+              rescue ArgumentError, URI::Error
                 message = "Server responded with status #{status} but no valid location header."
                 raise ScalarGalaxy::Errors::APIConnectionError.new(
                   url: url,
@@ -133,6 +202,16 @@ module ScalarGalaxy
                ScalarGalaxy::Internal::Util.uri_origin(location)
               drop = %w[authorization cookie host proxy-authorization]
               request = {**request, headers: request.fetch(:headers).except(*drop)}
+            end
+
+            # The list above only knows the standard credential headers, so an API key sent in a
+            # header of its own (`x-api-key`) would otherwise follow any redirect to a foreign host,
+            # and a 307/308 would carry the method and body with it. The drop is sticky: nothing
+            # re-adds a header once it is gone, so a chain that returns to the client's origin after
+            # a foreign hop still arrives without it.
+            if ScalarGalaxy::Internal::Util.uri_origin(base_url) !=
+               ScalarGalaxy::Internal::Util.uri_origin(location)
+              request = {**request, headers: request.fetch(:headers).except(*credential_headers)}
             end
 
             request
@@ -223,6 +302,115 @@ module ScalarGalaxy
 
         # @api private
         #
+        # The credential headers one request is sent with, given the security requirement groups its
+        # operation passes as `security:` (`nil` for the client's default). A client that scopes its
+        # credentials per operation overrides this; every other one sends all of `auth_headers`.
+        #
+        # @param _security [Array<Array<String>>, nil]
+        #
+        # @return [Hash{String=>String}]
+        private def auth_headers_for(_security) = auth_headers
+
+        # @api private
+        #
+        # Lowercased names of every header credential `auth_headers` can write, whether or not the
+        # client holds a value for it. A redirect that leaves the base URL's origin drops these, so a
+        # key passed per call through `extra_headers` is dropped the same as one the client holds.
+        #
+        # @return [Array<String>]
+        private def auth_header_keys = []
+
+        # @api private
+        #
+        # Credentials the client sends as query parameters, merged under each request's own query
+        # so a per-request or `extra_query` value still wins.
+        #
+        # @return [Hash{String=>String}]
+        private def auth_query = {}
+
+        # @api private
+        #
+        # The query credentials one request is sent with, given the security requirement groups its
+        # operation passes as `security:`; a client that scopes its credentials per operation
+        # overrides this, every other one sends all of `auth_query`.
+        #
+        # @param _security [Array<Array<String>>, nil]
+        #
+        # @return [Hash{String=>String}]
+        private def auth_query_for(_security) = auth_query
+
+        # @api private
+        #
+        # Wire names of every query-carried credential, whether or not the client holds a value for
+        # it. Redaction and redirects key off these rather than off `auth_query`, which drops unset
+        # values: a key passed per call through `extra_query` travels under the same name.
+        #
+        # @return [Array<String>]
+        private def auth_query_keys = []
+
+        # @api private
+        #
+        # The URL with every `auth_query_keys` credential's value replaced, for anything that outlives the
+        # request: error messages and `#url`, `#inspect`, and the stream that raises from a frame. Those
+        # end up in logs and error trackers, and a query-carried key must not travel with them.
+        #
+        # @param url [URI::Generic, nil]
+        #
+        # @return [URI::Generic, nil]
+        private def redact_url(url)
+          secrets = auth_query_keys
+          return url if secrets.empty? || url.nil? || url.query.nil?
+
+          query = ScalarGalaxy::Internal::Util.decode_query(url.query)
+          secrets.each { query[_1] = ["REDACTED"] if query.key?(_1) }
+          redacted = url.dup
+          redacted.query = ScalarGalaxy::Internal::Util.encode_query(query)
+          redacted
+        end
+
+        # @api private
+        #
+        # A redirect rebuilds the URL from the `Location` header, which drops the query credential.
+        # It is merged back only while the whole chain has stayed on the client's own origin —
+        # compared with the base URL, never the previous hop. Once any hop leaves it (`left_origin`),
+        # the key is never re-sent, even to a later hop back on the API, as `follow_redirect` drops
+        # the header credentials (`Authorization`, `Cookie` and every `auth_header_keys` name) once
+        # a hop leaves it, for good; a 307/308 from a foreign host would otherwise replay the
+        # original method and body, with the key, at a path it picks.
+        # Both origins go through `Util.uri_origin`, so an explicit default port on either side
+        # (`https://api.x.com:443`) compares equal to none. The values re-sent are the ones the
+        # original request carried (a per-call `extra_query` key included), and a value the server
+        # already put in `Location` is left alone: missing credentials are appended to its query
+        # string as-is, never decoded and re-encoded, so flags, `;`, key order and signed values
+        # survive byte for byte. The error URL is refreshed either way.
+        #
+        # @param previous [Hash{Symbol=>Object}]
+        # @param redirected [Hash{Symbol=>Object}]
+        #
+        # @return [Hash{Symbol=>Object}]
+        private def reauthorize_redirect(previous, redirected)
+          sent =
+            previous.fetch(:auth_query_sent) do
+              carried = ScalarGalaxy::Internal::Util.decode_query(previous.fetch(:url).query)
+              auth_query_keys.to_h { [_1, carried[_1]] }.reject { |_, values| values.empty? }
+            end
+          to = redirected.fetch(:url)
+          left =
+            previous.fetch(:left_origin, false) ||
+            ScalarGalaxy::Internal::Util.uri_origin(to) !=
+            ScalarGalaxy::Internal::Util.uri_origin(@base_url)
+          present = ScalarGalaxy::Internal::Util.decode_query(to.query)
+          missing = left ? {} : sent.reject { |key, _| present.key?(key) }
+          unless missing.empty?
+            appended = ScalarGalaxy::Internal::Util.encode_query(missing)
+            to = to.dup
+            to.query = to.query.to_s.empty? ? appended : "#{to.query}&#{appended}"
+          end
+          {**redirected, url: to, error_url: redact_url(to), auth_query_sent: sent, left_origin: left}
+        end
+
+        # @api private
+        #
         # @return [String]
         private def user_agent = "#{self.class.name}/Ruby #{ScalarGalaxy::VERSION}"
 
@@ -253,6 +441,8 @@ module ScalarGalaxy
         #
         #   @option req [ScalarGalaxy::Internal::Type::Converter, Class, nil] :model
         #
+        #   @option req [Array<Array<String>>, nil] :security
+        #
         # @param opts [Hash{Symbol=>Object}] .
         #
         #   @option opts [String, nil] :idempotency_key
@@ -273,15 +463,25 @@ module ScalarGalaxy
 
           path = ScalarGalaxy::Internal::Util.interpolate_path(uninterpolated_path)
 
-          query = ScalarGalaxy::Internal::Util.deep_merge(req[:query].to_h, opts[:extra_query].to_h)
-
-          headers =
-            ScalarGalaxy::Internal::Util.normalized_headers(
-              @headers,
-              auth_headers,
-              req[:headers].to_h,
-              opts[:extra_headers].to_h
+          query =
+            ScalarGalaxy::Internal::Util.deep_merge(
+              auth_query_for(req[:security]),
+              req[:query].to_h,
+              opts[:extra_query].to_h
             )
+
+          # The client's defaults, its credentials and the operation's own headers each may carry a
+          # `cookie`, and a plain merge would let the operation's cookie parameters replace the
+          # credential cookie. Those three are merged by cookie name instead; `extra_headers` still
+          # replaces the whole header, as it replaces any other.
+          sources =
+            [@headers, auth_headers_for(req[:security]), req[:headers].to_h].map do
+              ScalarGalaxy::Internal::Util.normalized_headers(_1)
+            end
+          merged = ScalarGalaxy::Internal::Util.normalized_headers(*sources)
+          cookie = ScalarGalaxy::Internal::Util.merge_cookies(*sources.map { _1["cookie"] })
+          merged["cookie"] = cookie unless cookie.nil?
+          headers = ScalarGalaxy::Internal::Util.normalized_headers(merged, opts[:extra_headers].to_h)
 
           if @idempotency_header && !headers.key?(@idempotency_header) &&
              (!Net::HTTP::IDEMPOTENT_METHODS_.include?(method.to_s.upcase) || opts.key?(:idempotency_key))
@@ -317,6 +517,7 @@ module ScalarGalaxy
           {
             method: method,
             url: url,
+            error_url: redact_url(url),
             headers: headers,
             body: encoded,
             max_retries: opts.fetch(:max_retries, @max_retries),
@@ -331,20 +532,8 @@ module ScalarGalaxy
         #
         # @return [Float]
         private def retry_delay(headers, retry_count:)
-          # Non-standard extension
-          span = Float(headers["retry-after-ms"], exception: false)&.then { _1 / 1000 }
-          return span if span
-
-          retry_header = headers["retry-after"]
-          return span if (span = Float(retry_header, exception: false))
-
-          span =
-            retry_header&.then do
-              Time.httpdate(_1) - Time.now
-            rescue ArgumentError
-              nil
-            end
-          return span if span
+          asked = self.class.retry_after(headers)
+          return asked if asked
 
           scale = retry_count**2
           jitter = 1 - (0.25 * rand)
@@ -391,18 +580,30 @@ module ScalarGalaxy
           end
           headers = ScalarGalaxy::Internal::Util.normalized_headers(response&.each_header&.to_h)
 
+          redirect = status.is_a?(Integer) && self.class.redirect?(status, headers: headers)
+
           case status
           in ..299
             [status, response, stream]
-          in 300..399 if redirect_count >= self.class::MAX_REDIRECTS
+          in Integer if redirect && redirect_count >= self.class::MAX_REDIRECTS
             self.class.reap_connection!(status, stream: stream)
 
             message = "Failed to complete the request within #{self.class::MAX_REDIRECTS} redirects."
             raise ScalarGalaxy::Errors::APIConnectionError.new(url: url, response: response, message: message)
-          in 300..399
+          in Integer if redirect
             self.class.reap_connection!(status, stream: stream)
 
-            request = self.class.follow_redirect(request, status: status, response_headers: headers)
+            request =
+              reauthorize_redirect(
+                request,
+                self.class.follow_redirect(
+                  request,
+                  status: status,
+                  response_headers: headers,
+                  base_url: @base_url,
+                  credential_headers: auth_header_keys
+                )
+              )
             send_request(
               request,
               redirect_count: redirect_count + 1,
@@ -411,23 +612,32 @@ module ScalarGalaxy
             )
           in ScalarGalaxy::Errors::APIConnectionError if retry_count >= max_retries
             raise status
-          in (400..) if retry_count >= max_retries || !self.class.should_retry?(status, headers: headers)
+            # Any other 3xx — a 304 answering a conditional request, a 300, a redirect status without a
+            # `location` — is the server's answer rather than a hop, so it fails as a status error, like a 4xx.
+          in (300..) if retry_count >= max_retries || !self.class.should_retry?(status, headers: headers)
+            # Read only for the error's `body`, so only its first `MAX_ERROR_BODY_BYTES` are kept and
+            # the rest is never read: a server cannot make an error cost more than that in memory.
             decoded =
               Kernel.then do
-                ScalarGalaxy::Internal::Util.decode_content(headers, stream: stream, suppress_error: true)
+                ScalarGalaxy::Internal::Util.decode_content(
+                  headers,
+                  stream: stream,
+                  suppress_error: true,
+                  truncate_at: ScalarGalaxy::Internal::Util::MAX_ERROR_BODY_BYTES
+                )
               ensure
                 self.class.reap_connection!(status, stream: stream)
               end
 
             raise ScalarGalaxy::Errors::APIStatusError.for(
-              url: url,
+              url: request.fetch(:error_url, url),
               status: status,
               headers: headers,
               body: decoded,
               request: nil,
               response: response
             )
-          in 400.. | ScalarGalaxy::Errors::APIConnectionError
+          in 300.. | ScalarGalaxy::Errors::APIConnectionError
             self.class.reap_connection!(status, stream: stream)
 
             delay = retry_delay(response || {}, retry_count: retry_count)
@@ -493,15 +703,25 @@ module ScalarGalaxy
           # Don't send the current retry count in the headers if the caller modified the header defaults.
           send_retry_header = request.fetch(:headers)["x-scalar-retry-count"] == "0"
           status, response, stream =
-            send_request(request, redirect_count: 0, retry_count: 0, send_retry_header: send_retry_header)
+            begin
+              send_request(request, redirect_count: 0, retry_count: 0, send_retry_header: send_retry_header)
+            rescue ScalarGalaxy::Errors::APIError => e
+              # Connection, timeout and redirect errors are raised with the dialed URL; their messages
+              # carry none, so redacting the attribute is enough.
+              e.url = redact_url(e.url)
+              raise
+            end
 
           headers = ScalarGalaxy::Internal::Util.normalized_headers(response.each_header.to_h)
-          decoded = ScalarGalaxy::Internal::Util.decode_content(headers, stream: stream)
+          # Only an operation declared to return raw bytes reads its body whole; every other buffered
+          # body is capped, since the response's own content type cannot be trusted to say which it is.
+          decoded =
+            ScalarGalaxy::Internal::Util.decode_content(headers, stream: stream, download: model == StringIO)
           case req
           in stream: Class => st
             st.new(
               model: model,
-              url: url,
+              url: request.fetch(:error_url, url),
               status: status,
               headers: headers,
               response: response,

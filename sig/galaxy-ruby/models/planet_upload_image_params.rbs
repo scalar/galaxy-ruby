@@ -1,10 +1,10 @@
 module ScalarGalaxy
   module Models
-    type planet_delte_image_params =
+    type planet_upload_image_params =
       { planet_id: Integer, image: ScalarGalaxy::Internal::file_input }
       & ScalarGalaxy::Internal::Type::request_parameters
 
-    class PlanetDelteImageParams < ScalarGalaxy::Internal::Type::BaseModel
+    class PlanetUploadImageParams < ScalarGalaxy::Internal::Type::BaseModel
       extend ScalarGalaxy::Internal::Type::RequestParameters::Converter
       include ScalarGalaxy::Internal::Type::RequestParameters
 

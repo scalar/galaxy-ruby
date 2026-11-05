@@ -46,6 +46,28 @@ module ScalarGalaxy
       # @return [Object, nil]
       attr_accessor :body
 
+      # Request identifier exposed by common API response headers, matched case-insensitively.
+      # @return [String, nil]
+      def request_id
+        response_header("x-request-id") || response_header("request-id") ||
+          response_header("x-correlation-id")
+      end
+
+      # Parsed RFC 7807 body for application/problem+json responses, preserving extension fields.
+      # Non-object bodies and other media types are not treated as Problem Details.
+      # @return [Hash{String, Symbol=>Object}, nil]
+      def problem_details
+        media_type = response_header("content-type").to_s.split(";", 2).first.to_s.strip.downcase
+        @body if media_type == "application/problem+json" && @body.is_a?(Hash)
+      end
+
+      # Header maps supplied directly by callers need not use the transport's lowercase spelling.
+      # @param name [String]
+      # @return [String, nil]
+      private def response_header(name)
+        @headers&.find { |key, _| key.to_s.downcase == name }&.last
+      end
+
       # @api private
       #
       # @param url [URI::Generic]
@@ -222,6 +244,24 @@ module ScalarGalaxy
 
     class InternalServerError < ScalarGalaxy::Errors::APIStatusError
       HTTP_STATUS = (500..)
+    end
+
+    # Raised by SDKs that verify webhook signatures through the `standardwebhooks` gem when that gem
+    # is not installed. This SDK verifies them with the standard library and never raises it; the
+    # class is declared so code that rescues or names it keeps working.
+    class MissingDependencyError < ScalarGalaxy::Errors::Error
+      # @api private
+      #
+      # @param gem_name [String]
+      # @param feature [String]
+      def initialize(gem_name:, feature:)
+        message = [
+          "The '#{gem_name}' gem is required to use #{feature}.",
+          "Install it with: gem install #{gem_name}",
+          "Or add it to your Gemfile: gem '#{gem_name}'"
+        ].join("\n")
+        super(message)
+      end
     end
   end
 end

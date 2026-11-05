@@ -46,6 +46,14 @@ module ScalarGalaxy
     sig { returns(T.nilable(String)) }
     attr_reader :webhook_secret
 
+    # @api private
+    #
+    # The `webhook_secret` passed to the constructor, or `nil` when it was left to
+    # default to `ENV["SCALAR_WEBHOOK_SECRET"]`. The webhook helpers read that
+    # variable again on every call, so only a value passed here outranks it.
+    sig { returns(T.nilable(String)) }
+    attr_reader :explicit_webhook_secret
+
     # Everything about planets
     sig { returns(ScalarGalaxy::Resources::Planets) }
     attr_reader :planets
@@ -65,6 +73,21 @@ module ScalarGalaxy
     # @api private
     sig { override.returns(T::Hash[String, String]) }
     private def auth_headers
+    end
+
+    # @api private
+    sig { override.returns(T::Array[String]) }
+    private def auth_header_keys
+    end
+
+    # @api private
+    sig { override.returns(T::Hash[String, String]) }
+    private def auth_query
+    end
+
+    # @api private
+    sig { override.returns(T::Array[String]) }
+    private def auth_query_keys
     end
 
     # Creates and returns a new client for interacting with the API.

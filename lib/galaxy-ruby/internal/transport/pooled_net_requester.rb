@@ -13,6 +13,9 @@ module ScalarGalaxy
 
         DEFAULT_MAX_CONNECTIONS = [Etc.nprocessors, 99].max
 
+        # Most origins the requester keeps a connection pool for at once.
+        MAX_POOLS = 16
+
         class << self
           # @api private
           #
@@ -105,12 +108,25 @@ module ScalarGalaxy
         private def with_pool(url, deadline:, &blk)
           origin = ScalarGalaxy::Internal::Util.uri_origin(url)
           timeout = deadline - ScalarGalaxy::Internal::Util.monotonic_secs
+          # One pool per origin, created on first use. `@mutex` only guards the lookup: waiting for a
+          # connection happens in the pool, so a full pool for one origin never blocks another's.
+          evicted = nil
           pool =
             @mutex.synchronize do
-              @pools[origin] ||= ConnectionPool.new(size: @size) do
-                self.class.connect(cert_store: @cert_store, url: url)
-              end
+              # Re-inserted on every use, so the hash's insertion order is least recently used first.
+              found = @pools.delete(origin)
+              found ||=
+                ScalarGalaxy::Internal::Transport::ConnectionPool.new(size: @size) do
+                  self.class.connect(cert_store: @cert_store, url: url)
+                end
+              # Origins come from redirects and next-page links as well as the base URL, so a server
+              # could otherwise name a new one on every response and hold a socket open for each.
+              # Past `MAX_POOLS` the least recently used pool is shut down.
+              evicted = @pools.shift&.last if @pools.size >= self.class::MAX_POOLS
+              @pools[origin] = found
             end
+          # Outside `@mutex`, since closing a connection can wait on the network.
+          evicted&.shutdown { _1.finish if _1.started? }
 
           pool.with(timeout: timeout, &blk)
         end
@@ -133,7 +149,6 @@ module ScalarGalaxy
         def execute(request)
           url, deadline = request.fetch_values(:url, :deadline)
 
-          req = nil
           finished = false
 
           # rubocop:disable Metrics/BlockLength
@@ -181,10 +196,18 @@ module ScalarGalaxy
                   end
                 end
               end
+              # `request: nil`, as every other error site passes: the built request carries the client's
+              # credential headers, and an error is the kind of object that gets logged or inspected.
             rescue Timeout::Error
-              raise ScalarGalaxy::Errors::APITimeoutError.new(url: url, request: req)
+              raise ScalarGalaxy::Errors::APITimeoutError.new(
+                url: request.fetch(:error_url, url),
+                request: nil
+              )
             rescue StandardError
-              raise ScalarGalaxy::Errors::APIConnectionError.new(url: url, request: req)
+              raise ScalarGalaxy::Errors::APIConnectionError.new(
+                url: request.fetch(:error_url, url),
+                request: nil
+              )
             end
           # rubocop:enable Metrics/BlockLength
 

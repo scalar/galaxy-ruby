@@ -12,6 +12,8 @@ Gem::Specification.new do |spec|
   spec.metadata = {
     "homepage_uri" => "https://github.com/scalar/galaxy-ruby",
     "source_code_uri" => "https://github.com/scalar/galaxy-ruby",
+    "bug_tracker_uri" => "https://github.com/scalar/galaxy-ruby/issues",
+    "changelog_uri" => "https://github.com/scalar/galaxy-ruby/blob/main/CHANGELOG.md",
     "rubygems_mfa_required" => "false"
   }
   spec.files = Dir[
@@ -29,8 +31,4 @@ Gem::Specification.new do |spec|
   spec.extra_rdoc_files = ["README.md"]
   spec.require_paths = ["lib"]
   spec.required_ruby_version = ">= 3.2"
-  spec.add_dependency "base64"
-  spec.add_dependency "cgi"
-  spec.add_dependency "connection_pool"
-  spec.add_dependency "standardwebhooks"
 end

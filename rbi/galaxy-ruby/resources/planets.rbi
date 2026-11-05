@@ -8,7 +8,6 @@ module ScalarGalaxy
       # much. What could go wrong anyway?
       sig do
         params(
-          id: Integer,
           name: String,
           atmosphere: T::Array[ScalarGalaxy::Planet::Atmosphere::OrHash],
           creator: ScalarGalaxy::User::OrHash,
@@ -17,7 +16,6 @@ module ScalarGalaxy
           failure_callback_url: String,
           habitability_index: Float,
           image: T.nilable(String),
-          last_updated: Time,
           physical_properties: ScalarGalaxy::Planet::PhysicalProperties::OrHash,
           satellites: T::Array[T.anything],
           success_callback_url: String,
@@ -27,7 +25,6 @@ module ScalarGalaxy
         ).returns(ScalarGalaxy::Planet)
       end
       def create(
-        id:,
         name:,
         # Atmospheric composition
         atmosphere: nil,
@@ -40,7 +37,6 @@ module ScalarGalaxy
         # A score from 0 to 1 indicating potential habitability
         habitability_index: nil,
         image: nil,
-        last_updated: nil,
         physical_properties: nil,
         satellites: nil,
         # URL which gets invoked upon a successful operation
@@ -71,7 +67,6 @@ module ScalarGalaxy
       sig do
         params(
           planet_id: Integer,
-          id: Integer,
           name: String,
           atmosphere: T::Array[ScalarGalaxy::Planet::Atmosphere::OrHash],
           creator: ScalarGalaxy::User::OrHash,
@@ -80,7 +75,6 @@ module ScalarGalaxy
           failure_callback_url: String,
           habitability_index: Float,
           image: T.nilable(String),
-          last_updated: Time,
           physical_properties: ScalarGalaxy::Planet::PhysicalProperties::OrHash,
           satellites: T::Array[T.anything],
           success_callback_url: String,
@@ -92,7 +86,6 @@ module ScalarGalaxy
       def update(
         # The ID of the planet to get
         planet_id,
-        id:,
         name:,
         # Atmospheric composition
         atmosphere: nil,
@@ -105,13 +98,30 @@ module ScalarGalaxy
         # A score from 0 to 1 indicating potential habitability
         habitability_index: nil,
         image: nil,
-        last_updated: nil,
         physical_properties: nil,
         satellites: nil,
         # URL which gets invoked upon a successful operation
         success_callback_url: nil,
         tags: nil,
         type: nil,
+        request_options: {}
+      )
+      end
+
+      # It's easy to say you know them all, but do you really? Retrieve all the planets
+      # and check whether you missed one.
+      sig do
+        params(
+          limit: Integer,
+          offset: Integer,
+          request_options: ScalarGalaxy::RequestOptions::OrHash
+        ).returns(ScalarGalaxy::Models::PlanetListResponse)
+      end
+      def list(
+        # The number of items to return
+        limit: nil,
+        # The number of items to skip before starting to collect the result set
+        offset: nil,
         request_options: {}
       )
       end
@@ -138,31 +148,13 @@ module ScalarGalaxy
           planet_id: Integer,
           image: ScalarGalaxy::Internal::FileInput,
           request_options: ScalarGalaxy::RequestOptions::OrHash
-        ).returns(ScalarGalaxy::Models::PlanetDelteImageResponse)
+        ).returns(ScalarGalaxy::Models::PlanetUploadImageResponse)
       end
-      def delte_image(
+      def upload_image(
         # The ID of the planet to get
         planet_id,
         # The image file to upload
         image: nil,
-        request_options: {}
-      )
-      end
-
-      # It's easy to say you know them all, but do you really? Retrieve all the planets
-      # and check whether you missed one.
-      sig do
-        params(
-          limit: Integer,
-          offset: Integer,
-          request_options: ScalarGalaxy::RequestOptions::OrHash
-        ).returns(ScalarGalaxy::Models::PlanetListAllDataResponse)
-      end
-      def list_all_data(
-        # The number of items to return
-        limit: nil,
-        # The number of items to skip before starting to collect the result set
-        offset: nil,
         request_options: {}
       )
       end

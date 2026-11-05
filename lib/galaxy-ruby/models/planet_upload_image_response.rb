@@ -2,8 +2,8 @@
 
 module ScalarGalaxy
   module Models
-    # @see ScalarGalaxy::Resources::Planets#delte_image
-    class PlanetDelteImageResponse < ScalarGalaxy::Internal::Type::BaseModel
+    # @see ScalarGalaxy::Resources::Planets#upload_image
+    class PlanetUploadImageResponse < ScalarGalaxy::Internal::Type::BaseModel
       # @!attribute file_size
       #   Size of the uploaded image in bytes
       #

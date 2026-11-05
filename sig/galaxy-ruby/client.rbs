@@ -31,6 +31,8 @@ module ScalarGalaxy
 
     attr_reader webhook_secret: String?
 
+    attr_reader explicit_webhook_secret: String?
+
     attr_reader planets: ScalarGalaxy::Resources::Planets
 
     attr_reader celestial_bodies: ScalarGalaxy::Resources::CelestialBodies
@@ -40,6 +42,12 @@ module ScalarGalaxy
     attr_reader webhooks: ScalarGalaxy::Resources::Webhooks
 
     private def auth_headers: -> ::Hash[String, String]
+
+    private def auth_header_keys: -> ::Array[String]
+
+    private def auth_query: -> ::Hash[String, String]
+
+    private def auth_query_keys: -> ::Array[String]
 
     def initialize: (
       ?bearer_auth: String?,

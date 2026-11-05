@@ -1,6 +1,6 @@
 module ScalarGalaxy
   module Models
-    type planet_delte_image_response =
+    type planet_upload_image_response =
       {
         file_size: Integer,
         image_url: String,
@@ -9,7 +9,7 @@ module ScalarGalaxy
         uploaded_at: Time
       }
 
-    class PlanetDelteImageResponse < ScalarGalaxy::Internal::Type::BaseModel
+    class PlanetUploadImageResponse < ScalarGalaxy::Internal::Type::BaseModel
       attr_reader file_size: Integer?
 
       def file_size=: (Integer) -> Integer

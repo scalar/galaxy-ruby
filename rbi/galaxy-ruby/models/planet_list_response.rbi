@@ -2,39 +2,35 @@
 
 module ScalarGalaxy
   module Models
-    class PlanetListAllDataResponse < ScalarGalaxy::Internal::Type::BaseModel
+    class PlanetListResponse < ScalarGalaxy::Internal::Type::BaseModel
       OrHash =
         T.type_alias do
           T.any(
-            ScalarGalaxy::Models::PlanetListAllDataResponse,
+            ScalarGalaxy::Models::PlanetListResponse,
             ScalarGalaxy::Internal::AnyHash
           )
         end
 
-      sig { returns(T.nilable(T::Array[T.anything])) }
+      sig { returns(T.nilable(T::Array[ScalarGalaxy::Planet])) }
       attr_reader :data
 
-      sig { params(data: T::Array[T.anything]).void }
+      sig { params(data: T::Array[ScalarGalaxy::Planet::OrHash]).void }
       attr_writer :data
 
-      sig do
-        returns(
-          T.nilable(ScalarGalaxy::Models::PlanetListAllDataResponse::Meta)
-        )
-      end
+      sig { returns(T.nilable(ScalarGalaxy::Models::PlanetListResponse::Meta)) }
       attr_reader :meta
 
       sig do
         params(
-          meta: ScalarGalaxy::Models::PlanetListAllDataResponse::Meta::OrHash
+          meta: ScalarGalaxy::Models::PlanetListResponse::Meta::OrHash
         ).void
       end
       attr_writer :meta
 
       sig do
         params(
-          data: T::Array[T.anything],
-          meta: ScalarGalaxy::Models::PlanetListAllDataResponse::Meta::OrHash
+          data: T::Array[ScalarGalaxy::Planet::OrHash],
+          meta: ScalarGalaxy::Models::PlanetListResponse::Meta::OrHash
         ).returns(T.attached_class)
       end
       def self.new(data: nil, meta: nil)
@@ -43,8 +39,8 @@ module ScalarGalaxy
       sig do
         override.returns(
           {
-            data: T::Array[T.anything],
-            meta: ScalarGalaxy::Models::PlanetListAllDataResponse::Meta
+            data: T::Array[ScalarGalaxy::Planet],
+            meta: ScalarGalaxy::Models::PlanetListResponse::Meta
           }
         )
       end
@@ -55,7 +51,7 @@ module ScalarGalaxy
         OrHash =
           T.type_alias do
             T.any(
-              ScalarGalaxy::Models::PlanetListAllDataResponse::Meta,
+              ScalarGalaxy::Models::PlanetListResponse::Meta,
               ScalarGalaxy::Internal::AnyHash
             )
           end

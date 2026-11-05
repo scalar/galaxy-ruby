@@ -6,7 +6,7 @@ target(:lib) do
   configure_code_diagnostics(Steep::Diagnostic::Ruby.strict)
 
   # Signatures only, so the manifest below is all this needs. Adding `check("lib")` would also mean
-  # loading the libraries the runtime itself calls into (`cgi`, `erb`, `json`, `securerandom`).
+  # loading the libraries the runtime itself calls into (`erb`, `json`, `securerandom`, `timeout`).
   signature("sig")
 
   # `sig/manifest.yaml` ships in the gem for `rbs collection`; reading it back here keeps a local

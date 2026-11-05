@@ -250,7 +250,12 @@ module ScalarGalaxy
         #
         # @return [String]
         def uri_origin(uri)
-          "#{uri.scheme}://#{uri.host}#{":#{uri.port}" unless uri.port == uri.default_port}"
+          # Re-parsed because `unparse_uri` and `join_parsed_uri` build a plain `URI::Generic`, which
+          # knows no default port, and the host downcased because hosts are case-insensitive. Without
+          # both, `https://API.example.com:443` and `https://api.example.com` read as two origins, and
+          # a same-origin redirect loses its credentials.
+          uri = URI(uri.to_s)
+          "#{uri.scheme}://#{uri.host&.downcase}#{":#{uri.port}" unless uri.port == uri.default_port}"
         end
 
         # @api private
@@ -264,8 +269,19 @@ module ScalarGalaxy
 
         # @api private
         #
+        # Fills a path template with its encoded parameters, refusing a value that would address a
+        # different endpoint than the one the method names.
+        #
+        # Encoding stops a value from adding `/`, `?` or `#`, but not from being a whole segment of its
+        # own: `URI.join` resolves a `.` or `..` segment away, so a `..` id would send the request, with
+        # the client's credentials, to the parent resource, and an empty value silently addresses the
+        # parent collection. Both are refused before any request is built. The assembled path is
+        # checked as well as each value, because values that pass alone can combine (`{a}{b}` with two
+        # `.`s). A `%2e` spelling is not a dot segment here: `encode_path` escapes its `%`.
+        #
         # @param path [String, Array<String>]
         #
+        # @raise [ArgumentError]
         # @return [String]
         def interpolate_path(path)
           case path
@@ -275,7 +291,21 @@ module ScalarGalaxy
             ""
           in [String => p, *interpolations]
             encoded = interpolations.map { encode_path(_1) }
-            format(p, *encoded)
+            if encoded.any?(&:empty?)
+              raise ArgumentError.new(
+                "A path parameter in `#{p}` is empty, which would address a different endpoint."
+              )
+            end
+
+            assembled = format(p, *encoded)
+            # Only the path takes part in dot-segment removal, not a query the template carries.
+            segment = assembled.split(/[?#]/, 2).first.to_s.split("/").find { %w[. ..].include?(_1) }
+            unless segment.nil?
+              message =
+                "The request path `#{assembled}` contains a #{segment.inspect} segment, which would address a different endpoint."
+              raise ArgumentError.new(message)
+            end
+            assembled
           end
         end
       end
@@ -287,7 +317,43 @@ module ScalarGalaxy
         #
         # @return [Hash{String=>Array<String>}]
         def decode_query(query)
-          CGI.parse(query.to_s)
+          # Pairs split on `;` as well as `&`, empty pairs are skipped, and a key with no `=` maps to
+          # `[]` rather than `[""]`, so a bare flag survives as a key without gaining a value.
+          # `URI.decode_www_form` does none of those, and on Ruby 3.2 it also swaps bytes that are not
+          # UTF-8 for U+FFFD, which would rewrite a query value the client re-sends.
+          pairs = query.to_s.split(/[&;]/)
+          decoded = {}
+          pairs.each do |pair|
+            key, value = pair.split("=", 2).map { unescape_query_component(_1) }
+            next if key.nil?
+
+            values = (decoded[key] ||= [])
+            values << value unless value.nil?
+          end
+          # Callers read absent keys as "no values" (`decoded[key].empty?`), so a miss is `[]`. Frozen,
+          # so an `<<` on a miss raises instead of writing into the one array every miss shares.
+          decoded.default = [].freeze
+          decoded
+        end
+
+        # @api private
+        #
+        # `+` is a space, and each run of `%XX` escapes becomes the bytes it encodes. A `%` that starts
+        # no valid escape is kept as written rather than raising. The result is UTF-8 when its bytes
+        # are, else it keeps the input's encoding.
+        #
+        # `CGI.unescape` stops decoding at a `%` in a component's last two bytes, which leaves a
+        # trailing `%+` as written; that one case is kept, so no decoded value changes.
+        #
+        # @param component [String]
+        #
+        # @return [String]
+        private def unescape_query_component(component)
+          bytes = component.b
+          kept = bytes.end_with?("%+") ? bytes.slice!(-1..) : ""
+          unescaped = bytes.tr("+", " ").gsub(/(?:%\h\h)+/) { [_1.delete("%")].pack("H*") } << kept
+          unescaped.force_encoding(Encoding::UTF_8)
+          unescaped.valid_encoding? ? unescaped : unescaped.force_encoding(component.encoding)
         end
 
         # @api private
@@ -398,6 +464,48 @@ module ScalarGalaxy
               [key.downcase, value]
             end
         end
+
+        # @api private
+        #
+        # A cookie value percent-encoded the way `encodeURIComponent` encodes one, byte by byte.
+        #
+        # A cookie parameter is caller input, often end-user input, and the `Cookie` header gives `;`,
+        # `,`, whitespace, `"` and `\` meaning: left raw, `x; sid=evil` would add a cookie of its own and
+        # could stand in for the client's credential cookie.
+        #
+        # @param value [Object]
+        #
+        # @return [String]
+        def encode_cookie_value(value)
+          value.to_s.b.gsub(/[^A-Za-z0-9\-_.!~*'()]/n) { format("%%%02X", _1.ord) }
+        end
+
+        # @api private
+        #
+        # Joins `Cookie` header values into one, by cookie name: a later value replaces an earlier
+        # cookie of the same name and adds the rest, in the order they first appeared.
+        #
+        # The client's credential cookie and an operation's cookie parameters arrive as separate
+        # `cookie` headers, and a plain header merge would let the operation's replace the credential's
+        # outright. Merging by name keeps both, while an operation parameter that shares the
+        # credential's name still replaces that one cookie.
+        #
+        # @param values [Array<String, nil>]
+        #
+        # @return [String, nil]
+        def merge_cookies(*values)
+          merged = {}
+          values.each do |value|
+            value
+              .to_s
+              .split(";")
+              .each do |pair|
+                name = pair.split("=", 2).first.to_s.strip
+                merged[name] = pair.strip unless name.empty?
+              end
+          end
+          merged.empty? ? nil : merged.values.join("; ")
+        end
       end
 
       # @api private
@@ -501,9 +609,22 @@ module ScalarGalaxy
       end
 
       # @type [Regexp]
-      JSON_CONTENT = %r{^application/(?:[a-zA-Z0-9.-]+\+)?json(?!l)}
+      JSON_CONTENT = %r{^application/(?:[a-zA-Z0-9.-]+\+)?json(?!l)}i
       # @type [Regexp]
       JSONL_CONTENT = %r{^application/(:?x-(?:n|l)djson)|(:?(?:x-)?jsonl)}
+
+      # Most bytes of a response body the SDK holds to decode it, counted after decompression.
+      # @type [Integer]
+      MAX_BUFFERED_BODY_BYTES = 64 * 1024 * 1024
+
+      # Most bytes of an error response read for the error's `body`; the rest is never read.
+      # @type [Integer]
+      MAX_ERROR_BODY_BYTES = 64 * 1024
+
+      # Most bytes one pending stream line or server-sent event may hold before the stream fails, so
+      # a server that never ends one cannot grow the buffer without bound.
+      # @type [Integer]
+      MAX_PENDING_STREAM_BYTES = 64 * 1024 * 1024
 
       class << self
         # @api private
@@ -529,7 +650,9 @@ module ScalarGalaxy
           in Hash
             element.each { |name, value| write_query_param_element!(collection, "#{key}[#{name}]", value) }
           in Array
-            collection[key] = element.map(&:to_s).join(",")
+            collection[key] = element.map { _1.is_a?(Time) ? _1.iso8601 : _1.to_s }.join(",")
+          in Time
+            collection[key] = element.iso8601
           else
             collection[key] = element.to_s
           end
@@ -572,6 +695,20 @@ module ScalarGalaxy
 
         # @api private
         #
+        # A multipart field name escaped for its quoted `name` parameter: `"` as `%22`, a backslash
+        # doubled, and every C0 control but ESC as `%XX`. A body hash can carry a caller's keys, and
+        # left raw a `"` would end the quoted name early and a CR or LF would start a part header of
+        # its own.
+        #
+        # @param name [Symbol, String]
+        #
+        # @return [String]
+        def encode_form_name(name)
+          name.to_s.gsub(/["\\\x00-\x1A\x1C-\x1F]/) { _1 == "\\" ? "\\\\" : format("%%%02X", _1.ord) }
+        end
+
+        # @api private
+        #
         # @param y [Enumerator::Yielder]
         # @param boundary [String]
         # @param key [Symbol, String]
@@ -581,13 +718,13 @@ module ScalarGalaxy
           y << "--#{boundary}\r\n"
           y << "Content-Disposition: form-data"
 
-          y << "; name=\"#{key}\"" unless key.nil?
+          y << "; name=\"#{encode_form_name(key)}\"" unless key.nil?
 
           case val
           in ScalarGalaxy::FilePart unless val.filename.nil?
             filename = encode_path(val.filename)
             y << "; filename=\"#{filename}\""
-          in Pathname | IO
+          in Pathname | IO if val.respond_to?(:to_path)
             filename = encode_path(::File.basename(val.to_path))
             y << "; filename=\"#{filename}\""
           else
@@ -637,6 +774,41 @@ module ScalarGalaxy
 
         # @api private
         #
+        # A form body is encoded the way the query string is, through `encode_query_params`, so a list
+        # follows the configured array format and an object nests as `key[name]`. A form has no file
+        # parts, so a file value goes out as its contents, the way a string field would.
+        #
+        # @param body [Hash{Symbol=>Object}]
+        #
+        # @return [String]
+        def encode_form(body)
+          URI.encode_www_form(encode_query_params(form_field_value(body)))
+        end
+
+        # @api private
+        #
+        # @param value [Object]
+        #
+        # @return [Object]
+        private def form_field_value(value)
+          case value
+          in Hash
+            value.transform_values { form_field_value(_1) }
+          in Array
+            value.map { form_field_value(_1) }
+          in ScalarGalaxy::FilePart
+            form_field_value(value.content)
+          in StringIO
+            value.string
+          in IO | Pathname
+            value.read
+          else
+            value
+          end
+        end
+
+        # @api private
+        #
         # @param headers [Hash{String=>String}]
         # @param body [Object]
         #
@@ -652,6 +824,8 @@ module ScalarGalaxy
                Enumerable
              ] unless ScalarGalaxy::Internal::Type::FileInput === body
             [headers, body.lazy.map { JSON.generate(_1) }]
+          in [%r{^application/x-www-form-urlencoded}i, Hash]
+            [headers, encode_form(body)]
           in [%r{^multipart/form-data}, Hash | ScalarGalaxy::Internal::Type::FileInput]
             boundary, strio = encode_multipart_streaming(body)
             headers = {**headers, "content-type" => "#{content_type}; boundary=#{boundary}"}
@@ -689,18 +863,66 @@ module ScalarGalaxy
 
         # @api private
         #
+        # Reads a body into one string, holding at most `limit` bytes of it.
+        #
+        # The chunks are counted as they arrive, after `Net::HTTP` has inflated a `gzip` or `deflate`
+        # body, so a small compressed response cannot inflate past the limit in memory. Over the limit
+        # a body is either refused or, with `truncate`, cut at the limit and the rest left unread;
+        # leaving the iteration early closes the connection rather than draining it.
+        #
+        # @param stream [Enumerable<String>]
+        # @param limit [Integer]
+        # @param truncate [Boolean]
+        #
+        # @raise [ScalarGalaxy::Errors::Error] when the body is over `limit` and `truncate` is false
+        # @return [String]
+        def read_body(stream, limit:, truncate: false)
+          body = String.new
+          stream.each do |chunk|
+            room = limit - body.bytesize
+            if chunk.bytesize > room
+              unless truncate
+                message = "The response body is larger than the #{limit}-byte limit for a buffered response."
+                raise ScalarGalaxy::Errors::Error.new(message)
+              end
+
+              body << chunk.byteslice(0, room)
+              break
+            end
+            body << chunk
+          end
+          body
+        end
+
+        # @api private
+        #
         # Assumes each chunk in stream has `Encoding::BINARY`.
+        #
+        # A buffered body is held to {MAX_BUFFERED_BODY_BYTES}, whatever its type: the type is the
+        # server's word, so a JSON answer labelled `text/plain` (or not labelled) must not escape the
+        # limit. Only `download` lifts it, and the caller sets that from the operation's declared
+        # binary model, never from the response. With `truncate_at` (an error response, read only for
+        # its message) every buffered type keeps at most that many bytes.
         #
         # @param headers [Hash{String=>String}]
         # @param stream [Enumerable<String>]
         # @param suppress_error [Boolean]
+        # @param truncate_at [Integer, nil]
+        # @param download [Boolean] the operation returns raw bytes the caller asked for
         #
         # @raise [JSON::ParserError]
+        # @raise [ScalarGalaxy::Errors::Error] when a buffered body is over the buffered-body limit
         # @return [Object]
-        def decode_content(headers, stream:, suppress_error: false)
+        def decode_content(headers, stream:, suppress_error: false, truncate_at: nil, download: false)
           case (content_type = headers["content-type"])
           in ScalarGalaxy::Internal::Util::JSON_CONTENT
-            return nil if (json = stream.to_a.join).empty?
+            json =
+              if truncate_at.nil?
+                read_body(stream, limit: ScalarGalaxy::Internal::Util::MAX_BUFFERED_BODY_BYTES)
+              else
+                read_body(stream, limit: truncate_at, truncate: true)
+              end
+            return nil if json.empty?
 
             begin
               JSON.parse(json, symbolize_names: true)
@@ -721,7 +943,14 @@ module ScalarGalaxy
             lines = decode_lines(stream)
             decode_sse(lines)
           else
-            text = stream.to_a.join
+            text =
+              if !truncate_at.nil?
+                read_body(stream, limit: truncate_at, truncate: true)
+              elsif download
+                stream.to_a.join
+              else
+                read_body(stream, limit: ScalarGalaxy::Internal::Util::MAX_BUFFERED_BODY_BYTES)
+              end
             force_charset!(content_type, text: text)
             StringIO.new(text)
           end
@@ -790,8 +1019,12 @@ module ScalarGalaxy
         # This decoder is responsible for reassembling lines split across multiple
         # fragments.
         #
+        # A line still pending past {MAX_PENDING_STREAM_BYTES} fails the stream: the server controls
+        # where lines end, and one that never ends would otherwise be buffered without bound.
+        #
         # @param enum [Enumerable<String>]
         #
+        # @raise [ScalarGalaxy::Errors::Error] when one line outgrows the pending-line limit
         # @return [Enumerable<String>]
         def decode_lines(enum)
           re = /(\r\n|\r|\n)/
@@ -815,11 +1048,28 @@ module ScalarGalaxy
                 offset = 0
                 cr_seen = nil
               end
+              check_pending_stream!(buffer.bytesize)
             end
 
             y << buffer.slice!(..(cr_seen.pred)) unless cr_seen.nil?
             y << buffer unless buffer.empty?
           end
+        end
+
+        # @api private
+        #
+        # Fails a stream whose pending line or event has outgrown {MAX_PENDING_STREAM_BYTES}.
+        #
+        # @param bytesize [Integer]
+        #
+        # @raise [ScalarGalaxy::Errors::Error]
+        private def check_pending_stream!(bytesize)
+          limit = ScalarGalaxy::Internal::Util::MAX_PENDING_STREAM_BYTES
+          return if bytesize <= limit
+
+          raise ScalarGalaxy::Errors::Error.new(
+            "A stream line or event is larger than the #{limit}-byte limit."
+          )
         end
 
         # @api private
@@ -851,7 +1101,10 @@ module ScalarGalaxy
                 in "event"
                   current.merge!(event: value)
                 in "data"
+                  # An event's `data` lines accumulate until a blank line, which the server may
+                  # never send, so the event is held to the same limit as one line.
                   (current[:data] ||= String.new) << (value << "\n")
+                  check_pending_stream!(current[:data].bytesize)
                 in "id" unless value.include?("\0")
                   current.merge!(id: value)
                 in "retry" if /^\d+$/ =~ value

@@ -2,8 +2,8 @@
 
 module ScalarGalaxy
   module Models
-    # @see ScalarGalaxy::Resources::Planets#delte_image
-    class PlanetDelteImageParams < ScalarGalaxy::Internal::Type::BaseModel
+    # @see ScalarGalaxy::Resources::Planets#upload_image
+    class PlanetUploadImageParams < ScalarGalaxy::Internal::Type::BaseModel
       extend ScalarGalaxy::Internal::Type::RequestParameters::Converter
       include ScalarGalaxy::Internal::Type::RequestParameters
 

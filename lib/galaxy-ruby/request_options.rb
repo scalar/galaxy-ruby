@@ -26,8 +26,8 @@ module ScalarGalaxy
     end
 
     # @!attribute idempotency_key
-    #   Idempotency key to send with request and all associated retries. Will only be
-    #   sent for write requests.
+    #   Idempotency key to send with this request and its retries when the client
+    #   has an idempotency header configured.
     #
     #   @return [String, nil]
     optional :idempotency_key, String
