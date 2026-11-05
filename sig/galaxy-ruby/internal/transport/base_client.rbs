@@ -20,6 +20,7 @@ module ScalarGalaxy
             page: Class?,
             stream: Class?,
             model: ScalarGalaxy::Internal::Type::Converter::input?,
+            security: ::Array[::Array[String]]?,
             options: ScalarGalaxy::request_opts?
           }
         type request_input =
@@ -37,6 +38,8 @@ module ScalarGalaxy
 
         MAX_REDIRECTS: 20
 
+        MAX_RETRY_AFTER: 60
+
         PLATFORM_HEADERS: ::Hash[String, String]
 
         def self.validate!: (
@@ -44,6 +47,13 @@ module ScalarGalaxy
         ) -> void
 
         def self.should_retry?: (
+          Integer status,
+          headers: ::Hash[String, String]
+        ) -> bool
+
+        def self.retry_after: (::Hash[String, String] headers) -> Float?
+
+        def self.redirect?: (
           Integer status,
           headers: ::Hash[String, String]
         ) -> bool
@@ -92,9 +102,17 @@ module ScalarGalaxy
 
         private def auth_headers: -> ::Hash[String, String]
 
+        private def auth_headers_for: (
+          ::Array[::Array[String]]? _security
+        ) -> ::Hash[String, String]
+
         private def auth_header_keys: -> ::Array[String]
 
         private def auth_query: -> ::Hash[String, String]
+
+        private def auth_query_for: (
+          ::Array[::Array[String]]? _security
+        ) -> ::Hash[String, String]
 
         private def auth_query_keys: -> ::Array[String]
 

@@ -74,5 +74,7 @@ module ScalarGalaxy
 
   User = ScalarGalaxy::Models::User
 
+  WebhookParsedParams = ScalarGalaxy::Models::WebhookParsedParams
+
   WebhookUnwrapParams = ScalarGalaxy::Models::WebhookUnwrapParams
 end

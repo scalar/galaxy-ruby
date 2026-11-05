@@ -25,6 +25,9 @@ module ScalarGalaxy
 
         DEFAULT_MAX_CONNECTIONS = T.let(T.unsafe(nil), Integer)
 
+        # Most origins the requester keeps a connection pool for at once.
+        MAX_POOLS = 16
+
         class << self
           # @api private
           sig do

@@ -31,5 +31,7 @@ module ScalarGalaxy
 
   class User = ScalarGalaxy::Models::User
 
+  class WebhookParsedParams = ScalarGalaxy::Models::WebhookParsedParams
+
   class WebhookUnwrapParams = ScalarGalaxy::Models::WebhookUnwrapParams
 end

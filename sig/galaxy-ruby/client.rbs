@@ -31,6 +31,8 @@ module ScalarGalaxy
 
     attr_reader webhook_secret: String?
 
+    attr_reader explicit_webhook_secret: String?
+
     attr_reader planets: ScalarGalaxy::Resources::Planets
 
     attr_reader celestial_bodies: ScalarGalaxy::Resources::CelestialBodies

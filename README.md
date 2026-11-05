@@ -16,6 +16,7 @@ The full API of this library can be found in [api.md](./api.md).
 - [Client Options](#client-options)
 - [Request Options](#request-options)
 - [Retries and Timeouts](#retries-and-timeouts)
+- [Webhooks](#webhooks)
 - [Helpers](#helpers)
 - [Requirements](#requirements)
 
@@ -154,6 +155,24 @@ client = ScalarGalaxy::Client.new(
 ## Retries and Timeouts
 
 Generated clients support request timeouts and retry temporary failures such as network errors, 408, 409, 429, and 5xx responses. Retry delays honor `Retry-After` headers when present. Tune the retry and timeout client options shown above, or override them per request.
+
+<br />
+
+## Webhooks
+
+The webhook helper verifies the signature of each delivery your server receives, then decodes its body into a typed event. Pass it the request body exactly as it arrived, before any JSON parsing, together with the request headers: the signature covers the raw body, so one that was parsed and re-serialized fails verification. A delivery whose signature does not verify is rejected before it is decoded.
+
+```ruby
+# `payload` is the raw request body; `headers` holds the request headers.
+event = client.webhooks.unwrap(payload, headers: headers)
+```
+
+The signing secret comes from the client's `webhook_secret` option, which defaults to the `SCALAR_WEBHOOK_SECRET` environment variable. Pass `key:` to use a different secret for one call.
+
+The same resource also has:
+
+- `client.webhooks.verify_signature(payload: payload, headers: headers)` checks a delivery's signature, and fails when it does not verify.
+- `client.webhooks.parse_unsafe(payload)` decodes a body into a typed event without checking its signature. Use it only for a body verified elsewhere, or in tests.
 
 <br />
 
