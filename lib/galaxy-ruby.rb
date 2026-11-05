@@ -3,7 +3,6 @@
 # Standard libraries.
 # rubocop:disable Lint/RedundantRequireStatement
 require "English"
-require "cgi"
 require "date"
 require "erb"
 require "etc"
@@ -16,6 +15,7 @@ require "securerandom"
 require "set"
 require "stringio"
 require "time"
+require "timeout"
 require "uri"
 # rubocop:enable Lint/RedundantRequireStatement
 
@@ -25,10 +25,6 @@ if Object.const_defined?(:Tapioca) && caller.chain([$PROGRAM_NAME]).chain(ARGV).
    ARGV.none?(/dsl/)
   return
 end
-
-# Gems.
-require "connection_pool"
-require "standardwebhooks"
 
 # Package files.
 require_relative "galaxy-ruby/version"
@@ -48,7 +44,9 @@ require_relative "galaxy-ruby/internal"
 require_relative "galaxy-ruby/request_options"
 require_relative "galaxy-ruby/file_part"
 require_relative "galaxy-ruby/errors"
+require_relative "galaxy-ruby/internal/webhook_verifier"
 require_relative "galaxy-ruby/internal/transport/base_client"
+require_relative "galaxy-ruby/internal/transport/connection_pool"
 require_relative "galaxy-ruby/internal/transport/pooled_net_requester"
 require_relative "galaxy-ruby/client"
 require_relative "galaxy-ruby/models/credentials"

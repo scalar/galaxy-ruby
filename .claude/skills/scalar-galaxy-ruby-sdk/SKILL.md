@@ -81,5 +81,5 @@ end
 
 ## Reference files
 
-- [README.md](../../../README.md) — full feature tour: client options, request options, retries and timeouts.
+- [README.md](../../../README.md) — full feature tour: client options, request options, retries and timeouts, webhooks.
 - [api.md](../../../api.md) — complete catalogue of every operation with request and response types.

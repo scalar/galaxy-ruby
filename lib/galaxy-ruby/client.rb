@@ -54,6 +54,15 @@ module ScalarGalaxy
     # @return [String, nil]
     attr_reader :webhook_secret
 
+    # @api private
+    #
+    # The `webhook_secret` passed to the constructor, or `nil` when it was left to
+    # default to `ENV["SCALAR_WEBHOOK_SECRET"]`. The webhook helpers read that
+    # variable again on every call, so only a value passed here outranks it.
+    #
+    # @return [String, nil]
+    attr_reader :explicit_webhook_secret
+
     # Everything about planets
     # @return [ScalarGalaxy::Resources::Planets]
     attr_reader :planets
@@ -201,7 +210,7 @@ module ScalarGalaxy
       api_key_cookie: ENV["API_KEY_COOKIE"],
       o_auth2: ENV["SCALAR_O_AUTH2"],
       open_id_connect: ENV["SCALAR_OPEN_ID_CONNECT"],
-      webhook_secret: ENV["SCALAR_WEBHOOK_SECRET"],
+      webhook_secret: (webhook_secret_from_env = ENV["SCALAR_WEBHOOK_SECRET"]),
       environment: nil,
       base_url: ENV["SCALAR_BASE_URL"],
       max_retries: self.class::DEFAULT_MAX_RETRIES,
@@ -238,6 +247,7 @@ module ScalarGalaxy
       @o_auth2 = o_auth2&.to_s
       @open_id_connect = open_id_connect&.to_s
       @webhook_secret = webhook_secret&.to_s
+      @explicit_webhook_secret = webhook_secret_from_env.nil? ? @webhook_secret : nil
 
       super(
         base_url: base_url,

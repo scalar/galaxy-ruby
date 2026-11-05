@@ -11,10 +11,10 @@ module ScalarGalaxy
           )
         end
 
-      sig { returns(T.nilable(T::Array[T.anything])) }
+      sig { returns(T.nilable(T::Array[ScalarGalaxy::Planet])) }
       attr_reader :data
 
-      sig { params(data: T::Array[T.anything]).void }
+      sig { params(data: T::Array[ScalarGalaxy::Planet::OrHash]).void }
       attr_writer :data
 
       sig { returns(T.nilable(ScalarGalaxy::Models::PlanetListResponse::Meta)) }
@@ -29,7 +29,7 @@ module ScalarGalaxy
 
       sig do
         params(
-          data: T::Array[T.anything],
+          data: T::Array[ScalarGalaxy::Planet::OrHash],
           meta: ScalarGalaxy::Models::PlanetListResponse::Meta::OrHash
         ).returns(T.attached_class)
       end
@@ -39,7 +39,7 @@ module ScalarGalaxy
       sig do
         override.returns(
           {
-            data: T::Array[T.anything],
+            data: T::Array[ScalarGalaxy::Planet],
             meta: ScalarGalaxy::Models::PlanetListResponse::Meta
           }
         )

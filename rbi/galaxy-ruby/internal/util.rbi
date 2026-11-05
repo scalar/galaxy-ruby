@@ -163,6 +163,9 @@ module ScalarGalaxy
         end
 
         # @api private
+        #
+        # Fills a path template with its encoded parameters, refusing an empty value
+        # and a `.` or `..` segment.
         sig { params(path: T.any(String, T::Array[String])).returns(String) }
         def interpolate_path(path)
         end
@@ -176,6 +179,11 @@ module ScalarGalaxy
           )
         end
         def decode_query(query)
+        end
+
+        # @api private
+        sig { params(component: String).returns(String) }
+        private def unescape_query_component(component)
         end
 
         # @api private
@@ -251,6 +259,21 @@ module ScalarGalaxy
         end
         def normalized_headers(*headers)
         end
+
+        # @api private
+        #
+        # A cookie value percent-encoded the way `encodeURIComponent` encodes one.
+        sig { params(value: T.anything).returns(String) }
+        def encode_cookie_value(value)
+        end
+
+        # @api private
+        #
+        # Joins `Cookie` header values into one, a later cookie replacing an earlier
+        # one of the same name.
+        sig { params(values: T.nilable(String)).returns(T.nilable(String)) }
+        def merge_cookies(*values)
+        end
       end
 
       # @api private
@@ -308,6 +331,16 @@ module ScalarGalaxy
       JSONL_CONTENT =
         T.let(%r{^application/(:?x-(?:n|l)djson)|(:?(?:x-)?jsonl)}, Regexp)
 
+      # Most bytes of a response body the SDK holds to decode it, counted after
+      # decompression.
+      MAX_BUFFERED_BODY_BYTES = T.let(64 * 1024 * 1024, Integer)
+
+      # Most bytes of an error response read for the error's `body`.
+      MAX_ERROR_BODY_BYTES = T.let(64 * 1024, Integer)
+
+      # Most bytes one pending stream line or server-sent event may hold.
+      MAX_PENDING_STREAM_BYTES = T.let(64 * 1024 * 1024, Integer)
+
       class << self
         # @api private
         sig do
@@ -327,6 +360,13 @@ module ScalarGalaxy
           ).void
         end
         private def write_query_param_element!(collection, key, element)
+        end
+
+        # @api private
+        #
+        # A multipart field name escaped for its quoted `name` parameter.
+        sig { params(name: T.any(Symbol, String)).returns(String) }
+        def encode_form_name(name)
         end
 
         # @api private
@@ -369,6 +409,18 @@ module ScalarGalaxy
         end
 
         # @api private
+        #
+        # A form body, encoded the way the query string is.
+        sig { params(body: ScalarGalaxy::Internal::AnyHash).returns(String) }
+        def encode_form(body)
+        end
+
+        # @api private
+        sig { params(value: T.anything).returns(T.anything) }
+        private def form_field_value(value)
+        end
+
+        # @api private
         sig do
           params(headers: T::Hash[String, String], body: T.anything).returns(
             T.anything
@@ -386,15 +438,36 @@ module ScalarGalaxy
 
         # @api private
         #
+        # Reads a body into one string, holding at most `limit` bytes of it.
+        sig do
+          params(
+            stream: T::Enumerable[String],
+            limit: Integer,
+            truncate: T::Boolean
+          ).returns(String)
+        end
+        def read_body(stream, limit:, truncate: false)
+        end
+
+        # @api private
+        #
         # Assumes each chunk in stream has `Encoding::BINARY`.
         sig do
           params(
             headers: T::Hash[String, String],
             stream: T::Enumerable[String],
-            suppress_error: T::Boolean
+            suppress_error: T::Boolean,
+            truncate_at: T.nilable(Integer),
+            download: T::Boolean
           ).returns(T.anything)
         end
-        def decode_content(headers, stream:, suppress_error: false)
+        def decode_content(
+          headers,
+          stream:,
+          suppress_error: false,
+          truncate_at: nil,
+          download: false
+        )
         end
       end
 
@@ -449,6 +522,14 @@ module ScalarGalaxy
           params(enum: T::Enumerable[String]).returns(T::Enumerable[String])
         end
         def decode_lines(enum)
+        end
+
+        # @api private
+        #
+        # Fails a stream whose pending line or event has outgrown
+        # `MAX_PENDING_STREAM_BYTES`.
+        sig { params(bytesize: Integer).void }
+        private def check_pending_stream!(bytesize)
         end
 
         # @api private

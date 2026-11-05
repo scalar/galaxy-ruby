@@ -10,5 +10,7 @@ module ScalarGalaxy
       # @!method initialize(request_options: {})
       #   @param request_options [ScalarGalaxy::RequestOptions, Hash{Symbol=>Object}]
     end
+
+    WebhookParsedParams = WebhookUnwrapParams
   end
 end

@@ -2,14 +2,16 @@ module ScalarGalaxy
   module Models
     type planet_list_response =
       {
-        data: ::Array[top],
+        data: ::Array[ScalarGalaxy::Planet],
         meta: ScalarGalaxy::Models::PlanetListResponse::Meta
       }
 
     class PlanetListResponse < ScalarGalaxy::Internal::Type::BaseModel
-      attr_reader data: ::Array[top]?
+      attr_reader data: ::Array[ScalarGalaxy::Planet]?
 
-      def data=: (::Array[top]) -> ::Array[top]
+      def data=: (
+        ::Array[ScalarGalaxy::Planet]
+      ) -> ::Array[ScalarGalaxy::Planet]
 
       attr_reader meta: ScalarGalaxy::Models::PlanetListResponse::Meta?
 
@@ -18,12 +20,12 @@ module ScalarGalaxy
       ) -> ScalarGalaxy::Models::PlanetListResponse::Meta
 
       def initialize: (
-        ?data: ::Array[top],
+        ?data: ::Array[ScalarGalaxy::Planet],
         ?meta: ScalarGalaxy::Models::PlanetListResponse::Meta
       ) -> void
 
       def to_hash: -> {
-        data: ::Array[top],
+        data: ::Array[ScalarGalaxy::Planet],
         meta: ScalarGalaxy::Models::PlanetListResponse::Meta
       }
 

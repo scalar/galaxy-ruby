@@ -245,5 +245,23 @@ module ScalarGalaxy
     class InternalServerError < ScalarGalaxy::Errors::APIStatusError
       HTTP_STATUS = (500..)
     end
+
+    # Raised by SDKs that verify webhook signatures through the `standardwebhooks` gem when that gem
+    # is not installed. This SDK verifies them with the standard library and never raises it; the
+    # class is declared so code that rescues or names it keeps working.
+    class MissingDependencyError < ScalarGalaxy::Errors::Error
+      # @api private
+      #
+      # @param gem_name [String]
+      # @param feature [String]
+      def initialize(gem_name:, feature:)
+        message = [
+          "The '#{gem_name}' gem is required to use #{feature}.",
+          "Install it with: gem install #{gem_name}",
+          "Or add it to your Gemfile: gem '#{gem_name}'"
+        ].join("\n")
+        super(message)
+      end
+    end
   end
 end
