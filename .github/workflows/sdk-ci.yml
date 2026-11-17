@@ -31,11 +31,9 @@ jobs:
       # `--autocorrect` here: fixing and committing in CI would make the pushed bytes differ from
       # generator output and invalidate the snapshot suite.
       #
-      # Two checks, because this SDK formats its two Ruby trees with two different tools: `.rb` with
-      # `rake format:rb` (RuboCop) and `.rbi` with `rake format:rbi` (`stree write`). Checking an
-      # `.rbi` with RuboCop would fail on formatting `stree write` itself produces — the two tools
-      # disagree about multi-line method-call indentation, and the generator never runs RuboCop over
-      # a signature file — so each tree is checked by the tool that owns it.
+      # Both trees are checked, `.rb` and `.rbi`, because RuboCop formats both: `rake format:rb` and
+      # `rake format:rbi` are the same `rubocop --autocorrect`, over different directories. The cops
+      # that do not apply to a signature file are excluded for `**/*.rbi` in `.rubocop.yml`.
       #
       # Files are piped in explicitly rather than naming the directories, the way `rake lint:rubocop`
       # does it: RuboCop globs a directory argument through `AllCops/Include`, which does not list
@@ -60,26 +58,11 @@ jobs:
       # cannot fix, so failing CI on them would report a generator bug as formatting drift.
       # `Layout/LineLength` is then excluded for the reason `rake lint:rubocop` excludes it — some
       # lines cannot be broken, and the generator lays out what it can.
-      - run: gem install rubocop -v 1.89.0 --no-document
-      - run: gem install syntax_tree -v 6.3.0 --no-document
-      - name: rubocop (.rb formatting)
+      - run: gem install rubocop -v 1.92.2 --no-document
+      - name: rubocop (.rb and .rbi formatting)
         shell: bash
         run: >-
-          find lib examples -type f -name '*.rb' -print0
+          find lib examples rbi -type f \( -name '*.rb' -o -name '*.rbi' \) -print0
           | xargs -0 --no-run-if-empty
           rubocop --only Layout --except Layout/LineLength --format github
-      # `RUBYOPT` for the reason the generated Rakefile's `format:rbi` task sets it: `stree` reads a
-      # file through `SyntaxTree.read`, which falls back to `Encoding.default_external`. The emitted
-      # signatures are not all ASCII — `request_options.rbi` carries a typographic apostrophe — so on
-      # a runner with no `LANG` or `LC_ALL` (a container-based self-hosted one, typically) the read
-      # raises `invalid byte sequence in US-ASCII` and reads as formatting drift. RuboCop forces
-      # UTF-8 itself, so only this step needs it.
-      - name: stree (.rbi formatting)
-        shell: bash
-        env:
-          RUBYOPT: --encoding=UTF-8
-        run: >-
-          find rbi -type f -name '*.rbi' -print0
-          | xargs -0 --no-run-if-empty
-          stree check --
       - run: gem build *.gemspec
