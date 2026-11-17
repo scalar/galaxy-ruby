@@ -42,7 +42,9 @@ module ScalarGalaxy
           in Array
             value.map { ScalarGalaxy::Internal::Type::Unknown.dump(_1, state: state) }
           in Hash
-            value.transform_values { ScalarGalaxy::Internal::Type::Unknown.dump(_1, state: state) }
+            value.transform_values do
+              ScalarGalaxy::Internal::Type::Unknown.dump(_1, state: state)
+            end
           in ScalarGalaxy::Internal::Type::BaseModel
             value.class.dump(value, state: state)
           in StringIO
@@ -53,6 +55,8 @@ module ScalarGalaxy
           in ScalarGalaxy::FilePart
             state[:can_retry] = false if value.content.is_a?(IO)
             value
+          in Time
+            value.iso8601
           else
             value
           end
@@ -188,7 +192,11 @@ module ScalarGalaxy
           #   @option state [Integer] :branched
           #
           # @return [Object]
-          def coerce(target, value, state: ScalarGalaxy::Internal::Type::Converter.new_coerce_state)
+          def coerce(
+            target,
+            value,
+            state: ScalarGalaxy::Internal::Type::Converter.new_coerce_state
+          )
             # rubocop:disable Metrics/BlockNesting
             exactness = state.fetch(:exactness)
 
@@ -309,7 +317,9 @@ module ScalarGalaxy
         end
 
         define_sorbet_constant!(:Input) do
-          T.type_alias { T.any(ScalarGalaxy::Internal::Type::Converter, T::Class[T.anything]) }
+          T.type_alias do
+            T.any(ScalarGalaxy::Internal::Type::Converter, T::Class[T.anything])
+          end
         end
         define_sorbet_constant!(:CoerceState) do
           T.type_alias do

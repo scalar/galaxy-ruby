@@ -55,6 +55,8 @@ module ScalarGalaxy
 
       def self?.decode_query: (String? query) -> ::Hash[String, ::Array[String]]
 
+      def self?.unescape_query_component: (String component) -> String
+
       def self?.encode_query: (
         ::Hash[String, (::Array[String] | String)?]? query
       ) -> String?
@@ -87,6 +89,10 @@ module ScalarGalaxy
         | ::Array[(String | Integer)?])?] headers
       ) -> ::Hash[String, String]
 
+      def self?.encode_cookie_value: (top value) -> String
+
+      def self?.merge_cookies: (*String? values) -> String?
+
       class ReadIOAdapter
         def close?: -> bool?
 
@@ -110,6 +116,12 @@ module ScalarGalaxy
       JSON_CONTENT: Regexp
       JSONL_CONTENT: Regexp
 
+      MAX_BUFFERED_BODY_BYTES: Integer
+
+      MAX_ERROR_BODY_BYTES: Integer
+
+      MAX_PENDING_STREAM_BYTES: Integer
+
       def encode_query_params: (
         ::Hash[Symbol, top] query
       ) -> ::Hash[Symbol, top]
@@ -119,6 +131,8 @@ module ScalarGalaxy
         String key,
         top element
       ) -> nil
+
+      def self?.encode_form_name: (Symbol | String name) -> String
 
       def self?.write_multipart_content: (
         Enumerator::Yielder y,
@@ -139,6 +153,10 @@ module ScalarGalaxy
         top body
       ) -> [String, Enumerable[String]]
 
+      def self?.encode_form: (::Hash[Symbol, top] body) -> String
+
+      def self?.form_field_value: (top value) -> top
+
       def self?.encode_content: (
         ::Hash[String, String] headers,
         top body
@@ -146,10 +164,18 @@ module ScalarGalaxy
 
       def self?.force_charset!: (String content_type, text: String) -> void
 
+      def self?.read_body: (
+        Enumerable[String] stream,
+        limit: Integer,
+        ?truncate: bool
+      ) -> String
+
       def self?.decode_content: (
         ::Hash[String, String] headers,
         stream: Enumerable[String],
-        ?suppress_error: bool
+        ?suppress_error: bool,
+        ?truncate_at: Integer?,
+        ?download: bool
       ) -> top
 
       def self?.fused_enum: (
@@ -171,6 +197,8 @@ module ScalarGalaxy
         { event: String?, data: String?, id: String?, retry: Integer? }
 
       def self?.decode_lines: (Enumerable[String] enum) -> Enumerable[String]
+
+      def self?.check_pending_stream!: (Integer bytesize) -> void
 
       def self?.decode_sse: (
         Enumerable[String] lines

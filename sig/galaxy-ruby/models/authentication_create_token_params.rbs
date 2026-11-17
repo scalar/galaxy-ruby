@@ -1,15 +1,25 @@
 module ScalarGalaxy
   module Models
     type authentication_create_token_params =
-      {  } & ScalarGalaxy::Internal::Type::request_parameters
+      { password: String } & ScalarGalaxy::Internal::Type::request_parameters
 
     class AuthenticationCreateTokenParams < ScalarGalaxy::Models::Credentials
       extend ScalarGalaxy::Internal::Type::RequestParameters::Converter
       include ScalarGalaxy::Internal::Type::RequestParameters
 
-      def initialize: (?request_options: ScalarGalaxy::request_opts) -> void
+      def password: -> String
 
-      def to_hash: -> { request_options: ScalarGalaxy::RequestOptions }
+      def password=: (String _) -> String
+
+      def initialize: (
+        password: String,
+        ?request_options: ScalarGalaxy::request_opts
+      ) -> void
+
+      def to_hash: -> {
+        password: String,
+        request_options: ScalarGalaxy::RequestOptions
+      }
     end
   end
 end

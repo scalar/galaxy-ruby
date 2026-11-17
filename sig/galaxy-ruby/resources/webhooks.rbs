@@ -3,8 +3,24 @@ module ScalarGalaxy
     class Webhooks
       def unwrap: (
         String payload,
-        headers: ::Hash[String, String],
+        headers: ::Hash[String | Symbol, String | ::Array[String]],
         ?key: String?
+      ) -> ScalarGalaxy::NewPlanetWebhookEvent
+
+      def parsed: (
+        String payload,
+        headers: ::Hash[String | Symbol, String | ::Array[String]],
+        ?key: String?
+      ) -> ScalarGalaxy::NewPlanetWebhookEvent
+
+      def verify_signature: (
+        payload: String,
+        headers: ::Hash[String | Symbol, String | ::Array[String]],
+        ?key: String?
+      ) -> ::Hash[Symbol, untyped]
+
+      def parse_unsafe: (
+        String payload
       ) -> ScalarGalaxy::NewPlanetWebhookEvent
 
       def initialize: (client: ScalarGalaxy::Client) -> void

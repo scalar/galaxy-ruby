@@ -22,6 +22,8 @@ module ScalarGalaxy
       #   @return [String, nil]
       optional :name, String
 
+      drop_on_dump :id
+
       # @!method initialize(email:, password:, name: nil, request_options: {})
       #   @param email [String]
       #   @param password [String]

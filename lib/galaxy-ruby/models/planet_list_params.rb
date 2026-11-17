@@ -2,8 +2,8 @@
 
 module ScalarGalaxy
   module Models
-    # @see ScalarGalaxy::Resources::Planets#list_all_data
-    class PlanetListAllDataParams < ScalarGalaxy::Internal::Type::BaseModel
+    # @see ScalarGalaxy::Resources::Planets#list
+    class PlanetListParams < ScalarGalaxy::Internal::Type::BaseModel
       extend ScalarGalaxy::Internal::Type::RequestParameters::Converter
       include ScalarGalaxy::Internal::Type::RequestParameters
 

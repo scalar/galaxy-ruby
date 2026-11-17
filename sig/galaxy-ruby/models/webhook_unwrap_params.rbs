@@ -11,5 +11,9 @@ module ScalarGalaxy
 
       def to_hash: -> { request_options: ScalarGalaxy::RequestOptions }
     end
+
+    type webhook_parsed_params = webhook_unwrap_params
+
+    class WebhookParsedParams = ScalarGalaxy::Models::WebhookUnwrapParams
   end
 end

@@ -13,6 +13,8 @@ module ScalarGalaxy
 
   CelestialBodyCreateParams = ScalarGalaxy::Models::CelestialBodyCreateParams
 
+  CelestialBodyParam = ScalarGalaxy::Models::CelestialBodyParam
+
   Credentials = ScalarGalaxy::Models::Credentials
 
   NewPlanetWebhookEvent = ScalarGalaxy::Models::NewPlanetWebhookEvent
@@ -23,17 +25,23 @@ module ScalarGalaxy
 
   PlanetDeleteParams = ScalarGalaxy::Models::PlanetDeleteParams
 
-  PlanetDelteImageParams = ScalarGalaxy::Models::PlanetDelteImageParams
+  PlanetListParams = ScalarGalaxy::Models::PlanetListParams
 
-  PlanetListAllDataParams = ScalarGalaxy::Models::PlanetListAllDataParams
+  PlanetParam = ScalarGalaxy::Models::PlanetParam
 
   PlanetRetrieveParams = ScalarGalaxy::Models::PlanetRetrieveParams
 
   PlanetUpdateParams = ScalarGalaxy::Models::PlanetUpdateParams
 
+  PlanetUploadImageParams = ScalarGalaxy::Models::PlanetUploadImageParams
+
   UnwrapWebhookEvent = ScalarGalaxy::Models::UnwrapWebhookEvent
 
   User = ScalarGalaxy::Models::User
+
+  UserParam = ScalarGalaxy::Models::UserParam
+
+  WebhookParsedParams = ScalarGalaxy::Models::WebhookParsedParams
 
   WebhookUnwrapParams = ScalarGalaxy::Models::WebhookUnwrapParams
 end

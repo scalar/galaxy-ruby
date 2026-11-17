@@ -2,14 +2,14 @@
 
 module ScalarGalaxy
   module Models
-    class PlanetDelteImageParams < ScalarGalaxy::Internal::Type::BaseModel
+    class PlanetUploadImageParams < ScalarGalaxy::Internal::Type::BaseModel
       extend ScalarGalaxy::Internal::Type::RequestParameters::Converter
       include ScalarGalaxy::Internal::Type::RequestParameters
 
       OrHash =
         T.type_alias do
           T.any(
-            ScalarGalaxy::PlanetDelteImageParams,
+            ScalarGalaxy::PlanetUploadImageParams,
             ScalarGalaxy::Internal::AnyHash
           )
         end
