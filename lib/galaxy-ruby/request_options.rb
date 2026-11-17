@@ -37,7 +37,10 @@ module ScalarGalaxy
     #   `query` given at the client level.
     #
     #   @return [Hash{String=>Array<String>, String, nil}, nil]
-    optional :extra_query, ScalarGalaxy::Internal::Type::HashOf[ScalarGalaxy::Internal::Type::ArrayOf[String]]
+    optional :extra_query,
+             ScalarGalaxy::Internal::Type::HashOf[
+               ScalarGalaxy::Internal::Type::ArrayOf[String]
+             ]
 
     # @!attribute extra_headers
     #   Extra headers to send with the request. These are `.merged`’d into any
@@ -51,7 +54,10 @@ module ScalarGalaxy
     #   generated as part of the normal request.
     #
     #   @return [Object, nil]
-    optional :extra_body, ScalarGalaxy::Internal::Type::HashOf[ScalarGalaxy::Internal::Type::Unknown]
+    optional :extra_body,
+             ScalarGalaxy::Internal::Type::HashOf[
+               ScalarGalaxy::Internal::Type::Unknown
+             ]
 
     # @!attribute max_retries
     #   Maximum number of retries to attempt after a failed initial request.
@@ -71,7 +77,9 @@ module ScalarGalaxy
     #   @param values [Hash{Symbol=>Object}]
 
     define_sorbet_constant!(:OrHash) do
-      T.type_alias { T.any(ScalarGalaxy::RequestOptions, ScalarGalaxy::Internal::AnyHash) }
+      T.type_alias do
+        T.any(ScalarGalaxy::RequestOptions, ScalarGalaxy::Internal::AnyHash)
+      end
     end
   end
 end

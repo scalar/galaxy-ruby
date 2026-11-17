@@ -65,26 +65,13 @@ module ScalarGalaxy
               spec:
                 T.any(
                   {
-                    const:
-                      T.nilable(
-                        T.any(NilClass, T::Boolean, Integer, Float, Symbol)
-                      ),
+                    const: T.nilable(T.any(NilClass, T::Boolean, Integer, Float, Symbol)),
                     enum:
-                      T.nilable(
-                        T.proc.returns(
-                          ScalarGalaxy::Internal::Type::Converter::Input
-                        )
-                      ),
+                      T.nilable(T.proc.returns(ScalarGalaxy::Internal::Type::Converter::Input)),
                     union:
-                      T.nilable(
-                        T.proc.returns(
-                          ScalarGalaxy::Internal::Type::Converter::Input
-                        )
-                      )
+                      T.nilable(T.proc.returns(ScalarGalaxy::Internal::Type::Converter::Input))
                   },
-                  T.proc.returns(
-                    ScalarGalaxy::Internal::Type::Converter::Input
-                  ),
+                  T.proc.returns(ScalarGalaxy::Internal::Type::Converter::Input),
                   ScalarGalaxy::Internal::Type::Converter::Input
                 )
             ).returns(T.proc.returns(T.anything))
@@ -98,51 +85,25 @@ module ScalarGalaxy
               type_info:
                 T.any(
                   {
-                    const:
-                      T.nilable(
-                        T.any(NilClass, T::Boolean, Integer, Float, Symbol)
-                      ),
+                    const: T.nilable(T.any(NilClass, T::Boolean, Integer, Float, Symbol)),
                     enum:
-                      T.nilable(
-                        T.proc.returns(
-                          ScalarGalaxy::Internal::Type::Converter::Input
-                        )
-                      ),
+                      T.nilable(T.proc.returns(ScalarGalaxy::Internal::Type::Converter::Input)),
                     union:
-                      T.nilable(
-                        T.proc.returns(
-                          ScalarGalaxy::Internal::Type::Converter::Input
-                        )
-                      )
+                      T.nilable(T.proc.returns(ScalarGalaxy::Internal::Type::Converter::Input))
                   },
-                  T.proc.returns(
-                    ScalarGalaxy::Internal::Type::Converter::Input
-                  ),
+                  T.proc.returns(ScalarGalaxy::Internal::Type::Converter::Input),
                   ScalarGalaxy::Internal::Type::Converter::Input
                 ),
               spec:
                 T.any(
                   {
-                    const:
-                      T.nilable(
-                        T.any(NilClass, T::Boolean, Integer, Float, Symbol)
-                      ),
+                    const: T.nilable(T.any(NilClass, T::Boolean, Integer, Float, Symbol)),
                     enum:
-                      T.nilable(
-                        T.proc.returns(
-                          ScalarGalaxy::Internal::Type::Converter::Input
-                        )
-                      ),
+                      T.nilable(T.proc.returns(ScalarGalaxy::Internal::Type::Converter::Input)),
                     union:
-                      T.nilable(
-                        T.proc.returns(
-                          ScalarGalaxy::Internal::Type::Converter::Input
-                        )
-                      )
+                      T.nilable(T.proc.returns(ScalarGalaxy::Internal::Type::Converter::Input))
                   },
-                  T.proc.returns(
-                    ScalarGalaxy::Internal::Type::Converter::Input
-                  ),
+                  T.proc.returns(ScalarGalaxy::Internal::Type::Converter::Input),
                   ScalarGalaxy::Internal::Type::Converter::Input
                 )
             ).returns(ScalarGalaxy::Internal::AnyHash)

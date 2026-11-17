@@ -16,7 +16,7 @@ module ScalarGalaxy
         # client's own backoff is used instead.
         MAX_RETRY_AFTER = 60
 
-        # rubocop:disable Style/MutableConstant
+        # rubocop:disable-next Style/MutableConstant
         PLATFORM_HEADERS = {
           "x-scalar-arch" => ScalarGalaxy::Internal::Util.arch,
           "x-scalar-lang" => "ruby",
@@ -25,7 +25,6 @@ module ScalarGalaxy
           "x-scalar-runtime" => ::RUBY_ENGINE,
           "x-scalar-runtime-version" => ::RUBY_ENGINE_VERSION
         }
-        # rubocop:enable Style/MutableConstant
 
         class << self
           # @api private
@@ -411,8 +410,11 @@ module ScalarGalaxy
 
         # @api private
         #
+        # A literal rather than `self.class.name`: a class name is namespaced (`Acme::Client`), and
+        # `:` is not a token character (RFC 9110 §5.6.2).
+        #
         # @return [String]
-        private def user_agent = "#{self.class.name}/Ruby #{ScalarGalaxy::VERSION}"
+        private def user_agent = "ScalarGalaxy/Ruby #{ScalarGalaxy::VERSION}"
 
         # @api private
         #
@@ -463,12 +465,11 @@ module ScalarGalaxy
 
           path = ScalarGalaxy::Internal::Util.interpolate_path(uninterpolated_path)
 
-          query =
-            ScalarGalaxy::Internal::Util.deep_merge(
-              auth_query_for(req[:security]),
-              req[:query].to_h,
-              opts[:extra_query].to_h
-            )
+          query = ScalarGalaxy::Internal::Util.deep_merge(
+            auth_query_for(req[:security]),
+            req[:query].to_h,
+            opts[:extra_query].to_h
+          )
 
           # The client's defaults, its credentials and the operation's own headers each may carry a
           # `cookie`, and a plain merge would let the operation's cookie parameters replace the
@@ -479,9 +480,13 @@ module ScalarGalaxy
               ScalarGalaxy::Internal::Util.normalized_headers(_1)
             end
           merged = ScalarGalaxy::Internal::Util.normalized_headers(*sources)
-          cookie = ScalarGalaxy::Internal::Util.merge_cookies(*sources.map { _1["cookie"] })
+          # A local rather than an inline block: under a long module name the inline form is broken
+          # inside its braces, and the multi-line `{ }` block that leaves is a `Style` offense.
+          cookies = sources.map { _1["cookie"] }
+          cookie = ScalarGalaxy::Internal::Util.merge_cookies(*cookies)
           merged["cookie"] = cookie unless cookie.nil?
-          headers = ScalarGalaxy::Internal::Util.normalized_headers(merged, opts[:extra_headers].to_h)
+          headers =
+            ScalarGalaxy::Internal::Util.normalized_headers(merged, opts[:extra_headers].to_h)
 
           if @idempotency_header && !headers.key?(@idempotency_header) &&
              (!Net::HTTP::IDEMPOTENT_METHODS_.include?(method.to_s.upcase) || opts.key?(:idempotency_key))
@@ -589,7 +594,11 @@ module ScalarGalaxy
             self.class.reap_connection!(status, stream: stream)
 
             message = "Failed to complete the request within #{self.class::MAX_REDIRECTS} redirects."
-            raise ScalarGalaxy::Errors::APIConnectionError.new(url: url, response: response, message: message)
+            raise ScalarGalaxy::Errors::APIConnectionError.new(
+              url: url,
+              response: response,
+              message: message
+            )
           in Integer if redirect
             self.class.reap_connection!(status, stream: stream)
 
@@ -612,8 +621,8 @@ module ScalarGalaxy
             )
           in ScalarGalaxy::Errors::APIConnectionError if retry_count >= max_retries
             raise status
-            # Any other 3xx — a 304 answering a conditional request, a 300, a redirect status without a
-            # `location` — is the server's answer rather than a hop, so it fails as a status error, like a 4xx.
+          # Any other 3xx — a 304 answering a conditional request, a 300, a redirect status without a
+          # `location` — is the server's answer rather than a hop, so it fails as a status error, like a 4xx.
           in (300..) if retry_count >= max_retries || !self.class.should_retry?(status, headers: headers)
             # Read only for the error's `body`, so only its first `MAX_ERROR_BODY_BYTES` are kept and
             # the rest is never read: a server cannot make an error cost more than that in memory.
@@ -716,7 +725,11 @@ module ScalarGalaxy
           # Only an operation declared to return raw bytes reads its body whole; every other buffered
           # body is capped, since the response's own content type cannot be trusted to say which it is.
           decoded =
-            ScalarGalaxy::Internal::Util.decode_content(headers, stream: stream, download: model == StringIO)
+            ScalarGalaxy::Internal::Util.decode_content(
+              headers,
+              stream: stream,
+              download: model == StringIO
+            )
           case req
           in stream: Class => st
             st.new(
@@ -740,9 +753,8 @@ module ScalarGalaxy
         #
         # @return [String]
         def inspect
-          # rubocop:disable Layout/LineLength
+          # rubocop:disable-next Layout/LineLength
           "#<#{self.class.name}:0x#{object_id.to_s(16)} base_url=#{@base_url} max_retries=#{@max_retries} timeout=#{@timeout}>"
-          # rubocop:enable Layout/LineLength
         end
 
         define_sorbet_constant!(:RequestComponents) do
@@ -770,7 +782,11 @@ module ScalarGalaxy
                 ),
               page:
                 T.nilable(
-                  T::Class[ScalarGalaxy::Internal::Type::BasePage[ScalarGalaxy::Internal::Type::BaseModel]]
+                  T::Class[
+                    ScalarGalaxy::Internal::Type::BasePage[
+                      ScalarGalaxy::Internal::Type::BaseModel
+                    ]
+                  ]
                 ),
               stream: T.nilable(T::Class[T.anything]),
               model: T.nilable(ScalarGalaxy::Internal::Type::Converter::Input),

@@ -160,7 +160,8 @@ module ScalarGalaxy
           in Hash | nil => coerced
             coerced
           else
-            message = "Expected a #{Hash} or #{ScalarGalaxy::Internal::Type::BaseModel}, got #{input.inspect}"
+            message =
+              "Expected a #{Hash} or #{ScalarGalaxy::Internal::Type::BaseModel}, got #{input.inspect}"
             raise ArgumentError.new(message)
           end
         end
@@ -264,7 +265,11 @@ module ScalarGalaxy
         #
         # @return [String]
         def encode_path(path)
-          path.to_s.gsub(ScalarGalaxy::Internal::Util::RFC_3986_NOT_PCHARS) { ERB::Util.url_encode(_1) }
+          path
+            .to_s
+            .gsub(ScalarGalaxy::Internal::Util::RFC_3986_NOT_PCHARS) do
+              ERB::Util.url_encode(_1)
+            end
         end
 
         # @api private
@@ -747,13 +752,14 @@ module ScalarGalaxy
           boundary = SecureRandom.urlsafe_base64(46)
 
           closing = []
+          file_input = ScalarGalaxy::Internal::Type::FileInput
           strio =
             writable_enum do |y|
               case body
               in Hash
                 body.each do |key, val|
                   case val
-                  in Array if val.all? { primitive?(_1) || ScalarGalaxy::Internal::Type::FileInput === _1 }
+                  in Array if val.all? { primitive?(_1) || file_input === _1 }
                     val.each do |v|
                       write_multipart_chunk(y, boundary: boundary, key: key, val: v, closing: closing)
                     end
@@ -993,9 +999,8 @@ module ScalarGalaxy
         def close_fused!(enum)
           return unless enum.is_a?(Enumerator)
 
-          # rubocop:disable Lint/UnreachableLoop
+          # rubocop:disable-next Lint/UnreachableLoop
           enum.rewind.each { break }
-          # rubocop:enable Lint/UnreachableLoop
         end
 
         # @api private

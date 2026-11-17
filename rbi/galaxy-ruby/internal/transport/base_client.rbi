@@ -14,21 +14,12 @@ module ScalarGalaxy
             {
               method: Symbol,
               path: T.any(String, T::Array[String]),
-              query:
-                T.nilable(
-                  T::Hash[String, T.nilable(T.any(T::Array[String], String))]
-                ),
+              query: T.nilable(T::Hash[String, T.nilable(T.any(T::Array[String], String))]),
               headers:
                 T.nilable(
                   T::Hash[
                     String,
-                    T.nilable(
-                      T.any(
-                        String,
-                        Integer,
-                        T::Array[T.nilable(T.any(String, Integer))]
-                      )
-                    )
+                    T.nilable(T.any(String, Integer, T::Array[T.nilable(T.any(String, Integer))]))
                   ]
                 ),
               body: T.nilable(T.anything),
@@ -83,20 +74,13 @@ module ScalarGalaxy
         class << self
           # @api private
           sig do
-            params(
-              req:
-                ScalarGalaxy::Internal::Transport::BaseClient::RequestComponents
-            ).void
+            params(req: ScalarGalaxy::Internal::Transport::BaseClient::RequestComponents).void
           end
           def validate!(req)
           end
 
           # @api private
-          sig do
-            params(status: Integer, headers: T::Hash[String, String]).returns(
-              T::Boolean
-            )
-          end
+          sig { params(status: Integer, headers: T::Hash[String, String]).returns(T::Boolean) }
           def should_retry?(status, headers:)
           end
 
@@ -104,43 +88,26 @@ module ScalarGalaxy
           #
           # The wait in seconds a `retry-after-ms` or `Retry-After` header asks for,
           # when it is a finite value over zero and at most `MAX_RETRY_AFTER`.
-          sig do
-            params(
-              headers: T.any(T::Hash[String, String], Net::HTTPResponse)
-            ).returns(T.nilable(Float))
-          end
+          sig { params(headers: T.any(T::Hash[String, String], Net::HTTPResponse)).returns(T.nilable(Float)) }
           def retry_after(headers)
           end
 
           # @api private
-          sig do
-            params(status: Integer, headers: T::Hash[String, String]).returns(
-              T::Boolean
-            )
-          end
+          sig { params(status: Integer, headers: T::Hash[String, String]).returns(T::Boolean) }
           def redirect?(status, headers:)
           end
 
           # @api private
           sig do
             params(
-              request:
-                ScalarGalaxy::Internal::Transport::BaseClient::RequestInput,
+              request: ScalarGalaxy::Internal::Transport::BaseClient::RequestInput,
               status: Integer,
               response_headers: T::Hash[String, String],
               base_url: URI::Generic,
               credential_headers: T::Array[String]
-            ).returns(
-              ScalarGalaxy::Internal::Transport::BaseClient::RequestInput
-            )
+            ).returns(ScalarGalaxy::Internal::Transport::BaseClient::RequestInput)
           end
-          def follow_redirect(
-            request,
-            status:,
-            response_headers:,
-            base_url:,
-            credential_headers:
-          )
+          def follow_redirect(request, status:, response_headers:, base_url:, credential_headers:)
           end
 
           # @api private
@@ -188,16 +155,7 @@ module ScalarGalaxy
             initial_retry_delay: Float,
             max_retry_delay: Float,
             headers:
-              T::Hash[
-                String,
-                T.nilable(
-                  T.any(
-                    String,
-                    Integer,
-                    T::Array[T.nilable(T.any(String, Integer))]
-                  )
-                )
-              ],
+              T::Hash[String, T.nilable(T.any(String, Integer, T::Array[T.nilable(T.any(String, Integer))]))],
             idempotency_header: T.nilable(String)
           ).returns(T.attached_class)
         end
@@ -251,19 +209,15 @@ module ScalarGalaxy
         end
 
         # @api private
-        sig do
-          params(url: T.nilable(URI::Generic)).returns(T.nilable(URI::Generic))
-        end
+        sig { params(url: T.nilable(URI::Generic)).returns(T.nilable(URI::Generic)) }
         private def redact_url(url)
         end
 
         # @api private
         sig do
           params(
-            previous:
-              ScalarGalaxy::Internal::Transport::BaseClient::RequestInput,
-            redirected:
-              ScalarGalaxy::Internal::Transport::BaseClient::RequestInput
+            previous: ScalarGalaxy::Internal::Transport::BaseClient::RequestInput,
+            redirected: ScalarGalaxy::Internal::Transport::BaseClient::RequestInput
           ).returns(ScalarGalaxy::Internal::Transport::BaseClient::RequestInput)
         end
         private def reauthorize_redirect(previous, redirected)
@@ -283,43 +237,29 @@ module ScalarGalaxy
         sig do
           overridable
             .params(
-              req:
-                ScalarGalaxy::Internal::Transport::BaseClient::RequestComponents,
+              req: ScalarGalaxy::Internal::Transport::BaseClient::RequestComponents,
               opts: ScalarGalaxy::Internal::AnyHash
             )
-            .returns(
-              ScalarGalaxy::Internal::Transport::BaseClient::RequestInput
-            )
+            .returns(ScalarGalaxy::Internal::Transport::BaseClient::RequestInput)
         end
         private def build_request(req, opts)
         end
 
         # @api private
-        sig do
-          params(
-            headers: T::Hash[String, String],
-            retry_count: Integer
-          ).returns(Float)
-        end
+        sig { params(headers: T::Hash[String, String], retry_count: Integer).returns(Float) }
         private def retry_delay(headers, retry_count:)
         end
 
         # @api private
         sig do
           params(
-            request:
-              ScalarGalaxy::Internal::Transport::BaseClient::RequestInput,
+            request: ScalarGalaxy::Internal::Transport::BaseClient::RequestInput,
             redirect_count: Integer,
             retry_count: Integer,
             send_retry_header: T::Boolean
           ).returns([Integer, Net::HTTPResponse, T::Enumerable[String]])
         end
-        def send_request(
-          request,
-          redirect_count:,
-          retry_count:,
-          send_retry_header:
-        )
+        def send_request(request, redirect_count:, retry_count:, send_retry_header:)
         end
 
         # Execute the request specified by `req`. This is the method that all resource
@@ -330,21 +270,12 @@ module ScalarGalaxy
           params(
             method: Symbol,
             path: T.any(String, T::Array[String]),
-            query:
-              T.nilable(
-                T::Hash[String, T.nilable(T.any(T::Array[String], String))]
-              ),
+            query: T.nilable(T::Hash[String, T.nilable(T.any(T::Array[String], String))]),
             headers:
               T.nilable(
                 T::Hash[
                   String,
-                  T.nilable(
-                    T.any(
-                      String,
-                      Integer,
-                      T::Array[T.nilable(T.any(String, Integer))]
-                    )
-                  )
+                  T.nilable(T.any(String, Integer, T::Array[T.nilable(T.any(String, Integer))]))
                 ]
               ),
             body: T.nilable(T.anything),

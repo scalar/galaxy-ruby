@@ -2,7 +2,7 @@ module ScalarGalaxy
   module Resources
     class CelestialBodies
       def create: (
-        celestial_body: ScalarGalaxy::Models::celestial_body,
+        celestial_body: ScalarGalaxy::Models::celestial_body_param,
         ?request_options: ScalarGalaxy::request_opts
       ) -> ScalarGalaxy::Models::celestial_body
 

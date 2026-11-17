@@ -27,11 +27,7 @@ module ScalarGalaxy
 
         # @api private
         sig do
-          returns(
-            T::Array[
-              [T.nilable(Symbol), T.anything, ScalarGalaxy::Internal::AnyHash]
-            ]
-          )
+          returns(T::Array[[T.nilable(Symbol), T.anything, ScalarGalaxy::Internal::AnyHash]])
         end
         protected def derefed_variants
         end
@@ -56,12 +52,7 @@ module ScalarGalaxy
                 T.proc.returns(T.anything),
                 T.anything
               ),
-            spec:
-              T.any(
-                ScalarGalaxy::Internal::AnyHash,
-                T.proc.returns(T.anything),
-                T.anything
-              )
+            spec: T.any(ScalarGalaxy::Internal::AnyHash, T.proc.returns(T.anything), T.anything)
           ).void
         end
         private def variant(key, spec = nil)

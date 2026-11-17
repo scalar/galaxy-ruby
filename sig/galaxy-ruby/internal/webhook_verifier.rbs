@@ -10,6 +10,10 @@ module ScalarGalaxy
 
       TOLERANCE_SECONDS: Integer
 
+      DEFAULT_ALGORITHM: String
+
+      HMAC_DIGESTS: ::Hash[String, String]
+
       module LegacyRescue
         def ===: (top other) -> bool
       end
@@ -17,7 +21,13 @@ module ScalarGalaxy
       def self.verify!: (
         String payload,
         ::Hash[String | Symbol, String | ::Array[String]] headers,
-        String secret
+        String secret,
+        ?algorithm: String,
+        ?id_header: String,
+        ?timestamp_header: String,
+        ?signature_header: String,
+        ?tolerance: Integer,
+        ?decoder: String?
       ) -> void
 
       def self.header_value: (
@@ -27,7 +37,7 @@ module ScalarGalaxy
 
       def self.decode_secret: (String secret) -> String
 
-      def self.verify_timestamp!: (String msg_timestamp) -> void
+      def self.verify_timestamp!: (String msg_timestamp, ?Integer tolerance) -> void
 
       def self.secure_compare: (
         String expected,

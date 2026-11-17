@@ -4,7 +4,7 @@ module ScalarGalaxy
       def create: (
         name: String,
         ?atmosphere: ::Array[ScalarGalaxy::Planet::Atmosphere],
-        ?creator: ScalarGalaxy::User,
+        ?creator: ScalarGalaxy::UserParam,
         ?description: String?,
         ?discovered_at: Time,
         ?failure_callback_url: String,
@@ -27,7 +27,7 @@ module ScalarGalaxy
         Integer planet_id,
         name: String,
         ?atmosphere: ::Array[ScalarGalaxy::Planet::Atmosphere],
-        ?creator: ScalarGalaxy::User,
+        ?creator: ScalarGalaxy::UserParam,
         ?description: String?,
         ?discovered_at: Time,
         ?failure_callback_url: String,

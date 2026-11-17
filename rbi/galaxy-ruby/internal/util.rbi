@@ -39,67 +39,39 @@ module ScalarGalaxy
         end
 
         # @api private
-        sig do
-          params(input: T.any(String, T::Boolean)).returns(
-            T.any(T::Boolean, T.anything)
-          )
-        end
+        sig { params(input: T.any(String, T::Boolean)).returns(T.any(T::Boolean, T.anything)) }
         def coerce_boolean(input)
         end
 
         # @api private
-        sig do
-          params(input: T.any(String, T::Boolean)).returns(
-            T.nilable(T::Boolean)
-          )
-        end
+        sig { params(input: T.any(String, T::Boolean)).returns(T.nilable(T::Boolean)) }
         def coerce_boolean!(input)
         end
 
         # @api private
-        sig do
-          params(input: T.any(String, Integer)).returns(
-            T.any(Integer, T.anything)
-          )
-        end
+        sig { params(input: T.any(String, Integer)).returns(T.any(Integer, T.anything)) }
         def coerce_integer(input)
         end
 
         # @api private
-        sig do
-          params(input: T.any(String, Integer, Float)).returns(
-            T.any(Float, T.anything)
-          )
-        end
+        sig { params(input: T.any(String, Integer, Float)).returns(T.any(Float, T.anything)) }
         def coerce_float(input)
         end
 
         # @api private
-        sig do
-          params(input: T.anything).returns(
-            T.any(T::Hash[T.anything, T.anything], T.anything)
-          )
-        end
+        sig { params(input: T.anything).returns(T.any(T::Hash[T.anything, T.anything], T.anything)) }
         def coerce_hash(input)
         end
 
         # @api private
-        sig do
-          params(input: T.anything).returns(
-            T.nilable(T::Hash[T.anything, T.anything])
-          )
-        end
+        sig { params(input: T.anything).returns(T.nilable(T::Hash[T.anything, T.anything])) }
         def coerce_hash!(input)
         end
       end
 
       class << self
         # @api private
-        sig do
-          params(lhs: T.anything, rhs: T.anything, concat: T::Boolean).returns(
-            T.anything
-          )
-        end
+        sig { params(lhs: T.anything, rhs: T.anything, concat: T::Boolean).returns(T.anything) }
         private def deep_merge_lr(lhs, rhs, concat: false)
         end
 
@@ -108,11 +80,9 @@ module ScalarGalaxy
         # Recursively merge one hash with another. If the values at a given key are not
         # both hashes, just take the new value.
         sig do
-          params(
-            values: T::Array[T.anything],
-            sentinel: T.nilable(T.anything),
-            concat: T::Boolean
-          ).returns(T.anything)
+          params(values: T::Array[T.anything], sentinel: T.nilable(T.anything), concat: T::Boolean).returns(
+            T.anything
+          )
         end
         def deep_merge(
           *values,
@@ -126,12 +96,7 @@ module ScalarGalaxy
         # @api private
         sig do
           params(
-            data:
-              T.any(
-                ScalarGalaxy::Internal::AnyHash,
-                T::Array[T.anything],
-                T.anything
-              ),
+            data: T.any(ScalarGalaxy::Internal::AnyHash, T::Array[T.anything], T.anything),
             pick:
               T.nilable(
                 T.any(
@@ -173,11 +138,7 @@ module ScalarGalaxy
 
       class << self
         # @api private
-        sig do
-          params(query: T.nilable(String)).returns(
-            T::Hash[String, T::Array[String]]
-          )
-        end
+        sig { params(query: T.nilable(String)).returns(T::Hash[String, T::Array[String]]) }
         def decode_query(query)
         end
 
@@ -188,12 +149,9 @@ module ScalarGalaxy
 
         # @api private
         sig do
-          params(
-            query:
-              T.nilable(
-                T::Hash[String, T.nilable(T.any(T::Array[String], String))]
-              )
-          ).returns(T.nilable(String))
+          params(query: T.nilable(T::Hash[String, T.nilable(T.any(T::Array[String], String))])).returns(
+            T.nilable(String)
+          )
         end
         def encode_query(query)
         end
@@ -222,9 +180,7 @@ module ScalarGalaxy
 
         # @api private
         sig do
-          params(parsed: ScalarGalaxy::Internal::Util::ParsedUri).returns(
-            URI::Generic
-          )
+          params(parsed: ScalarGalaxy::Internal::Util::ParsedUri).returns(URI::Generic)
         end
         def unparse_uri(parsed)
         end
@@ -245,16 +201,7 @@ module ScalarGalaxy
         sig do
           params(
             headers:
-              T::Hash[
-                String,
-                T.nilable(
-                  T.any(
-                    String,
-                    Integer,
-                    T::Array[T.nilable(T.any(String, Integer))]
-                  )
-                )
-              ]
+              T::Hash[String, T.nilable(T.any(String, Integer, T::Array[T.nilable(T.any(String, Integer))]))]
           ).returns(T::Hash[String, String])
         end
         def normalized_headers(*headers)
@@ -296,12 +243,7 @@ module ScalarGalaxy
         end
 
         # @api private
-        sig do
-          params(
-            max_len: T.nilable(Integer),
-            out_string: T.nilable(String)
-          ).returns(T.nilable(String))
-        end
+        sig { params(max_len: T.nilable(Integer), out_string: T.nilable(String)).returns(T.nilable(String)) }
         def read(max_len = nil, out_string = nil)
         end
 
@@ -317,19 +259,13 @@ module ScalarGalaxy
       end
 
       class << self
-        sig do
-          params(blk: T.proc.params(y: Enumerator::Yielder).void).returns(
-            T::Enumerable[String]
-          )
-        end
+        sig { params(blk: T.proc.params(y: Enumerator::Yielder).void).returns(T::Enumerable[String]) }
         def writable_enum(&blk)
         end
       end
 
-      JSON_CONTENT =
-        T.let(%r{^application/(?:[a-zA-Z0-9.-]+\+)?json(?!l)}, Regexp)
-      JSONL_CONTENT =
-        T.let(%r{^application/(:?x-(?:n|l)djson)|(:?(?:x-)?jsonl)}, Regexp)
+      JSON_CONTENT = T.let(%r{^application/(?:[a-zA-Z0-9.-]+\+)?json(?!l)}, Regexp)
+      JSONL_CONTENT = T.let(%r{^application/(:?x-(?:n|l)djson)|(:?(?:x-)?jsonl)}, Regexp)
 
       # Most bytes of a response body the SDK holds to decode it, counted after
       # decompression.
@@ -378,12 +314,7 @@ module ScalarGalaxy
             content_type: T.nilable(String)
           ).void
         end
-        private def write_multipart_content(
-          y,
-          val:,
-          closing:,
-          content_type: nil
-        )
+        private def write_multipart_content(y, val:, closing:, content_type: nil)
         end
 
         # @api private
@@ -402,9 +333,7 @@ module ScalarGalaxy
         # @api private
         #
         # https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.1.md#special-considerations-for-multipart-content
-        sig do
-          params(body: T.anything).returns([String, T::Enumerable[String]])
-        end
+        sig { params(body: T.anything).returns([String, T::Enumerable[String]]) }
         private def encode_multipart_streaming(body)
         end
 
@@ -421,11 +350,7 @@ module ScalarGalaxy
         end
 
         # @api private
-        sig do
-          params(headers: T::Hash[String, String], body: T.anything).returns(
-            T.anything
-          )
-        end
+        sig { params(headers: T::Hash[String, String], body: T.anything).returns(T.anything) }
         def encode_content(headers, body)
         end
 
@@ -439,13 +364,7 @@ module ScalarGalaxy
         # @api private
         #
         # Reads a body into one string, holding at most `limit` bytes of it.
-        sig do
-          params(
-            stream: T::Enumerable[String],
-            limit: Integer,
-            truncate: T::Boolean
-          ).returns(String)
-        end
+        sig { params(stream: T::Enumerable[String], limit: Integer, truncate: T::Boolean).returns(String) }
         def read_body(stream, limit:, truncate: false)
         end
 
@@ -461,13 +380,7 @@ module ScalarGalaxy
             download: T::Boolean
           ).returns(T.anything)
         end
-        def decode_content(
-          headers,
-          stream:,
-          suppress_error: false,
-          truncate_at: nil,
-          download: false
-        )
+        def decode_content(headers, stream:, suppress_error: false, truncate_at: nil, download: false)
         end
       end
 
@@ -476,11 +389,9 @@ module ScalarGalaxy
         #
         # https://doc.rust-lang.org/std/iter/trait.FusedIterator.html
         sig do
-          params(
-            enum: T::Enumerable[T.anything],
-            external: T::Boolean,
-            close: T.proc.void
-          ).returns(T::Enumerable[T.anything])
+          params(enum: T::Enumerable[T.anything], external: T::Boolean, close: T.proc.void).returns(
+            T::Enumerable[T.anything]
+          )
         end
         def fused_enum(enum, external: false, &close)
         end
@@ -518,9 +429,7 @@ module ScalarGalaxy
         #
         # This decoder is responsible for reassembling lines split across multiple
         # fragments.
-        sig do
-          params(enum: T::Enumerable[String]).returns(T::Enumerable[String])
-        end
+        sig { params(enum: T::Enumerable[String]).returns(T::Enumerable[String]) }
         def decode_lines(enum)
         end
 
@@ -580,11 +489,7 @@ module ScalarGalaxy
           # @api private
           sig do
             params(
-              type:
-                T.any(
-                  ScalarGalaxy::Internal::Util::SorbetRuntimeSupport,
-                  T.anything
-                )
+              type: T.any(ScalarGalaxy::Internal::Util::SorbetRuntimeSupport, T.anything)
             ).returns(T.anything)
           end
           def to_sorbet_type(type)

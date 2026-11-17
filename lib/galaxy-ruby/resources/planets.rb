@@ -13,7 +13,7 @@ module ScalarGalaxy
       #
       # @param atmosphere [Array<ScalarGalaxy::Models::Planet::Atmosphere>] Atmospheric composition
       #
-      # @param creator [ScalarGalaxy::Models::User] A user
+      # @param creator [ScalarGalaxy::Models::UserParam] A user
       #
       # @param description [String, nil]
       #
@@ -83,7 +83,7 @@ module ScalarGalaxy
       #
       # @param atmosphere [Array<ScalarGalaxy::Models::Planet::Atmosphere>] Atmospheric composition
       #
-      # @param creator [ScalarGalaxy::Models::User] A user
+      # @param creator [ScalarGalaxy::Models::UserParam] A user
       #
       # @param description [String, nil]
       #
@@ -187,9 +187,7 @@ module ScalarGalaxy
         @client.request(
           method: :post,
           path: ["planets/%1$s/image", planet_id],
-          headers: {
-            "content-type" => "multipart/form-data"
-          },
+          headers: {"content-type" => "multipart/form-data"},
           body: parsed,
           model: ScalarGalaxy::Models::PlanetUploadImageResponse,
           options: options

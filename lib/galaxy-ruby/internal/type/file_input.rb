@@ -36,7 +36,9 @@ module ScalarGalaxy
         # @param other [Object]
         #
         # @return [Boolean]
-        def self.==(other) = other.is_a?(Class) && other <= ScalarGalaxy::Internal::Type::FileInput
+        def self.==(other)
+          other.is_a?(Class) && other <= ScalarGalaxy::Internal::Type::FileInput
+        end
 
         class << self
           # @api private
@@ -89,7 +91,11 @@ module ScalarGalaxy
               ScalarGalaxy::FilePart.new(value, filename: "upload")
             in IO
               state[:can_retry] = false
-              value.to_path.nil? ? ScalarGalaxy::FilePart.new(value, filename: "upload") : value
+              if value.to_path.nil?
+                ScalarGalaxy::FilePart.new(value, filename: "upload")
+              else
+                value
+              end
             in ScalarGalaxy::FilePart if value.content.is_a?(IO)
               state[:can_retry] = false
               value

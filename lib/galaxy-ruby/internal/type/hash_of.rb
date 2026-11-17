@@ -126,7 +126,9 @@ module ScalarGalaxy
         def dump(value, state:)
           target = item_type
           if value.is_a?(Hash)
-            value.transform_values { ScalarGalaxy::Internal::Type::Converter.dump(target, _1, state: state) }
+            value.transform_values do
+              ScalarGalaxy::Internal::Type::Converter.dump(target, _1, state: state)
+            end
           else
             super
           end

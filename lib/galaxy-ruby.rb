@@ -21,7 +21,8 @@ require "uri"
 
 # We already ship the preferred sorbet manifests in the package itself.
 # `tapioca` currently does not offer us a way to opt out of unnecessary compilation.
-if Object.const_defined?(:Tapioca) && caller.chain([$PROGRAM_NAME]).chain(ARGV).any?(/tapioca/) &&
+if Object.const_defined?(:Tapioca) &&
+   caller.chain([$PROGRAM_NAME]).chain(ARGV).any?(/tapioca/) &&
    ARGV.none?(/dsl/)
   return
 end
@@ -57,17 +58,20 @@ require_relative "galaxy-ruby/models/authentication_create_user_params"
 require_relative "galaxy-ruby/models/authentication_list_me_params"
 require_relative "galaxy-ruby/models/celestial_body"
 require_relative "galaxy-ruby/models/celestial_body_create_params"
+require_relative "galaxy-ruby/models/celestial_body_param"
 require_relative "galaxy-ruby/models/new_planet_webhook_event"
 require_relative "galaxy-ruby/models/planet_create_params"
 require_relative "galaxy-ruby/models/planet_delete_params"
 require_relative "galaxy-ruby/models/planet_list_params"
 require_relative "galaxy-ruby/models/planet_list_response"
+require_relative "galaxy-ruby/models/planet_param"
 require_relative "galaxy-ruby/models/planet_retrieve_params"
 require_relative "galaxy-ruby/models/planet_update_params"
 require_relative "galaxy-ruby/models/planet_upload_image_params"
 require_relative "galaxy-ruby/models/planet_upload_image_response"
 require_relative "galaxy-ruby/models/unwrap_webhook_event"
 require_relative "galaxy-ruby/models/user"
+require_relative "galaxy-ruby/models/user_param"
 require_relative "galaxy-ruby/models/webhook_unwrap_params"
 require_relative "galaxy-ruby/models"
 require_relative "galaxy-ruby/resources/planets"

@@ -2,8 +2,9 @@
 
 module ScalarGalaxy
   module Errors
-    # Raised when a webhook delivery fails Standard Webhooks signature verification: a required
-    # header is missing, the timestamp is unreadable or outside the tolerance, or no signature matches.
+    # Raised when a webhook delivery fails signature verification: a required header is missing, the
+    # timestamp is unreadable or outside the tolerance, no signature matches, or the helper is signed
+    # with an algorithm this SDK cannot verify, which refuses every delivery.
     class WebhookVerificationError < ScalarGalaxy::Errors::Error
     end
   end
@@ -11,9 +12,11 @@ module ScalarGalaxy
   module Internal
     # @api private
     #
-    # Verifies Standard Webhooks signatures with the standard library alone: an HMAC-SHA256 over
-    # `"<id>.<timestamp>.<payload>"`, keyed with the base64-decoded secret, which the
-    # `webhook-signature` header carries as one or more space-separated `v1,<base64>` entries.
+    # Verifies Standard Webhooks signatures with the standard library alone: an HMAC (SHA-256 unless
+    # the helper's scheme names SHA-1 or SHA-512) over `"<id>.<timestamp>.<payload>"`, keyed with the
+    # base64-decoded secret, which the `webhook-signature` header carries as one or more
+    # space-separated `v1,<base64>` entries. The header names and the replay window come from the
+    # helper's scheme too; each generated helper passes the ones it differs from the defaults in.
     #
     # @see https://github.com/standard-webhooks/standard-webhooks/blob/main/spec/standard-webhooks.md
     module WebhookVerifier
@@ -24,6 +27,14 @@ module ScalarGalaxy
       # signature covers the timestamp, so this bounds how long a captured delivery can be replayed;
       # the future side allows for a sender whose clock runs ahead.
       TOLERANCE_SECONDS = 5 * 60
+
+      # The scheme a helper verifies with when it names none: Standard Webhooks' HMAC-SHA256.
+      DEFAULT_ALGORITHM = "hmac-sha256"
+
+      # The `OpenSSL::Digest` each HMAC scheme a config can name is computed with. A scheme missing
+      # here (`ed25519`, `rsa-sha256`) is one this runtime cannot check, and `verify!` refuses every
+      # delivery for it rather than accepting one unchecked.
+      HMAC_DIGESTS = {"hmac-sha1" => "SHA1", "hmac-sha256" => "SHA256", "hmac-sha512" => "SHA512"}.freeze
 
       # @api private
       #
@@ -42,6 +53,8 @@ module ScalarGalaxy
         def ===(other)
           return true if super
 
+          # `Module#===` rather than `is_a?`, which a `BasicObject` does not have (see above).
+          # rubocop:disable-next Style/CaseEquality
           (
             equal?(::StandardWebhooks::StandardWebhooksError) ||
               equal?(::StandardWebhooks::WebhookVerificationError)
@@ -56,24 +69,53 @@ module ScalarGalaxy
         # @param headers [Hash{String, Symbol=>String, Array<String>}] names match in any case; see
         #   {header_value}
         # @param secret [String] the signing secret, with or without the `whsec_` prefix
+        # @param algorithm [String] the helper's configured scheme, as config spells it (`hmac-sha512`)
+        # @param id_header [String] the lowercase name of the header carrying the message id
+        # @param timestamp_header [String] the lowercase name of the header carrying the timestamp
+        # @param signature_header [String] the lowercase name of the header carrying the signatures
+        # @param tolerance [Integer] how far, in seconds, the timestamp may sit from now either way
+        # @param decoder [String, nil] the helper's decode-only method, named in the error an
+        #   unsupported algorithm raises; `nil` when the helper generates none
         #
         # @raise [ArgumentError] when the secret decodes to no key bytes at all
-        # @raise [ScalarGalaxy::Errors::WebhookVerificationError]
+        # @raise [ScalarGalaxy::Errors::WebhookVerificationError] also for an algorithm this runtime
+        #   cannot check, whatever the delivery carries
         # @return [void]
-        def verify!(payload, headers, secret)
+        def verify!(
+          payload,
+          headers,
+          secret,
+          algorithm: DEFAULT_ALGORITHM,
+          id_header: "webhook-id",
+          timestamp_header: "webhook-timestamp",
+          signature_header: "webhook-signature",
+          tolerance: TOLERANCE_SECONDS,
+          decoder: nil
+        )
+          # Checked before anything else, the secret included: no delivery can verify under a scheme
+          # this runtime does not implement, so none is ever accepted, and the message says what to do.
+          digest = HMAC_DIGESTS[algorithm]
+          unless digest
+            # The decode-only method is configurable (and can be turned off), so the helper names it.
+            decode = decoder ? "decode the payload with #{decoder}" : "decode the payload yourself"
+            raise ScalarGalaxy::Errors::WebhookVerificationError,
+                  "Unsupported webhook signature algorithm #{algorithm}: this SDK cannot verify it; " \
+                  "check the signature yourself, then #{decode}"
+          end
+
           key = decode_secret(secret)
 
-          msg_id = header_value(headers, "webhook-id")
-          msg_timestamp = header_value(headers, "webhook-timestamp")
-          msg_signature = header_value(headers, "webhook-signature")
+          msg_id = header_value(headers, id_header)
+          msg_timestamp = header_value(headers, timestamp_header)
+          msg_signature = header_value(headers, signature_header)
           if !msg_id || !msg_timestamp || !msg_signature
             raise ScalarGalaxy::Errors::WebhookVerificationError, "Missing required headers"
           end
 
-          verify_timestamp!(msg_timestamp)
+          verify_timestamp!(msg_timestamp, tolerance)
 
           signed = "#{msg_id}.#{msg_timestamp}.#{payload}"
-          expected = [OpenSSL::HMAC.digest(OpenSSL::Digest.new("SHA256"), key, signed)].pack("m0")
+          expected = [OpenSSL::HMAC.digest(OpenSSL::Digest.new(digest), key, signed)].pack("m0")
           # `split(" ")` splits on any run of whitespace, so a header folded with tabs or newlines
           # still yields its entries. The explicit pattern matters: a bare `split` uses `$;` when the
           # host process has set it. Entries for other versions are skipped rather than rejected,
@@ -148,9 +190,10 @@ module ScalarGalaxy
         # seconds. The signature is still computed over the header exactly as it was sent.
         #
         # @param msg_timestamp [String]
+        # @param tolerance [Integer] the replay window, in seconds, on each side of now
         #
         # @raise [ScalarGalaxy::Errors::WebhookVerificationError]
-        private def verify_timestamp!(msg_timestamp)
+        private def verify_timestamp!(msg_timestamp, tolerance = TOLERANCE_SECONDS)
           timestamp =
             begin
               Integer(msg_timestamp)
@@ -159,10 +202,10 @@ module ScalarGalaxy
             end
 
           now = Time.now.to_i
-          if timestamp < now - TOLERANCE_SECONDS
+          if timestamp < now - tolerance
             raise ScalarGalaxy::Errors::WebhookVerificationError, "Message timestamp too old"
           end
-          return unless timestamp > now + TOLERANCE_SECONDS
+          return unless timestamp > now + tolerance
 
           raise ScalarGalaxy::Errors::WebhookVerificationError, "Message timestamp too new"
         end
