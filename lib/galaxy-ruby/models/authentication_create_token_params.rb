@@ -7,7 +7,13 @@ module ScalarGalaxy
       extend ScalarGalaxy::Internal::Type::RequestParameters::Converter
       include ScalarGalaxy::Internal::Type::RequestParameters
 
-      # @!method initialize(request_options: {})
+      # @!attribute password
+      #
+      #   @return [String]
+      required :password, String
+
+      # @!method initialize(password:, request_options: {})
+      #   @param password [String]
       #   @param request_options [ScalarGalaxy::RequestOptions, Hash{Symbol=>Object}]
     end
   end

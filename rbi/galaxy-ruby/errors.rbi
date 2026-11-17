@@ -63,15 +63,7 @@ module ScalarGalaxy
           message: T.nilable(String)
         ).returns(T.attached_class)
       end
-      def self.new(
-        url:,
-        status: nil,
-        headers: nil,
-        body: nil,
-        request: nil,
-        response: nil,
-        message: nil
-      )
+      def self.new(url:, status: nil, headers: nil, body: nil, request: nil, response: nil, message: nil)
       end
     end
 
@@ -144,15 +136,7 @@ module ScalarGalaxy
           message: T.nilable(String)
         ).returns(T.attached_class)
       end
-      def self.for(
-        url:,
-        status:,
-        headers:,
-        body:,
-        request:,
-        response:,
-        message: nil
-      )
+      def self.for(url:, status:, headers:, body:, request:, response:, message: nil)
       end
 
       sig { returns(Integer) }
@@ -170,15 +154,7 @@ module ScalarGalaxy
           message: T.nilable(String)
         ).returns(T.attached_class)
       end
-      def self.new(
-        url:,
-        status:,
-        headers:,
-        body:,
-        request:,
-        response:,
-        message: nil
-      )
+      def self.new(url:, status:, headers:, body:, request:, response:, message: nil)
       end
     end
 
@@ -219,9 +195,7 @@ module ScalarGalaxy
     # class is declared so code that rescues or names it keeps working.
     class MissingDependencyError < ScalarGalaxy::Errors::Error
       # @api private
-      sig do
-        params(gem_name: String, feature: String).returns(T.attached_class)
-      end
+      sig { params(gem_name: String, feature: String).returns(T.attached_class) }
       def self.new(gem_name:, feature:)
       end
     end

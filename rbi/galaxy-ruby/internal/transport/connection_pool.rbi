@@ -7,10 +7,7 @@ module ScalarGalaxy
       class ConnectionPool
         # @api private
         sig do
-          params(
-            timeout: Float,
-            blk: T.proc.params(arg0: Net::HTTP).returns(T.anything)
-          ).returns(T.anything)
+          params(timeout: Float, blk: T.proc.params(arg0: Net::HTTP).returns(T.anything)).returns(T.anything)
         end
         def with(timeout:, &blk)
         end
@@ -38,11 +35,7 @@ module ScalarGalaxy
         end
 
         # @api private
-        sig do
-          params(size: Integer, blk: T.proc.returns(Net::HTTP)).returns(
-            T.attached_class
-          )
-        end
+        sig { params(size: Integer, blk: T.proc.returns(Net::HTTP)).returns(T.attached_class) }
         def self.new(size:, &blk)
         end
       end

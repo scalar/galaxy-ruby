@@ -10,8 +10,8 @@ module ScalarGalaxy
         params(
           celestial_body:
             T.any(
-              ScalarGalaxy::Planet::OrHash,
-              ScalarGalaxy::CelestialBody::Satellite::OrHash
+              ScalarGalaxy::PlanetParam::OrHash,
+              ScalarGalaxy::CelestialBodyParam::Satellite::OrHash
             ),
           request_options: ScalarGalaxy::RequestOptions::OrHash
         ).returns(ScalarGalaxy::CelestialBody::Variants)

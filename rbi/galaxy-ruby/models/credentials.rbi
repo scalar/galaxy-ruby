@@ -11,12 +11,9 @@ module ScalarGalaxy
       sig { returns(String) }
       attr_accessor :email
 
-      sig { returns(String) }
-      attr_accessor :password
-
       # Credentials to authenticate a user
-      sig { params(email: String, password: String).returns(T.attached_class) }
-      def self.new(email:, password:)
+      sig { params(email: String).returns(T.attached_class) }
+      def self.new(email:)
       end
 
       sig { override.returns({ email: String, password: String }) }

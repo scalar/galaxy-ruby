@@ -29,8 +29,7 @@ module ScalarGalaxy
         sig do
           params(
             client: ScalarGalaxy::Internal::Transport::BaseClient,
-            req:
-              ScalarGalaxy::Internal::Transport::BaseClient::RequestComponents,
+            req: ScalarGalaxy::Internal::Transport::BaseClient::RequestComponents,
             headers: T::Hash[String, String],
             page_data: T.anything
           ).void

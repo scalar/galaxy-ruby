@@ -24,11 +24,7 @@ module ScalarGalaxy
 
     # Extra query params to send with the request. These are `.merge`’d into any
     # `query` given at the client level.
-    sig do
-      returns(
-        T.nilable(T::Hash[String, T.nilable(T.any(T::Array[String], String))])
-      )
-    end
+    sig { returns(T.nilable(T::Hash[String, T.nilable(T.any(T::Array[String], String))])) }
     attr_accessor :extra_query
 
     # Extra headers to send with the request. These are `.merged`’d into any
@@ -50,9 +46,7 @@ module ScalarGalaxy
     attr_accessor :timeout
 
     # Returns a new instance of RequestOptions.
-    sig do
-      params(values: ScalarGalaxy::Internal::AnyHash).returns(T.attached_class)
-    end
+    sig { params(values: ScalarGalaxy::Internal::AnyHash).returns(T.attached_class) }
     def self.new(values = {})
     end
   end

@@ -1,22 +1,22 @@
 module ScalarGalaxy
   module Models
     type celestial_body_create_params =
-      { celestial_body: ScalarGalaxy::Models::celestial_body }
+      { celestial_body: ScalarGalaxy::Models::celestial_body_param }
       & ScalarGalaxy::Internal::Type::request_parameters
 
     class CelestialBodyCreateParams < ScalarGalaxy::Internal::Type::BaseModel
       extend ScalarGalaxy::Internal::Type::RequestParameters::Converter
       include ScalarGalaxy::Internal::Type::RequestParameters
 
-      attr_accessor celestial_body: ScalarGalaxy::Models::celestial_body
+      attr_accessor celestial_body: ScalarGalaxy::Models::celestial_body_param
 
       def initialize: (
-        celestial_body: ScalarGalaxy::Models::celestial_body,
+        celestial_body: ScalarGalaxy::Models::celestial_body_param,
         ?request_options: ScalarGalaxy::request_opts
       ) -> void
 
       def to_hash: -> {
-        celestial_body: ScalarGalaxy::Models::celestial_body,
+        celestial_body: ScalarGalaxy::Models::celestial_body_param,
         request_options: ScalarGalaxy::RequestOptions
       }
     end

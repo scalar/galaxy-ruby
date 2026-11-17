@@ -35,6 +35,19 @@ require_relative "../lib/galaxy-ruby"
 $ ruby ./examples/<your-example>.rb
 ```
 
+## Running the smoke tests
+
+Every resource has a minitest file under `test/galaxy-ruby/` that calls each of its methods, once with
+only the required arguments and, where it has optional ones, once with every argument.
+The tests skip unless `TEST_API_BASE_URL` names a server to call, so a plain run never reaches
+the real API:
+
+```bash
+$ TEST_API_BASE_URL=http://localhost:4010 bundle exec rake test
+```
+
+Credentials come from the environment variables the client itself reads.
+
 ## Using the repository from source
 
 To install from git in your `Gemfile`:

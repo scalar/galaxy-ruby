@@ -1,0 +1,15 @@
+module ScalarGalaxy
+  module Models
+    type user_param = { name: String }
+
+    class UserParam < ScalarGalaxy::Internal::Type::BaseModel
+      attr_reader name: String?
+
+      def name=: (String) -> String
+
+      def initialize: (?name: String) -> void
+
+      def to_hash: -> { name: String }
+    end
+  end
+end

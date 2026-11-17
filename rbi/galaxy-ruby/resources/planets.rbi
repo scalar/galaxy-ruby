@@ -10,7 +10,7 @@ module ScalarGalaxy
         params(
           name: String,
           atmosphere: T::Array[ScalarGalaxy::Planet::Atmosphere::OrHash],
-          creator: ScalarGalaxy::User::OrHash,
+          creator: ScalarGalaxy::UserParam::OrHash,
           description: T.nilable(String),
           discovered_at: Time,
           failure_callback_url: String,
@@ -69,7 +69,7 @@ module ScalarGalaxy
           planet_id: Integer,
           name: String,
           atmosphere: T::Array[ScalarGalaxy::Planet::Atmosphere::OrHash],
-          creator: ScalarGalaxy::User::OrHash,
+          creator: ScalarGalaxy::UserParam::OrHash,
           description: T.nilable(String),
           discovered_at: Time,
           failure_callback_url: String,

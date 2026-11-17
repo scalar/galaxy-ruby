@@ -6,10 +6,11 @@ module ScalarGalaxy
       sig do
         params(
           payload: String,
-          headers:
-            T::Hash[T.any(String, Symbol), T.any(String, T::Array[String])],
+          headers: T::Hash[T.any(String, Symbol), T.any(String, T::Array[String])],
           key: T.nilable(String)
-        ).returns(ScalarGalaxy::NewPlanetWebhookEvent)
+        ).returns(
+          ScalarGalaxy::NewPlanetWebhookEvent
+        )
       end
       def unwrap(
         # The raw webhook payload as a string
@@ -28,10 +29,11 @@ module ScalarGalaxy
       sig do
         params(
           payload: String,
-          headers:
-            T::Hash[T.any(String, Symbol), T.any(String, T::Array[String])],
+          headers: T::Hash[T.any(String, Symbol), T.any(String, T::Array[String])],
           key: T.nilable(String)
-        ).returns(ScalarGalaxy::NewPlanetWebhookEvent)
+        ).returns(
+          ScalarGalaxy::NewPlanetWebhookEvent
+        )
       end
       def parsed(
         # The raw webhook payload as a string
@@ -67,7 +69,11 @@ module ScalarGalaxy
       #
       # Only use this for a payload whose signature was already verified, or in tests.
       sig do
-        params(payload: String).returns(ScalarGalaxy::NewPlanetWebhookEvent)
+        params(
+          payload: String
+        ).returns(
+          ScalarGalaxy::NewPlanetWebhookEvent
+        )
       end
       def parse_unsafe(
         # The raw webhook payload as a string

@@ -8,10 +8,7 @@ module ScalarGalaxy
     # this alias might be refined in the future.
     AnyHash = T.type_alias { T::Hash[Symbol, T.anything] }
 
-    FileInput =
-      T.type_alias do
-        T.any(Pathname, StringIO, IO, String, ScalarGalaxy::FilePart)
-      end
+    FileInput = T.type_alias { T.any(Pathname, StringIO, IO, String, ScalarGalaxy::FilePart) }
 
     OMIT = T.let(Object.new.freeze, T.anything)
   end

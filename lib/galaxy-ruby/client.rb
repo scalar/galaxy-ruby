@@ -218,23 +218,21 @@ module ScalarGalaxy
       initial_retry_delay: self.class::DEFAULT_INITIAL_RETRY_DELAY,
       max_retry_delay: self.class::DEFAULT_MAX_RETRY_DELAY
     )
-      base_url ||=
-        ScalarGalaxy::Client::ENVIRONMENTS.fetch(environment&.to_sym || :production) do
-          message =
-            "environment must be one of #{ScalarGalaxy::Client::ENVIRONMENTS.keys}, got #{environment}"
-          raise ArgumentError.new(message)
-        end
+      base_url ||= ScalarGalaxy::Client::ENVIRONMENTS.fetch(environment&.to_sym || :production) do
+        message = "environment must be one of #{ScalarGalaxy::Client::ENVIRONMENTS.keys}, got #{environment}"
+        raise ArgumentError.new(message)
+      end
 
       headers = {}
       custom_headers_env = ENV["SCALAR_CUSTOM_HEADERS"]
       unless custom_headers_env.nil?
         parsed = {}
-        custom_headers_env
-          .split("\n")
-          .each do |line|
-            colon = line.index(":")
-            parsed[line[0...colon].strip] = line[(colon + 1)..].strip unless colon.nil?
+        custom_headers_env.split("\n").each do |line|
+          colon = line.index(":")
+          unless colon.nil?
+            parsed[line[0...colon].strip] = line[(colon + 1)..].strip
           end
+        end
         headers = parsed.merge(headers)
       end
 

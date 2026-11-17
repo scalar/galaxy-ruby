@@ -151,7 +151,7 @@ module ScalarGalaxy
 
           finished = false
 
-          # rubocop:disable Metrics/BlockLength
+          # rubocop:disable-next Metrics/BlockLength
           enum =
             Enumerator.new do |y|
               next if finished
@@ -209,7 +209,6 @@ module ScalarGalaxy
                 request: nil
               )
             end
-          # rubocop:enable Metrics/BlockLength
 
           _, response = enum.next
           body =

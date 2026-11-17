@@ -9,7 +9,7 @@ module ScalarGalaxy
       #
       # @overload create(celestial_body:, request_options: {})
       #
-      # @param celestial_body [ScalarGalaxy::Models::Planet, ScalarGalaxy::Models::CelestialBody::Satellite]
+      # @param celestial_body [ScalarGalaxy::Models::PlanetParam, ScalarGalaxy::Models::CelestialBodyParam::Satellite]
       # @param request_options [ScalarGalaxy::RequestOptions, Hash{Symbol=>Object}, nil]
       #
       # @return [ScalarGalaxy::Models::Planet, ScalarGalaxy::Models::CelestialBody::Satellite]

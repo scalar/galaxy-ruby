@@ -14,16 +14,22 @@ module ScalarGalaxy
           )
         end
 
+      sig { returns(String) }
+      attr_accessor :password
+
       sig do
-        params(request_options: ScalarGalaxy::RequestOptions::OrHash).returns(
-          T.attached_class
-        )
+        params(
+          password: String,
+          request_options: ScalarGalaxy::RequestOptions::OrHash
+        ).returns(T.attached_class)
       end
-      def self.new(request_options: {})
+      def self.new(password:, request_options: {})
       end
 
       sig do
-        override.returns({ request_options: ScalarGalaxy::RequestOptions })
+        override.returns(
+          { password: String, request_options: ScalarGalaxy::RequestOptions }
+        )
       end
       def to_hash
       end

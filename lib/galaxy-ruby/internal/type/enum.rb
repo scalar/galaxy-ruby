@@ -38,9 +38,8 @@ module ScalarGalaxy
         #
         # @return [Boolean]
         def ==(other)
-          # rubocop:disable Style/CaseEquality
+          # rubocop:disable-next Style/CaseEquality
           ScalarGalaxy::Internal::Type::Enum === other && other.values.to_set == values.to_set
-          # rubocop:enable Style/CaseEquality
         end
 
         # @api public
@@ -100,7 +99,10 @@ module ScalarGalaxy
         #
         # @return [Object]
         def to_sorbet_type
-          types = values.map { ScalarGalaxy::Internal::Util::SorbetRuntimeSupport.to_sorbet_type(_1) }.uniq
+          types =
+            values
+            .map { ScalarGalaxy::Internal::Util::SorbetRuntimeSupport.to_sorbet_type(_1) }
+            .uniq
           case types
           in []
             T.noreturn
@@ -119,7 +121,10 @@ module ScalarGalaxy
         def inspect(depth: 0)
           return is_a?(Module) ? super() : self.class.name if depth.positive?
 
-          members = values.map { ScalarGalaxy::Internal::Type::Converter.inspect(_1, depth: depth.succ) }
+          members =
+            values.map do
+              ScalarGalaxy::Internal::Type::Converter.inspect(_1, depth: depth.succ)
+            end
           prefix = is_a?(Module) ? name : self.class.name
 
           "#{prefix}[#{members.join(" | ")}]"

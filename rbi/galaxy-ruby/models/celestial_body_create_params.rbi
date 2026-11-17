@@ -16,7 +16,10 @@ module ScalarGalaxy
 
       sig do
         returns(
-          T.any(ScalarGalaxy::Planet, ScalarGalaxy::CelestialBody::Satellite)
+          T.any(
+            ScalarGalaxy::PlanetParam,
+            ScalarGalaxy::CelestialBodyParam::Satellite
+          )
         )
       end
       attr_accessor :celestial_body
@@ -25,8 +28,8 @@ module ScalarGalaxy
         params(
           celestial_body:
             T.any(
-              ScalarGalaxy::Planet::OrHash,
-              ScalarGalaxy::CelestialBody::Satellite::OrHash
+              ScalarGalaxy::PlanetParam::OrHash,
+              ScalarGalaxy::CelestialBodyParam::Satellite::OrHash
             ),
           request_options: ScalarGalaxy::RequestOptions::OrHash
         ).returns(T.attached_class)
@@ -39,8 +42,8 @@ module ScalarGalaxy
           {
             celestial_body:
               T.any(
-                ScalarGalaxy::Planet,
-                ScalarGalaxy::CelestialBody::Satellite
+                ScalarGalaxy::PlanetParam,
+                ScalarGalaxy::CelestialBodyParam::Satellite
               ),
             request_options: ScalarGalaxy::RequestOptions
           }
