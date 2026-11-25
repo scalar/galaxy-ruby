@@ -17,18 +17,35 @@ module ScalarGalaxy
       sig { returns(Integer) }
       attr_accessor :planet_id
 
+      # A user
+      sig { returns(T.nilable(ScalarGalaxy::UserParam)) }
+      attr_reader :creator
+
+      sig { params(creator: ScalarGalaxy::UserParam).void }
+      attr_writer :creator
+
       sig do
         params(
           planet_id: Integer,
+          creator: ScalarGalaxy::UserParam,
           request_options: ScalarGalaxy::RequestOptions::OrHash
         ).returns(T.attached_class)
       end
-      def self.new(planet_id:, request_options: {})
+      def self.new(
+        planet_id:,
+        # A user
+        creator: nil,
+        request_options: {}
+      )
       end
 
       sig do
         override.returns(
-          { planet_id: Integer, request_options: ScalarGalaxy::RequestOptions }
+          {
+            planet_id: Integer,
+            creator: ScalarGalaxy::UserParam,
+            request_options: ScalarGalaxy::RequestOptions
+          }
         )
       end
       def to_hash

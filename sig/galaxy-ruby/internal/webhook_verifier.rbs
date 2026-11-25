@@ -1,0 +1,53 @@
+module StandardWebhooks
+  class StandardWebhooksError < StandardError
+  end
+
+  class WebhookVerificationError < StandardWebhooksError
+  end
+end
+
+module ScalarGalaxy
+  module Errors
+    class WebhookVerificationError < ::StandardWebhooks::WebhookVerificationError
+      def initialize: (?String? message) -> void
+    end
+  end
+
+  module Internal
+    module WebhookVerifier
+      SECRET_PREFIX: String
+
+      TOLERANCE_SECONDS: Integer
+
+      DEFAULT_ALGORITHM: String
+
+      HMAC_DIGESTS: ::Hash[String, String]
+
+      def self.verify!: (
+        String payload,
+        ::Hash[String | Symbol, String | ::Array[String]] headers,
+        String secret,
+        ?algorithm: String,
+        ?id_header: String,
+        ?timestamp_header: String,
+        ?signature_header: String,
+        ?tolerance: Integer,
+        ?decoder: String?
+      ) -> void
+
+      def self.header_value: (
+        ::Hash[String | Symbol, String | ::Array[String]] headers,
+        String name
+      ) -> String?
+
+      def self.decode_secret: (String secret) -> String
+
+      def self.verify_timestamp!: (String msg_timestamp, ?Integer tolerance) -> void
+
+      def self.secure_compare: (
+        String expected,
+        String? signature
+      ) -> bool
+    end
+  end
+end

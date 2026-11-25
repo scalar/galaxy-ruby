@@ -38,11 +38,11 @@ It's easy to say you know them all, but do you really? Retrieve all the planets 
 
 | Direction | Type |
 | --- | --- |
-| Request | [`PlanetListAllDataParams`](././lib/galaxy-ruby/models/planet_list_all_data_params.rb) |
-| Response | [`PlanetListAllDataResponse`](././lib/galaxy-ruby/models/planet_list_all_data_response.rb) |
+| Request | [`PlanetListParams`](././lib/galaxy-ruby/models/planet_list_params.rb) |
+| Response | [`PlanetListResponse`](././lib/galaxy-ruby/models/planet_list_response.rb) |
 
 ```ruby
-response = client.planets.list_all_data({ limit: 10, offset: 0 })
+response = client.planets.list({ limit: 10, offset: 0 })
 
 puts response.inspect
 ```
@@ -57,7 +57,7 @@ Time to play god and create a new planet. What do you think? Ah, don't think too
 | Response | [`Planet`](././lib/galaxy-ruby/models/planet.rb) |
 
 ```ruby
-response = client.planets.create({ id: 1, name: "Mars", atmosphere: [{  }], creator: {  }, description: "The red planet", discovered_at: "1610-01-07T00:00:00Z", failure_callback_url: "https://example.com/webhook", habitability_index: 0.68, image: "https://cdn.scalar.com/photos/mars.jpg", last_updated: "2024-01-15T14:30:00Z", physical_properties: {  }, satellites: [{ "name" => "Phobos" }], success_callback_url: "https://example.com/webhook", tags: [""], type: "terrestrial" })
+response = client.planets.create({ name: "Mars", atmosphere: [{  }], creator: {  }, description: "The red planet", discovered_at: "1610-01-07T00:00:00Z", failure_callback_url: "https://example.com/webhook", habitability_index: 0.68, image: "https://cdn.scalar.com/photos/mars.jpg", physical_properties: {  }, satellites: [{ "name" => "Phobos" }], success_callback_url: "https://example.com/webhook", tags: [""], type: "terrestrial" })
 
 puts response.inspect
 ```
@@ -87,7 +87,7 @@ Sometimes you make mistakes, that's fine. No worries, you can update all planets
 | Response | [`Planet`](././lib/galaxy-ruby/models/planet.rb) |
 
 ```ruby
-response = client.planets.update(1, { id: 1, name: "Mars", atmosphere: [{  }], creator: {  }, description: "The red planet", discovered_at: "1610-01-07T00:00:00Z", failure_callback_url: "https://example.com/webhook", habitability_index: 0.68, image: "https://cdn.scalar.com/photos/mars.jpg", last_updated: "2024-01-15T14:30:00Z", physical_properties: {  }, satellites: [{ "name" => "Phobos" }], success_callback_url: "https://example.com/webhook", tags: [""], type: "terrestrial" })
+response = client.planets.update(1, { name: "Mars", atmosphere: [{  }], creator: {  }, description: "The red planet", discovered_at: "1610-01-07T00:00:00Z", failure_callback_url: "https://example.com/webhook", habitability_index: 0.68, image: "https://cdn.scalar.com/photos/mars.jpg", physical_properties: {  }, satellites: [{ "name" => "Phobos" }], success_callback_url: "https://example.com/webhook", tags: [""], type: "terrestrial" })
 
 puts response.inspect
 ```
@@ -110,11 +110,11 @@ Got a crazy good photo of a planet? Share it with the world!
 
 | Direction | Type |
 | --- | --- |
-| Request | [`PlanetDelteImageParams`](././lib/galaxy-ruby/models/planet_delte_image_params.rb) |
-| Response | [`PlanetDelteImageResponse`](././lib/galaxy-ruby/models/planet_delte_image_response.rb) |
+| Request | [`PlanetUploadImageParams`](././lib/galaxy-ruby/models/planet_upload_image_params.rb) |
+| Response | [`PlanetUploadImageResponse`](././lib/galaxy-ruby/models/planet_upload_image_response.rb) |
 
 ```ruby
-response = client.planets.delte_image(1, { image: "@mars.jpg" })
+response = client.planets.upload_image(1, { image: "@mars.jpg" })
 
 puts response.inspect
 ```

@@ -5,9 +5,9 @@
 - `planets.create(...)` — `POST /planets`
 - `planets.retrieve(...)` — `GET /planets/{planetId}`
 - `planets.update(...)` — `PUT /planets/{planetId}`
+- `planets.list(...)` — `GET /planets`
 - `planets.delete(...)` — `DELETE /planets/{planetId}`
-- `planets.delte_image(...)` — `POST /planets/{planetId}/image`
-- `planets.list_all_data(...)` — `GET /planets`
+- `planets.upload_image(...)` — `POST /planets/{planetId}/image`
 - `celestial_bodies.create(...)` — `POST /celestial-bodies`
 - `authentication.create_token(...)` — `POST /auth/token`
 - `authentication.create_user(...)` — `POST /user/signup`

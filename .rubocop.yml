@@ -291,20 +291,14 @@ Style/SoleNestedConditional:
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
-# Match `Style/StringLiterals` above rather than RuboCop's single-quote default. The generator
-# formats emitted Ruby with syntax_tree, which prints double quotes inside interpolations too, so
-# the default would put every interpolated literal in this SDK permanently at odds with the
-# formatter — `rake format:rb` would rewrite what `rake lint` had just accepted, and back again.
+# Match `Style/StringLiterals` above rather than RuboCop's single-quote default, so a string reads
+# the same inside an interpolation as outside it. The generator writes double quotes throughout.
 Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
 
-# `percent` rather than `brackets`, because syntax_tree rewrites `[:a, :b]` to `%i[a b]` and offers
-# no option not to. The generator writes the bracketed form; the formatter converts it; this makes
-# the linter agree with the file that actually ships.
-#
-# The Rakefile is excluded because the formatter never runs over it: the generator's pass selects
-# files by extension, and `Rakefile` has none. It therefore keeps the bracketed spelling, which
-# reads better for the `:"lint:rubocop"` task names it is made of.
+# `percent` is RuboCop's own default, and the generator writes `%i[a b]` wherever this cop would ask
+# for it. The entry exists for the exclusion: the Rakefile keeps the bracketed spelling, which reads
+# better for the `:"lint:rubocop"` task names it is made of.
 Style/SymbolArray:
   EnforcedStyle: percent
   Exclude:
@@ -312,10 +306,10 @@ Style/SymbolArray:
 
 # Disabled because its autocorrection produces Ruby that does not parse. A `case/in` clause whose
 # pattern ends in an endless range needs a trailing `then` — without it the next line is swallowed
-# into the range — and syntax_tree correctly emits one. This cop strips it back off, which silently
-# breaks the file. Verified against RuboCop 1.89.0, the version `Gemfile.lock` pins: running
-# `rake format` over a generated SDK with this cop enabled leaves `errors.rb` and `base_client.rb`
-# failing `ruby -c`.
+# into the range — and the generated runtime carries one wherever it needs it. This cop strips it
+# back off, which silently breaks the file. On RuboCop 1.89.0, autocorrecting a generated SDK with this cop enabled
+# leaves `errors.rb` and `base_client.rb` failing `ruby -c`. 1.92.2, the version `Gemfile.lock`
+# pins, no longer flags these clauses; the cop stays off for anyone linting with an older RuboCop.
 Style/MultilineInPatternThen:
   Enabled: false
 

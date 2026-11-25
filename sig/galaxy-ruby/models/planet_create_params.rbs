@@ -1,15 +1,26 @@
 module ScalarGalaxy
   module Models
     type planet_create_params =
-      {  } & ScalarGalaxy::Internal::Type::request_parameters
+      { creator: ScalarGalaxy::UserParam }
+      & ScalarGalaxy::Internal::Type::request_parameters
 
     class PlanetCreateParams < ScalarGalaxy::Models::Planet
       extend ScalarGalaxy::Internal::Type::RequestParameters::Converter
       include ScalarGalaxy::Internal::Type::RequestParameters
 
-      def initialize: (?request_options: ScalarGalaxy::request_opts) -> void
+      def creator: -> ScalarGalaxy::UserParam?
 
-      def to_hash: -> { request_options: ScalarGalaxy::RequestOptions }
+      def creator=: (ScalarGalaxy::UserParam _) -> ScalarGalaxy::UserParam
+
+      def initialize: (
+        ?creator: ScalarGalaxy::UserParam,
+        ?request_options: ScalarGalaxy::request_opts
+      ) -> void
+
+      def to_hash: -> {
+        creator: ScalarGalaxy::UserParam,
+        request_options: ScalarGalaxy::RequestOptions
+      }
     end
   end
 end

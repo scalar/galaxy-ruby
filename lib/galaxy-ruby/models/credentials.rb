@@ -8,18 +8,10 @@ module ScalarGalaxy
       #   @return [String]
       required :email, String
 
-      request_only do
-        # @!attribute password
-        #
-        #   @return [String]
-        required :password, String
-      end
-
-      # @!method initialize(email:, password:)
+      # @!method initialize(email:)
       #   Credentials to authenticate a user
       #
       #   @param email [String]
-      #   @param password [String]
     end
   end
 end

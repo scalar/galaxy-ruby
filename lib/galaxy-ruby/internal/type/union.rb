@@ -75,7 +75,9 @@ module ScalarGalaxy
             value.class
           in [Symbol, Hash]
             key =
-              value.fetch(@discriminator) { value.fetch(@discriminator.to_s, ScalarGalaxy::Internal::OMIT) }
+              value.fetch(@discriminator) do
+                value.fetch(@discriminator.to_s, ScalarGalaxy::Internal::OMIT)
+              end
 
             return nil if key == ScalarGalaxy::Internal::OMIT
 
@@ -105,7 +107,8 @@ module ScalarGalaxy
         #
         # @return [Boolean]
         def ==(other)
-          ScalarGalaxy::Internal::Type::Union === other && other.derefed_variants == derefed_variants
+          ScalarGalaxy::Internal::Type::Union === other &&
+            other.derefed_variants == derefed_variants
         end
 
         # @api public
@@ -136,11 +139,12 @@ module ScalarGalaxy
         #
         # @return [Object]
         def coerce(value, state:)
+          # Even discriminator-selected variants return through ensure below.
+          strictness = state.fetch(:strictness)
           if (target = resolve_variant(value))
             return ScalarGalaxy::Internal::Type::Converter.coerce(target, value, state: state)
           end
 
-          strictness = state.fetch(:strictness)
           exactness = state.fetch(:exactness)
 
           alternatives = []
@@ -149,7 +153,8 @@ module ScalarGalaxy
             exact = state[:exactness] = {yes: 0, no: 0, maybe: 0}
             state[:branched] += 1
 
-            coerced = ScalarGalaxy::Internal::Type::Converter.coerce(target, value, state: state)
+            coerced =
+              ScalarGalaxy::Internal::Type::Converter.coerce(target, value, state: state)
             yes, no, maybe = exact.values
             if (no + maybe).zero? || (!strictness && yes.positive?)
               exact.each { exactness[_1] += _2 }
@@ -201,7 +206,10 @@ module ScalarGalaxy
         #
         # @return [Object]
         def to_sorbet_type
-          types = variants.map { ScalarGalaxy::Internal::Util::SorbetRuntimeSupport.to_sorbet_type(_1) }.uniq
+          types =
+            variants
+            .map { ScalarGalaxy::Internal::Util::SorbetRuntimeSupport.to_sorbet_type(_1) }
+            .uniq
           case types
           in []
             T.noreturn
@@ -223,7 +231,10 @@ module ScalarGalaxy
         def inspect(depth: 0)
           return is_a?(Module) ? super() : self.class.name if depth.positive?
 
-          members = variants.map { ScalarGalaxy::Internal::Type::Converter.inspect(_1, depth: depth.succ) }
+          members =
+            variants.map do
+              ScalarGalaxy::Internal::Type::Converter.inspect(_1, depth: depth.succ)
+            end
           prefix = is_a?(Module) ? name : self.class.name
 
           "#{prefix}[#{members.join(" | ")}]"

@@ -39,6 +39,18 @@ module ScalarGalaxy
       sig { returns(T.nilable(T.anything)) }
       attr_accessor :body
 
+      sig { returns(T.nilable(String)) }
+      def request_id
+      end
+
+      sig { returns(T.nilable(T::Hash[T.any(String, Symbol), T.anything])) }
+      def problem_details
+      end
+
+      sig { params(name: String).returns(T.nilable(String)) }
+      private def response_header(name)
+      end
+
       # @api private
       sig do
         params(
@@ -51,15 +63,7 @@ module ScalarGalaxy
           message: T.nilable(String)
         ).returns(T.attached_class)
       end
-      def self.new(
-        url:,
-        status: nil,
-        headers: nil,
-        body: nil,
-        request: nil,
-        response: nil,
-        message: nil
-      )
+      def self.new(url:, status: nil, headers: nil, body: nil, request: nil, response: nil, message: nil)
       end
     end
 
@@ -132,15 +136,7 @@ module ScalarGalaxy
           message: T.nilable(String)
         ).returns(T.attached_class)
       end
-      def self.for(
-        url:,
-        status:,
-        headers:,
-        body:,
-        request:,
-        response:,
-        message: nil
-      )
+      def self.for(url:, status:, headers:, body:, request:, response:, message: nil)
       end
 
       sig { returns(Integer) }
@@ -158,15 +154,7 @@ module ScalarGalaxy
           message: T.nilable(String)
         ).returns(T.attached_class)
       end
-      def self.new(
-        url:,
-        status:,
-        headers:,
-        body:,
-        request:,
-        response:,
-        message: nil
-      )
+      def self.new(url:, status:, headers:, body:, request:, response:, message: nil)
       end
     end
 
@@ -200,6 +188,16 @@ module ScalarGalaxy
 
     class InternalServerError < ScalarGalaxy::Errors::APIStatusError
       HTTP_STATUS = T.let((500..), T::Range[Integer])
+    end
+
+    # Raised by SDKs that verify webhook signatures through the `standardwebhooks` gem when that gem
+    # is not installed. This SDK verifies them with the standard library and never raises it; the
+    # class is declared so code that rescues or names it keeps working.
+    class MissingDependencyError < ScalarGalaxy::Errors::Error
+      # @api private
+      sig { params(gem_name: String, feature: String).returns(T.attached_class) }
+      def self.new(gem_name:, feature:)
+      end
     end
   end
 end

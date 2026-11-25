@@ -14,16 +14,33 @@ module ScalarGalaxy
           )
         end
 
+      # A user
+      sig { returns(T.nilable(ScalarGalaxy::UserParam)) }
+      attr_reader :creator
+
+      sig { params(creator: ScalarGalaxy::UserParam).void }
+      attr_writer :creator
+
       sig do
-        params(request_options: ScalarGalaxy::RequestOptions::OrHash).returns(
-          T.attached_class
-        )
+        params(
+          creator: ScalarGalaxy::UserParam,
+          request_options: ScalarGalaxy::RequestOptions::OrHash
+        ).returns(T.attached_class)
       end
-      def self.new(request_options: {})
+      def self.new(
+        # A user
+        creator: nil,
+        request_options: {}
+      )
       end
 
       sig do
-        override.returns({ request_options: ScalarGalaxy::RequestOptions })
+        override.returns(
+          {
+            creator: ScalarGalaxy::UserParam,
+            request_options: ScalarGalaxy::RequestOptions
+          }
+        )
       end
       def to_hash
       end

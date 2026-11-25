@@ -28,7 +28,9 @@ module ScalarGalaxy
         # @param other [Object]
         #
         # @return [Boolean]
-        def self.==(other) = other.is_a?(Class) && other <= ScalarGalaxy::Internal::Type::Unknown
+        def self.==(other)
+          other.is_a?(Class) && other <= ScalarGalaxy::Internal::Type::Unknown
+        end
 
         class << self
           # @api private

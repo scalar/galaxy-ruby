@@ -1,7 +1,8 @@
 module ScalarGalaxy
   module Models
     type planet_update_params =
-      { planet_id: Integer } & ScalarGalaxy::Internal::Type::request_parameters
+      { planet_id: Integer, creator: ScalarGalaxy::UserParam }
+      & ScalarGalaxy::Internal::Type::request_parameters
 
     class PlanetUpdateParams < ScalarGalaxy::Models::Planet
       extend ScalarGalaxy::Internal::Type::RequestParameters::Converter
@@ -11,13 +12,19 @@ module ScalarGalaxy
 
       def planet_id=: (Integer _) -> Integer
 
+      def creator: -> ScalarGalaxy::UserParam?
+
+      def creator=: (ScalarGalaxy::UserParam _) -> ScalarGalaxy::UserParam
+
       def initialize: (
         planet_id: Integer,
+        ?creator: ScalarGalaxy::UserParam,
         ?request_options: ScalarGalaxy::request_opts
       ) -> void
 
       def to_hash: -> {
         planet_id: Integer,
+        creator: ScalarGalaxy::UserParam,
         request_options: ScalarGalaxy::RequestOptions
       }
     end

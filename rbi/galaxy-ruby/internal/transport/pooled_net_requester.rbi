@@ -14,7 +14,8 @@ module ScalarGalaxy
               url: URI::Generic,
               headers: T::Hash[String, String],
               body: T.anything,
-              deadline: Float
+              deadline: Float,
+              error_url: T.nilable(URI::Generic)
             }
           end
 
@@ -24,26 +25,31 @@ module ScalarGalaxy
 
         DEFAULT_MAX_CONNECTIONS = T.let(T.unsafe(nil), Integer)
 
+        # Most origins the requester keeps a connection pool for at once.
+        MAX_POOLS = 16
+
+        # Seconds each socket wait gets once the deadline has passed between two body chunks.
+        ELAPSED_SOCKET_TIMEOUT = T.let(0.001, Float)
+
+        # @api private
+        sig { returns(OpenSSL::X509::Store) }
+        attr_reader :cert_store
+
         class << self
           # @api private
-          sig do
-            params(cert_store: OpenSSL::X509::Store, url: URI::Generic).returns(
-              Net::HTTP
-            )
-          end
+          sig { params(cert_store: OpenSSL::X509::Store, url: URI::Generic).returns(Net::HTTP) }
           def connect(cert_store:, url:)
           end
 
           # @api private
-          sig { params(conn: Net::HTTP, deadline: Float).void }
-          def calibrate_socket_timeout(conn, deadline)
+          sig { params(conn: Net::HTTP, deadline: Float, finishing: T::Boolean).void }
+          def calibrate_socket_timeout(conn, deadline, finishing: false)
           end
 
           # @api private
           sig do
             params(
-              request:
-                ScalarGalaxy::Internal::Transport::PooledNetRequester::Request,
+              request: ScalarGalaxy::Internal::Transport::PooledNetRequester::Request,
               blk: T.proc.params(arg0: String).void
             ).returns([Net::HTTPGenericRequest, T.proc.void])
           end
@@ -52,21 +58,14 @@ module ScalarGalaxy
         end
 
         # @api private
-        sig do
-          params(
-            url: URI::Generic,
-            deadline: Float,
-            blk: T.proc.params(arg0: Net::HTTP).void
-          ).void
-        end
+        sig { params(url: URI::Generic, deadline: Float, blk: T.proc.params(arg0: Net::HTTP).void).void }
         private def with_pool(url, deadline:, &blk)
         end
 
         # @api private
         sig do
           params(
-            request:
-              ScalarGalaxy::Internal::Transport::PooledNetRequester::Request
+            request: ScalarGalaxy::Internal::Transport::PooledNetRequester::Request
           ).returns([Integer, Net::HTTPResponse, T::Enumerable[String]])
         end
         def execute(request)

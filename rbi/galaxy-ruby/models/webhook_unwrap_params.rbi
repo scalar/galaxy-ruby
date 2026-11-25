@@ -28,5 +28,7 @@ module ScalarGalaxy
       def to_hash
       end
     end
+
+    WebhookParsedParams = WebhookUnwrapParams
   end
 end

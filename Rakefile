@@ -9,8 +9,6 @@ multitask(:default) do
 end
 
 xargs = %w[xargs --no-run-if-empty --null --max-procs=0 --max-args=300 --]
-ruby_opt = {"RUBYOPT" => [ENV["RUBYOPT"], "--encoding=UTF-8"].compact.join(" ")}
-
 files = ->(ext, dirs) { (%w[find] + dirs + %w[-type f -and -name]) << "*.#{ext}" << "-print0" }
 
 desc("Lint `*.rb(i)`")
@@ -25,16 +23,19 @@ multitask(:"lint:rubocop") do
   sh("#{find.shelljoin} | #{(xargs + rubocop).shelljoin}")
 end
 
+# RuboCop formats both trees. The `*.rbi` files are piped in by name, like the `*.rb` ones: RuboCop
+# globs a directory through `AllCops/Include`, which does not list `*.rbi`. The cops that do not
+# apply to a signature file are excluded for `**/*.rbi` in `.rubocop.yml`.
+fmt = xargs + %w[rubocop --fail-level F --autocorrect --format simple --]
+
 desc("Format `*.rb`")
 multitask(:"format:rb") do
-  fmt = xargs + %w[rubocop --fail-level F --autocorrect --format simple --]
   sh("#{files["rb", %w[./lib ./examples]].shelljoin} | #{fmt.shelljoin}")
 end
 
 desc("Format `*.rbi`")
 multitask(:"format:rbi") do
-  fmt = xargs + %w[stree write --]
-  sh(ruby_opt, "#{files["rbi", %w[./rbi]].shelljoin} | #{fmt.shelljoin}")
+  sh("#{files["rbi", %w[./rbi]].shelljoin} | #{fmt.shelljoin}")
 end
 
 desc("Typecheck `*.rbs`")
@@ -55,3 +56,10 @@ multitask(format: [:"format:rb", :"format:rbi"])
 
 desc("Typecheck everything")
 multitask(typecheck: [:"typecheck:steep", :"typecheck:sorbet"])
+
+# The smoke tests skip unless TEST_API_BASE_URL names a server; see test/smoke_support.rb.
+require "rake/testtask"
+
+Rake::TestTask.new(:test) do |t|
+  t.test_files = FileList["test/**/*_test.rb"]
+end

@@ -13,6 +13,24 @@ module ScalarGalaxy
 
         DEFAULT_MAX_CONNECTIONS = [Etc.nprocessors, 99].max
 
+        # Most origins the requester keeps a connection pool for at once.
+        MAX_POOLS = 16
+
+        # Seconds each socket wait gets once the deadline has passed between two body chunks: enough
+        # for a read that finds the rest of the body already buffered, never enough to wait for more.
+        ELAPSED_SOCKET_TIMEOUT = 0.001
+
+        # @api private
+        #
+        # The trust store every TLS connection of this requester verifies against: OpenSSL's default
+        # paths, read when the client is constructed, so `SSL_CERT_FILE` and `SSL_CERT_DIR` as they
+        # stand then. A signed upload and a requested-URL fetch, which go to other hosts on connections
+        # of their own, verify against this same store, so those hosts are trusted exactly as the
+        # client's own are.
+        #
+        # @return [OpenSSL::X509::Store]
+        attr_reader :cert_store
+
         class << self
           # @api private
           #
@@ -43,10 +61,30 @@ module ScalarGalaxy
 
           # @api private
           #
+          # Sets every socket timeout of `conn` to what is left of `deadline`.
+          #
+          # A passed deadline never reaches `Net::HTTP` as a negative or zero timeout: a negative one
+          # makes the next socket wait raise `ArgumentError`, which would surface as a connection
+          # error, and a zero open timeout means no timeout at all. It raises instead, which `execute`
+          # maps to the SDK's timeout error, unless `finishing` is set.
+          #
           # @param conn [Net::HTTP]
           # @param deadline [Float]
-          def calibrate_socket_timeout(conn, deadline)
+          # @param finishing [Boolean] whether `conn` is between two chunks of a response body. The
+          #   consumer's time on the chunk it was handed can carry the deadline past, and the body may
+          #   be complete already, so the timeouts drop to `ELAPSED_SOCKET_TIMEOUT` rather than
+          #   raising: a read that still has to wait raises `Net::ReadTimeout`, and the next chunk's
+          #   own check raises when there is more to come.
+          #
+          # @raise [Timeout::Error] when the deadline has already passed and `finishing` is not set
+          def calibrate_socket_timeout(conn, deadline, finishing: false)
             timeout = deadline - ScalarGalaxy::Internal::Util.monotonic_secs
+            unless timeout.positive?
+              raise Timeout::Error, "The request did not finish within its timeout" unless finishing
+
+              timeout = self::ELAPSED_SOCKET_TIMEOUT
+            end
+
             conn.open_timeout = conn.read_timeout = conn.write_timeout = conn.continue_timeout = timeout
           end
 
@@ -105,12 +143,30 @@ module ScalarGalaxy
         private def with_pool(url, deadline:, &blk)
           origin = ScalarGalaxy::Internal::Util.uri_origin(url)
           timeout = deadline - ScalarGalaxy::Internal::Util.monotonic_secs
+          # A request whose deadline has already passed times out before it takes a connection, as
+          # `calibrate_socket_timeout` would raise on it first thing, rather than checking one out (or
+          # opening a pool for its origin) only to hand it straight back.
+          raise Timeout::Error, "The request did not finish within its timeout" unless timeout.positive?
+
+          # One pool per origin, created on first use. `@mutex` only guards the lookup: waiting for a
+          # connection happens in the pool, so a full pool for one origin never blocks another's.
+          evicted = nil
           pool =
             @mutex.synchronize do
-              @pools[origin] ||= ConnectionPool.new(size: @size) do
-                self.class.connect(cert_store: @cert_store, url: url)
-              end
+              # Re-inserted on every use, so the hash's insertion order is least recently used first.
+              found = @pools.delete(origin)
+              found ||=
+                ScalarGalaxy::Internal::Transport::ConnectionPool.new(size: @size) do
+                  self.class.connect(cert_store: @cert_store, url: url)
+                end
+              # Origins come from redirects and next-page links as well as the base URL, so a server
+              # could otherwise name a new one on every response and hold a socket open for each.
+              # Past `MAX_POOLS` the least recently used pool is shut down.
+              evicted = @pools.shift&.last if @pools.size >= self.class::MAX_POOLS
+              @pools[origin] = found
             end
+          # Outside `@mutex`, since closing a connection can wait on the network.
+          evicted&.shutdown { _1.finish if _1.started? }
 
           pool.with(timeout: timeout, &blk)
         end
@@ -133,10 +189,9 @@ module ScalarGalaxy
         def execute(request)
           url, deadline = request.fetch_values(:url, :deadline)
 
-          req = nil
           finished = false
 
-          # rubocop:disable Metrics/BlockLength
+          # rubocop:disable-next Metrics/BlockLength
           enum =
             Enumerator.new do |y|
               next if finished
@@ -164,10 +219,15 @@ module ScalarGalaxy
                         ::Kernel.throw(:jump) if finished
 
                         rsp.read_body do |bytes|
+                          # A chunk read once the deadline has passed means the body did not finish
+                          # within it. Checked here, not only before a wait, because a read that finds
+                          # bytes already buffered never waits, so a server that keeps a body coming
+                          # would otherwise outlast the deadline indefinitely.
+                          self.class.calibrate_socket_timeout(conn, deadline)
                           y << bytes.force_encoding(Encoding::BINARY)
                           ::Kernel.throw(:jump) if finished
 
-                          self.class.calibrate_socket_timeout(conn, deadline)
+                          self.class.calibrate_socket_timeout(conn, deadline, finishing: true)
                         end
                         eof = true
                       end
@@ -181,12 +241,19 @@ module ScalarGalaxy
                   end
                 end
               end
+              # `request: nil`, as every other error site passes: the built request carries the client's
+              # credential headers, and an error is the kind of object that gets logged or inspected.
             rescue Timeout::Error
-              raise ScalarGalaxy::Errors::APITimeoutError.new(url: url, request: req)
+              raise ScalarGalaxy::Errors::APITimeoutError.new(
+                url: request.fetch(:error_url, url),
+                request: nil
+              )
             rescue StandardError
-              raise ScalarGalaxy::Errors::APIConnectionError.new(url: url, request: req)
+              raise ScalarGalaxy::Errors::APIConnectionError.new(
+                url: request.fetch(:error_url, url),
+                request: nil
+              )
             end
-          # rubocop:enable Metrics/BlockLength
 
           _, response = enum.next
           body =
