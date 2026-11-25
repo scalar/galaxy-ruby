@@ -1,6 +1,15 @@
+module StandardWebhooks
+  class StandardWebhooksError < StandardError
+  end
+
+  class WebhookVerificationError < StandardWebhooksError
+  end
+end
+
 module ScalarGalaxy
   module Errors
-    class WebhookVerificationError < ScalarGalaxy::Errors::Error
+    class WebhookVerificationError < ::StandardWebhooks::WebhookVerificationError
+      def initialize: (?String? message) -> void
     end
   end
 
@@ -13,10 +22,6 @@ module ScalarGalaxy
       DEFAULT_ALGORITHM: String
 
       HMAC_DIGESTS: ::Hash[String, String]
-
-      module LegacyRescue
-        def ===: (top other) -> bool
-      end
 
       def self.verify!: (
         String payload,
@@ -44,13 +49,5 @@ module ScalarGalaxy
         String? signature
       ) -> bool
     end
-  end
-end
-
-module StandardWebhooks
-  class StandardWebhooksError < StandardError
-  end
-
-  class WebhookVerificationError < StandardWebhooksError
   end
 end

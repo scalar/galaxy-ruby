@@ -20,12 +20,20 @@ module ScalarGalaxy
 
         MAX_POOLS: 16
 
+        ELAPSED_SOCKET_TIMEOUT: Float
+
+        attr_reader cert_store: OpenSSL::X509::Store
+
         def self.connect: (
           cert_store: OpenSSL::X509::Store,
           url: URI::Generic
         ) -> top
 
-        def self.calibrate_socket_timeout: (top conn, Float deadline) -> void
+        def self.calibrate_socket_timeout: (
+          top conn,
+          Float deadline,
+          ?finishing: bool
+        ) -> void
 
         def self.build_request: (
           ScalarGalaxy::Internal::Transport::PooledNetRequester::request request

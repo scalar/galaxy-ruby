@@ -1,8 +1,19 @@
 # typed: strong
 
+module StandardWebhooks
+  class StandardWebhooksError < StandardError
+  end
+
+  class WebhookVerificationError < StandardWebhooksError
+  end
+end
+
 module ScalarGalaxy
   module Errors
-    class WebhookVerificationError < ScalarGalaxy::Errors::Error
+    class WebhookVerificationError < ::StandardWebhooks::WebhookVerificationError
+      sig { params(message: T.nilable(String)).void }
+      def initialize(message = nil)
+      end
     end
   end
 
@@ -16,13 +27,6 @@ module ScalarGalaxy
       DEFAULT_ALGORITHM = "hmac-sha256"
 
       HMAC_DIGESTS = T.let(T.unsafe(nil), T::Hash[String, String])
-
-      # @api private
-      module LegacyRescue
-        sig { params(other: T.anything).returns(T::Boolean) }
-        def ===(other)
-        end
-      end
 
       class << self
         # @api private
@@ -78,13 +82,5 @@ module ScalarGalaxy
         end
       end
     end
-  end
-end
-
-module StandardWebhooks
-  class StandardWebhooksError < StandardError
-  end
-
-  class WebhookVerificationError < StandardWebhooksError
   end
 end
