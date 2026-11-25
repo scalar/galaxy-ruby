@@ -47,9 +47,9 @@ module ScalarGalaxy
             reset_after_fork
             loop do
               # An idle connection or a free slot is handed out even once the deadline has passed: the
-              # timeout bounds the wait for one, and the requester's socket timeouts take over from
-              # there. Most recently returned first, so the connection most likely to still be alive
-              # is the one reused.
+              # timeout bounds the wait for one, and the requester raises its own timeout from there
+              # before it uses the connection. Most recently returned first, so the connection most
+              # likely to still be alive is the one reused.
               return @idle.pop, @pid unless @idle.empty?
 
               if @created < @size

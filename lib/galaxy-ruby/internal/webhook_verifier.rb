@@ -1,11 +1,36 @@
 # frozen_string_literal: true
 
+# The two error classes the `standardwebhooks` gem raised verification failures as, declared with the
+# gem's own hierarchy so that whichever of the gem and this file loads second reopens them instead of
+# conflicting. They come first because this SDK's verification error subclasses the second one, so code
+# written against the gem (`rescue StandardWebhooks::WebhookVerificationError`, `is_a?`, `rescue_from`)
+# keeps catching it whether or not the gem is installed.
+module StandardWebhooks
+  class StandardWebhooksError < StandardError
+  end
+
+  class WebhookVerificationError < StandardWebhooksError
+  end
+end
+
 module ScalarGalaxy
   module Errors
     # Raised when a webhook delivery fails signature verification: a required header is missing, the
     # timestamp is unreadable or outside the tolerance, no signature matches, or the helper is signed
     # with an algorithm this SDK cannot verify, which refuses every delivery.
-    class WebhookVerificationError < ScalarGalaxy::Errors::Error
+    #
+    # A `StandardWebhooks::WebhookVerificationError`, as the `standardwebhooks` gem's own failures
+    # were, and deliberately not an `Errors::Error`: a handler rescuing this SDK's API errors is not
+    # meant to swallow a forged or stale delivery.
+    class WebhookVerificationError < ::StandardWebhooks::WebhookVerificationError
+      # @param message [String, nil]
+      def initialize(message = nil)
+        super
+        # The gem's `StandardWebhooksError#initialize` keeps the message in `@message` without calling
+        # `Exception#initialize`, so with the gem loaded `to_s`, `inspect` and string interpolation
+        # would report the class name instead. Setting it here keeps the message either way.
+        ::Exception.instance_method(:initialize).bind_call(self, message)
+      end
     end
   end
 
@@ -35,32 +60,6 @@ module ScalarGalaxy
       # here (`ed25519`, `rsa-sha256`) is one this runtime cannot check, and `verify!` refuses every
       # delivery for it rather than accepting one unchecked.
       HMAC_DIGESTS = {"hmac-sha1" => "SHA1", "hmac-sha256" => "SHA256", "hmac-sha512" => "SHA512"}.freeze
-
-      # @api private
-      #
-      # Prepended onto `StandardWebhooks::StandardWebhooksError`'s singleton class (see the end of this
-      # file), so a `rescue StandardWebhooks::WebhookVerificationError` or
-      # `rescue StandardWebhooks::StandardWebhooksError` written against the gem this SDK used to call
-      # still catches this SDK's verification error. `rescue` and `case` match with `===`, so only
-      # those two classes are widened, and only for this SDK's error; `WebhookSigningError` and every
-      # other class keep plain `Module#===`. The match itself goes through `Module#===` too, so a
-      # `BasicObject` (no `is_a?`) is a plain non-match. Anything that checks the class directly
-      # (`is_a?`, `e.class`, a lookup by class name) sees the SDK's class.
-      module LegacyRescue
-        # @param other [Object]
-        #
-        # @return [Boolean]
-        def ===(other)
-          return true if super
-
-          # `Module#===` rather than `is_a?`, which a `BasicObject` does not have (see above).
-          # rubocop:disable-next Style/CaseEquality
-          (
-            equal?(::StandardWebhooks::StandardWebhooksError) ||
-              equal?(::StandardWebhooks::WebhookVerificationError)
-          ) && ScalarGalaxy::Errors::WebhookVerificationError === other
-        end
-      end
 
       class << self
         # @api private
@@ -114,13 +113,20 @@ module ScalarGalaxy
 
           verify_timestamp!(msg_timestamp, tolerance)
 
-          signed = "#{msg_id}.#{msg_timestamp}.#{payload}"
+          # Every part is joined as binary (`.b`), byte for byte as received. The id and the body come
+          # from the sender, so their encodings need not agree: interpolating a UTF-8 id with non-ASCII
+          # characters beside a binary body (or the reverse) raises `Encoding::CompatibilityError`,
+          # where the delivery has to be refused as unsigned instead.
+          signed = [msg_id, msg_timestamp, payload].map { |part| part.to_s.b }.join(".")
           expected = [OpenSSL::HMAC.digest(OpenSSL::Digest.new(digest), key, signed)].pack("m0")
           # `split(" ")` splits on any run of whitespace, so a header folded with tabs or newlines
           # still yields its entries. The explicit pattern matters: a bare `split` uses `$;` when the
           # host process has set it. Entries for other versions are skipped rather than rejected,
-          # which is what lets a sender add a new scheme beside `v1`.
-          entries = msg_signature.split(" ")
+          # which is what lets a sender add a new scheme beside `v1`. The header is split as binary:
+          # a UTF-8 string holding an invalid byte sequence raises `ArgumentError` from `split`, so a
+          # garbled entry would otherwise escape as that error and hide a valid entry beside it, where
+          # it has to be one more signature that does not match.
+          entries = msg_signature.to_s.b.split(" ")
           matched =
             entries.any? do |entry|
               version, signature = entry.split(",", 2)
@@ -151,7 +157,9 @@ module ScalarGalaxy
           if value.nil? && headers.respond_to?(:each)
             headers.each do |key, candidate|
               next unless !candidate.nil? && (key.is_a?(String) || key.is_a?(Symbol))
-              next unless key.to_s.downcase == name
+              # Folded as binary, so only ASCII letters change case: HTTP header names are ASCII, and
+              # `downcase` on a UTF-8 name holding an invalid byte sequence raises `ArgumentError`.
+              next unless key.to_s.b.downcase == name
 
               value = candidate
               break
@@ -230,19 +238,3 @@ module ScalarGalaxy
     end
   end
 end
-
-# The two error classes the `standardwebhooks` gem raised verification failures as, declared with the
-# gem's own hierarchy so that whichever of the gem and this file loads second reopens them instead of
-# conflicting. Code written against the gem keeps resolving the constants without it installed, and
-# `LegacyRescue` makes its `rescue` clauses catch this SDK's error.
-module StandardWebhooks
-  class StandardWebhooksError < StandardError
-  end
-
-  class WebhookVerificationError < StandardWebhooksError
-  end
-end
-
-StandardWebhooks::StandardWebhooksError.singleton_class.prepend(
-  ScalarGalaxy::Internal::WebhookVerifier::LegacyRescue
-)
